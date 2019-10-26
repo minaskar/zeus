@@ -16,7 +16,7 @@ class samples:
     def chain(self):
         return np.swapaxes(np.array(self.samples), 0, 1)
 
-    def flatten(self, burn=None):
+    def flatten(self, burn=None, thin=1):
         if burn is None:
             burn = int(self.nsteps/2)
-        return self.chain[:,burn:,:].reshape(-1,self.ndim)
+        return self.chain[:,burn::thin,:].reshape(-1,self.ndim)

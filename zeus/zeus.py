@@ -1,7 +1,14 @@
 import numpy as np
 from itertools import permutations
 from .samples import samples
-from tqdm import tqdm
+from .fwrapper import _FunctionWrapper
+from .start import jitter
+
+try:
+    from tqdm import tqdm
+    tqdm_exists = True
+except:
+    tqdm_exists = False
 
 class sampler:
 
@@ -9,14 +16,16 @@ class sampler:
                  logp,
                  nwalkers,
                  ndim,
+                 args=None,
+                 kwargs=None,
                  width=1.0,
                  maxsteps=1):
 
-        self.logp = logp
-        self.nwalkers = nwalkers
-        self.ndim = ndim
+        self.logp = _FunctionWrapper(logp, args, kwargs)
+        self.nwalkers = int(nwalkers)
+        self.ndim = int(ndim)
         self.width = width
-        self.maxsteps = maxsteps
+        self.maxsteps = int(maxsteps)
         self.nlogp = 0
 
     def run(self,
@@ -26,14 +35,14 @@ class sampler:
             progress=True,
             parallel=False):
 
-        X = np.copy(start)
-        self.nsteps = nsteps
+        X = jitter(start, self.nwalkers, self.ndim)
+        self.nsteps = int(nsteps)
         self.samples = samples(self.nsteps, self.nwalkers, self.ndim)
 
         walkers = np.arange(self.nwalkers)
         batches = np.array(list(map(np.random.permutation,np.broadcast_to(walkers, (nsteps,self.nwalkers)))))
 
-        for i in tqdm(range(nsteps)):
+        for i in tqdm(range(self.nsteps)):
             batch = batches[i]
             batch0 = list(batch[:int(self.nwalkers/2)])
             batch1 = list(batch[int(self.nwalkers/2):])
@@ -99,5 +108,5 @@ class sampler:
         return self.samples.chain
 
 
-    def flatten(self, burn=None):
-        return self.samples.flatten(burn)
+    def flatten(self, burn=None, thin=1):
+        return self.samples.flatten(burn, thin)
