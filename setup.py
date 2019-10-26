@@ -15,8 +15,11 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: GPL-3.0 License",
         "Operating System :: OS Independent",
+        'Intended Audience :: Science/Research',
+        'Topic :: Scientific/Engineering',
+        'Topic :: Scientific/Engineering :: Mathematics',
     ],
     install_requires=['numpy', 'scipy', 'tqdm'],
     python_requires='>=3.6',
