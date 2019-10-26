@@ -1,6 +1,7 @@
 import numpy as np
 from itertools import permutations, starmap
 import random
+from multiprocessing import Pool
 
 from .samples import samples
 from .fwrapper import _FunctionWrapper
@@ -40,7 +41,7 @@ class sampler:
             parallel=False):
 
         self.start = np.copy(start)
-        X = jitter(self.start, self.nwalkers, self.ndim)
+        self.X = jitter(self.start, self.nwalkers, self.ndim)
         self.nsteps = int(nsteps)
         self.samples = samples(self.nsteps, self.nwalkers, self.ndim)
 
@@ -48,7 +49,7 @@ class sampler:
         batches = np.array(list(map(np.random.permutation,np.broadcast_to(walkers, (nsteps,self.nwalkers)))))
 
         def vec_diff(i, j):
-            return X[i]-X[j]
+            return self.X[i] - self.X[j]
 
         if progress:
             t = tqdm(total=nsteps)
@@ -63,25 +64,31 @@ class sampler:
                 active, inactive = ensembles
                 perms = list(permutations(inactive,2))
                 pairs = random.sample(perms,int(self.nwalkers/2))
-                directions = self.mu * np.asarray(list(starmap(vec_diff,pairs)))
-                for k, w_k in enumerate(active):
-                    X[w_k] = self.slice1d(X[w_k], directions[k])
-
+                self.directions = self.mu * np.asarray(list(starmap(vec_diff,pairs)))
+                active_i = np.vstack((np.arange(int(self.nwalkers/2)),active)).T
+                if not parallel:
+                    loop = list(map(self.slice1d, active_i))
+                else:
+                    with Pool() as pool:
+                        loop = list(pool.map(self.slice1d, active_i))
 
             if i % thin == 0:
-                self.samples.append(X)
+                self.samples.append(self.X)
             if progress:
                 t.update()
         if progress:
             t.close()
 
 
-    def slice1d(self,
-               x,
-               direction):
+    def slice1d(self, k_w):
 
-        x_init = np.copy(x)
-        x0 = np.linalg.norm(x)
+        k, w_k = k_w
+
+        x_init = np.copy(self.X[w_k])
+        x0 = np.linalg.norm(x_init)
+        direction = self.directions[k]
+        if self.normalise:
+            direction /= np.linalg.norm(direction)
 
         # Sample z=log(y)
         z = self.slicelogp(0.0, x_init, direction) - np.random.exponential()
@@ -112,7 +119,9 @@ class sampler:
             elif (x1 > 0.0):
                 R = x1
 
-        return x1 * direction + x_init
+        self.X[w_k] = x1 * direction + x_init
+
+        return 1.0
 
 
     def slicelogp(self, x, x_init, direction):
