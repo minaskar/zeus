@@ -11,6 +11,10 @@ from tqdm import tqdm
 
 
 class sampler:
+    '''
+    This is the main class object of zeus.
+
+    '''
 
     def __init__(self,
                  logp,
