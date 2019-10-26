@@ -12,8 +12,13 @@ from tqdm import tqdm
 
 class sampler:
     '''
-    This is the main class object of zeus.
+    An ensemble slice MCMC sampler.
 
+    Args:
+        logp (callable): A python function that takes a vector in the
+            parameter space as input and returns the natural logarithm of the
+            unnormalised posterior probability at that position.
+        nwalkers (int): The number of walkers in the ensemble.
     '''
 
     def __init__(self,
