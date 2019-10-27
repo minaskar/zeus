@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 
 class sampler:
-    '''
+    """
     An ensemble slice MCMC sampler.
 
     Args:
@@ -19,8 +19,15 @@ class sampler:
             parameter space as input and returns the natural logarithm of the
             unnormalised posterior probability at that position.
         nwalkers (int): The number of walkers in the ensemble.
-    '''
+        ndim (int): The number of dimensions/parameters.
+        args (list): Extra arguments to be passed into the logp.
+        kwargs (list): Extra arguments to be passed into the logp.
+        width (float): Width of initial slice (default is 1.0, do not change that).
+        maxsteps (float): Maximum number of steps for stepping-out procedure of Slice Sampler (default is 1, do not change that).
+        mu (float): This is the mu coefficient (default value is 2.5). Numerical tests verify this as the optimal choice.
+        normalise (bool): If True (default is False) then normalise the direction vector (no reason to do that, unless you also change the width and the maxsteps).
 
+    """
     def __init__(self,
                  logp,
                  nwalkers,
@@ -31,7 +38,6 @@ class sampler:
                  maxsteps=1,
                  mu=2.5,
                  normalise=False):
-
         self.logp = _FunctionWrapper(logp, args, kwargs)
         self.nwalkers = int(nwalkers)
         self.ndim = int(ndim)
@@ -48,6 +54,16 @@ class sampler:
             thin=1,
             progress=True,
             parallel=False):
+        '''
+        Calling this method runs the mcmc sampler.
+
+        Args:
+            start (float) : Starting point for the walkers.
+            nsteps (int): Number of steps/generations (default is 1000).
+            thin (float): Thin the chain by this number (default is 1 no thinning).
+            progress (bool): If True (default), show progress bar (requires tqdm).
+            parallel (bool): If True run the walkers in parallel (default is False).
+        '''
 
         self.start = np.copy(start)
         self.X = jitter(self.start, self.nwalkers, self.ndim)
@@ -58,6 +74,7 @@ class sampler:
         batches = np.array(list(map(np.random.permutation,np.broadcast_to(walkers, (nsteps,self.nwalkers)))))
 
         def vec_diff(i, j):
+            ''' Returns the difference between two vectors'''
             return self.X[i] - self.X[j]
 
         if progress:
@@ -90,6 +107,12 @@ class sampler:
 
 
     def slice1d(self, k_w):
+        '''
+        Samples the next point along the chosen direction.
+
+        Args:
+            k_w (int,int): index and label of walker.
+        '''
 
         k, w_k = k_w
 
@@ -134,14 +157,41 @@ class sampler:
 
 
     def slicelogp(self, x, x_init, direction):
+        """
+        Evaluate the log probability in a point along a specific direction.
+
+        Args:
+            x (ndarray): magnitude of new point along the chosen direction.
+            x_init (ndarray): vector of initial point.
+            direction (ndarray): vector of chosen direction.
+
+        Returns:
+            The logp at direction * x + x_init
+        """
         self.nlogp += 1
         return self.logp(direction * x + x_init)
 
 
     @property
     def chain(self):
+        """
+        Returns the chains.
+
+        Returns:
+            Returns the chains of shape (nwalkers, nsteps, ndim).
+        """
         return self.samples.chain
 
 
     def flatten(self, burn=None, thin=1):
+        """
+        Flatten the chain.
+
+        Args:
+            burn (int): The number of burn-in steps to remove from each walker (default is None, which results to Nsteps/2).
+            thin (int): The ammount to thin the chain (default is 1, no thinning).
+
+        Returns:
+            2D Flattened chain.
+        """
         return self.samples.flatten(burn, thin)
