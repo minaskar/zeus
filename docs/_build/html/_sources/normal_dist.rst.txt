@@ -1,0 +1,5 @@
+================================================
+Sampling from a multivariate Normal distribution
+================================================
+
+.. notebook:: ./notebooks/normal_distribution.ipynb

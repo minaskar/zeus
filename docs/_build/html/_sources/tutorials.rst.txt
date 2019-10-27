@@ -1,0 +1,11 @@
+=========
+Tutorials
+=========
+
+
+
+
+
+using a relative path to the local file: link_.
+
+.. _link: notebooks/normal_distribution.ipynb

@@ -1,6 +1,11 @@
+.. title:: zeus documentation
+
 .. image:: ./../zeus.gif
 
-zeus is an efficient parallel Python implementation of the ensemble slice MCMC method.
+General-purpose MCMC sampler
+============================
+
+**zeus** is an efficient parallel Python implementation of the ensemble slice MCMC method.
 The latter is a combination of Slice Sampling (Neal 2003) and Adaptive Direction Sampling (Gilks, Roberts, George 1993)
 in a parallel ensemble framework with a few extra tricks. **The result is a fast and easy-to-use general-purpose
 MCMC sampler that works out-of-the-box without the need to tune any hyperparameters or provide a proposal distribution.**
@@ -29,13 +34,15 @@ For instance, if you wanted to draw samples from a 10-dimensional Gaussian, you 
 Installation
 ============
 
-To install zeus using pip run::
+To install **zeus** using pip run::
 
     pip install git+https://github.com/minaskar/zeus
 
 
-How to use this documentation?
-==============================
+Getting Started
+===============
+- See the :doc:`cookbook` page to learn how to perform Bayesian Inference using **zeus**.
+- See the :doc:`faq` page for frequently asked questions about zeus' operation.
 - See the :doc:`api` page for detailed API documentation.
 
 
@@ -44,12 +51,15 @@ Licence
 
 Copyright 2019-2019 Minas Karamanis and contributors.
 
-zeus is free software made available under the GPL-3.0 License. For details see the `LICENSE`.
+zeus is free software made available under the GPL-3.0 License.
 
 
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
 
-   api
+   cookbook
    faq
+   api
+   notebooks/normal_distribution.ipynb

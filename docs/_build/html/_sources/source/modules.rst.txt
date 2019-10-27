@@ -1,8 +1,0 @@
-zeus
-====
-
-.. toctree::
-   :maxdepth: 4
-
-   setup
-   zeus
