@@ -22,11 +22,7 @@ class sampler:
         ndim (int): The number of dimensions/parameters.
         args (list): Extra arguments to be passed into the logp.
         kwargs (list): Extra arguments to be passed into the logp.
-        width (float): Width of initial slice (default is 1.0, do not change that).
-        maxsteps (float): Maximum number of steps for stepping-out procedure of Slice Sampler (default is 1, do not change that).
         mu (float): This is the mu coefficient (default value is 2.5). Numerical tests verify this as the optimal choice.
-        normalise (bool): If True (default is False) then normalise the direction vector (no reason to do that, unless you also change the width and the maxsteps).
-
     """
     def __init__(self,
                  logp,
@@ -46,8 +42,7 @@ class sampler:
             start,
             nsteps=1000,
             thin=1,
-            progress=True,
-            parallel=False):
+            progress=True):
         '''
         Calling this method runs the mcmc sampler.
 
@@ -56,7 +51,6 @@ class sampler:
             nsteps (int): Number of steps/generations (default is 1000).
             thin (float): Thin the chain by this number (default is 1 no thinning).
             progress (bool): If True (default), show progress bar (requires tqdm).
-            parallel (bool): If True run the walkers in parallel (default is False).
         '''
 
         self.start = np.copy(start)
@@ -86,11 +80,7 @@ class sampler:
                 pairs = random.sample(perms,int(self.nwalkers/2))
                 self.directions = self.mu * np.asarray(list(starmap(vec_diff,pairs)))
                 active_i = np.vstack((np.arange(int(self.nwalkers/2)),active)).T
-                if not parallel:
-                    loop = list(map(self.slice1d, active_i))
-                else:
-                    with Pool() as pool:
-                        loop = list(pool.map(self.slice1d, active_i))
+                loop = list(map(self.slice1d, active_i))
 
             if i % thin == 0:
                 self.samples.append(self.X)
@@ -109,34 +99,25 @@ class sampler:
         '''
 
         k, w_k = k_w
-
         x_init = np.copy(self.X[w_k])
         x0 = np.linalg.norm(x_init)
         direction = self.directions[k]
-        if self.normalise:
-            direction /= np.linalg.norm(direction)
 
-        # Sample z=log(y)
         z = self.slicelogp(0.0, x_init, direction) - np.random.exponential()
 
-        # Stepping Out procedure
         L = - np.random.uniform(0.0,1.0)
         R = L + 1.0
 
-        # Shrinkage procedure
         while True:
             x1 = L + np.random.uniform(0.0,1.0) * (R - L)
-
             if (z < self.slicelogp(x1, x_init, direction)):
                 break
-
             if (x1 < 0.0):
                 L = x1
             elif (x1 > 0.0):
                 R = x1
 
         self.X[w_k] = x1 * direction + x_init
-
         return 1.0
 
 
