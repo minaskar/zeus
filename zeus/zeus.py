@@ -34,17 +34,11 @@ class sampler:
                  ndim,
                  args=None,
                  kwargs=None,
-                 width=1.0,
-                 maxsteps=1,
-                 mu=2.5,
-                 normalise=False):
+                 mu=2.5):
         self.logp = _FunctionWrapper(logp, args, kwargs)
         self.nwalkers = int(nwalkers)
         self.ndim = int(ndim)
-        self.width = width
-        self.maxsteps = int(maxsteps)
         self.mu = mu
-        self.normalise = normalise
         self.nlogp = 0
 
 
@@ -126,18 +120,8 @@ class sampler:
         z = self.slicelogp(0.0, x_init, direction) - np.random.exponential()
 
         # Stepping Out procedure
-        L = - self.width * np.random.uniform(0.0,1.0)
-        R = L + self.width
-        J = int(self.maxsteps * np.random.uniform(0.0,1.0))
-        K = (self.maxsteps - 1) - J
-
-        while (J > 0) and (z < self.slicelogp(L, x_init, direction)):
-            L = L - self.width
-            J = J - 1
-
-        while (K > 0) and (z < self.slicelogp(R, x_init, direction)):
-            R = R + self.width
-            K = K - 1
+        L = - np.random.uniform(0.0,1.0)
+        R = L + 1.0
 
         # Shrinkage procedure
         while True:
