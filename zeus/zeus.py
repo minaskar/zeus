@@ -2,6 +2,7 @@ import numpy as np
 from itertools import permutations, starmap
 import random
 from multiprocessing import Pool
+from schwimmbad import MPIPool
 
 from .samples import samples
 from .fwrapper import _FunctionWrapper
@@ -23,6 +24,7 @@ class sampler:
         args (list): Extra arguments to be passed into the logp.
         kwargs (list): Extra arguments to be passed into the logp.
         mu (float): This is the mu coefficient (default value is 2.5). Numerical tests verify this as the optimal choice.
+        parallel (bool): If True (default is False), use only 1 CPU, otherwise distribute to multiple.
     """
     def __init__(self,
                  logp,
@@ -30,11 +32,15 @@ class sampler:
                  ndim,
                  args=None,
                  kwargs=None,
-                 mu=2.5):
+                 mu=2.5,
+                 parallel=False,
+                 mpi=False):
         self.logp = _FunctionWrapper(logp, args, kwargs)
         self.nwalkers = int(nwalkers)
         self.ndim = int(ndim)
         self.mu = mu
+        self.parallel = parallel
+        self.mpi = mpi
         self.nlogp = 0
 
 
@@ -42,8 +48,7 @@ class sampler:
             start,
             nsteps=1000,
             thin=1,
-            progress=True,
-            parallel=False):
+            progress=True):
         '''
         Calling this method runs the mcmc sampler.
 
@@ -52,7 +57,6 @@ class sampler:
             nsteps (int): Number of steps/generations (default is 1000).
             thin (float): Thin the chain by this number (default is 1 no thinning).
             progress (bool): If True (default), show progress bar (requires tqdm).
-            parallel (bool): If True (default is False), use only 1 CPU, otherwise distribute to multiple.
         '''
 
         self.start = np.copy(start)
@@ -83,11 +87,18 @@ class sampler:
                 self.directions = self.mu * np.asarray(list(starmap(vec_diff,pairs)))
                 active_i = np.vstack((np.arange(int(self.nwalkers/2)),active)).T
 
-                if not parallel:
+                if not self.parallel:
                     results = list(map(self.slice1d, active_i))
                 else:
-                    with Pool() as pool:
-                        results = list(pool.map(self.slice1d, active_i))
+                    if not self.mpi:
+                        with Pool() as pool:
+                            results = list(pool.map(self.slice1d, active_i))
+                    else:
+                        with MPIPool() as pool:
+                            if not pool.is_master():
+                                pool.wait()
+                                sys.exit(0)
+                            results = list(pool.map(self.slice1d, active_i))
 
                 Xinit = np.copy(self.X)
                 for result in results:
@@ -109,6 +120,9 @@ class sampler:
 
         Args:
             k_w (int,int): index and label of walker.
+
+        Returns:
+            (list) : [k, w_k, x1, n]
         '''
 
         k, w_k = k_w
