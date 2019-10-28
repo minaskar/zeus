@@ -42,7 +42,8 @@ class sampler:
             start,
             nsteps=1000,
             thin=1,
-            progress=True):
+            progress=True,
+            parallel=False):
         '''
         Calling this method runs the mcmc sampler.
 
@@ -51,6 +52,7 @@ class sampler:
             nsteps (int): Number of steps/generations (default is 1000).
             thin (float): Thin the chain by this number (default is 1 no thinning).
             progress (bool): If True (default), show progress bar (requires tqdm).
+            parallel (bool): If True (default is False), use only 1 CPU, otherwise distribute to multiple.
         '''
 
         self.start = np.copy(start)
@@ -80,7 +82,18 @@ class sampler:
                 pairs = random.sample(perms,int(self.nwalkers/2))
                 self.directions = self.mu * np.asarray(list(starmap(vec_diff,pairs)))
                 active_i = np.vstack((np.arange(int(self.nwalkers/2)),active)).T
-                loop = list(map(self.slice1d, active_i))
+
+                if not parallel:
+                    results = list(map(self.slice1d, active_i))
+                else:
+                    with Pool() as pool:
+                        results = list(pool.map(self.slice1d, active_i))
+
+                Xinit = np.copy(self.X)
+                for result in results:
+                    k, w_k, x1, n = result
+                    self.X[w_k] = x1 * self.directions[k] + Xinit[w_k]
+                    self.nlogp += n
 
             if i % thin == 0:
                 self.samples.append(self.X)
@@ -108,7 +121,9 @@ class sampler:
         L = - np.random.uniform(0.0,1.0)
         R = L + 1.0
 
+        n = 1
         while True:
+            n += 1
             x1 = L + np.random.uniform(0.0,1.0) * (R - L)
             if (z < self.slicelogp(x1, x_init, direction)):
                 break
@@ -117,8 +132,7 @@ class sampler:
             elif (x1 > 0.0):
                 R = x1
 
-        self.X[w_k] = x1 * direction + x_init
-        return 1.0
+        return [k, w_k, x1, n]
 
 
     def slicelogp(self, x, x_init, direction):
@@ -133,7 +147,6 @@ class sampler:
         Returns:
             The logp at direction * x + x_init
         """
-        self.nlogp += 1
         return self.logp(direction * x + x_init)
 
 
