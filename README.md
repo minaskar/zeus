@@ -1,5 +1,5 @@
 
-# zeus
+# zeus: Lightning Fast MCMC
 
 ![](zeus.gif)
 
@@ -15,11 +15,11 @@ import zeus
 
 def logp(x, ivar):
     return - 0.5 * np.sum(ivar * x**2.0)
-    
+
 nsteps, nwalkers, ndim = 1000, 100, 10
 ivar = 1.0 / np.random.rand(ndim)
 start = np.random.rand(ndim)
-    
+
 sampler = zeus.sampler(logp, nwalkers, ndim, args=[ivar])
 sampler.run(start, nsteps)
 ```
@@ -37,4 +37,3 @@ pip install git+https://github.com/minaskar/zeus
 Copyright 2019-2019 Minas Karamanis and contributors.
 
 zeus is free software made available under the GPL-3.0 License. For details see the `LICENSE`.
-
