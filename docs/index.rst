@@ -2,8 +2,8 @@
 
 .. image:: ./../zeus.gif
 
-General-purpose MCMC sampler
-============================
+Lightning Fast MCMC
+===================
 
 **zeus** is an efficient parallel Python implementation of the ensemble slice MCMC method.
 The latter is a combination of Slice Sampling (Neal 2003) and Adaptive Direction Sampling (Gilks, Roberts, George 1993)

@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="zeus-mcmc",
-    version="0.6",
+    version="0.9",
     author="Minas Karamanis",
     author_email="minaskar@gmail.com",
-    description="zeus: The Python general-purpose MCMC sampler based on Ensemble Slice Sampling",
+    description="zeus: Lightning Fast MCMC",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/minaskar/zeus",
@@ -21,6 +21,6 @@ setuptools.setup(
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Mathematics',
     ],
-    install_requires=['numpy', 'scipy', 'tqdm'],
+    install_requires=['numpy', 'statsmodels', 'tqdm', 'schwimmbad'],
     python_requires='>=3.6',
 )

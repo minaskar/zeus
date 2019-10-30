@@ -2,12 +2,12 @@ import numpy as np
 from itertools import permutations, starmap
 import random
 from multiprocessing import Pool
+from schwimmbad import MPIPool
+from tqdm import tqdm
 
 from .samples import samples
 from .fwrapper import _FunctionWrapper
 from .start import jitter
-
-from tqdm import tqdm
 
 
 class sampler:
@@ -22,11 +22,9 @@ class sampler:
         ndim (int): The number of dimensions/parameters.
         args (list): Extra arguments to be passed into the logp.
         kwargs (list): Extra arguments to be passed into the logp.
-        width (float): Width of initial slice (default is 1.0, do not change that).
-        maxsteps (float): Maximum number of steps for stepping-out procedure of Slice Sampler (default is 1, do not change that).
         mu (float): This is the mu coefficient (default value is 2.5). Numerical tests verify this as the optimal choice.
-        normalise (bool): If True (default is False) then normalise the direction vector (no reason to do that, unless you also change the width and the maxsteps).
-
+        parallel (bool): If True (default is False), use only 1 CPU, otherwise distribute to multiple.
+        mpi (bool): If True (default is False) and parallel=True then run walkers in parallel using MPI. 
     """
     def __init__(self,
                  logp,
@@ -34,26 +32,25 @@ class sampler:
                  ndim,
                  args=None,
                  kwargs=None,
-                 width=1.0,
-                 maxsteps=1,
                  mu=2.5,
-                 normalise=False):
+                 parallel=False,
+                 mpi=False):
         self.logp = _FunctionWrapper(logp, args, kwargs)
         self.nwalkers = int(nwalkers)
         self.ndim = int(ndim)
-        self.width = width
-        self.maxsteps = int(maxsteps)
         self.mu = mu
-        self.normalise = normalise
+        self.parallel = parallel
+        self.mpi = mpi
         self.nlogp = 0
+        self.samples = samples()
+        self.X = None
 
 
     def run(self,
             start,
             nsteps=1000,
             thin=1,
-            progress=True,
-            parallel=False):
+            progress=True):
         '''
         Calling this method runs the mcmc sampler.
 
@@ -62,13 +59,13 @@ class sampler:
             nsteps (int): Number of steps/generations (default is 1000).
             thin (float): Thin the chain by this number (default is 1 no thinning).
             progress (bool): If True (default), show progress bar (requires tqdm).
-            parallel (bool): If True run the walkers in parallel (default is False).
         '''
 
-        self.start = np.copy(start)
-        self.X = jitter(self.start, self.nwalkers, self.ndim)
+        if self.X is None:
+            self.start = np.copy(start)
+            self.X = jitter(self.start, self.nwalkers, self.ndim)
+
         self.nsteps = int(nsteps)
-        self.samples = samples(self.nsteps, self.nwalkers, self.ndim)
 
         walkers = np.arange(self.nwalkers)
         batches = np.array(list(map(np.random.permutation,np.broadcast_to(walkers, (nsteps,self.nwalkers)))))
@@ -92,11 +89,25 @@ class sampler:
                 pairs = random.sample(perms,int(self.nwalkers/2))
                 self.directions = self.mu * np.asarray(list(starmap(vec_diff,pairs)))
                 active_i = np.vstack((np.arange(int(self.nwalkers/2)),active)).T
-                if not parallel:
-                    loop = list(map(self.slice1d, active_i))
+
+                if not self.parallel:
+                    results = list(map(self._slice1d, active_i))
                 else:
-                    with Pool() as pool:
-                        loop = list(pool.map(self.slice1d, active_i))
+                    if not self.mpi:
+                        with Pool() as pool:
+                            results = list(pool.map(self._slice1d, active_i))
+                    else:
+                        with MPIPool() as pool:
+                            if not pool.is_master():
+                                pool.wait()
+                                sys.exit(0)
+                            results = list(pool.map(self._slice1d, active_i))
+
+                Xinit = np.copy(self.X)
+                for result in results:
+                    k, w_k, x1, n = result
+                    self.X[w_k] = x1 * self.directions[k] + Xinit[w_k]
+                    self.nlogp += n
 
             if i % thin == 0:
                 self.samples.append(self.X)
@@ -106,57 +117,42 @@ class sampler:
             t.close()
 
 
-    def slice1d(self, k_w):
+    def _slice1d(self, k_w):
         '''
         Samples the next point along the chosen direction.
 
         Args:
             k_w (int,int): index and label of walker.
+
+        Returns:
+            (list) : [k, w_k, x1, n]
         '''
 
         k, w_k = k_w
-
         x_init = np.copy(self.X[w_k])
         x0 = np.linalg.norm(x_init)
         direction = self.directions[k]
-        if self.normalise:
-            direction /= np.linalg.norm(direction)
 
-        # Sample z=log(y)
-        z = self.slicelogp(0.0, x_init, direction) - np.random.exponential()
+        z = self._slicelogp(0.0, x_init, direction) - np.random.exponential()
 
-        # Stepping Out procedure
-        L = - self.width * np.random.uniform(0.0,1.0)
-        R = L + self.width
-        J = int(self.maxsteps * np.random.uniform(0.0,1.0))
-        K = (self.maxsteps - 1) - J
+        L = - np.random.uniform(0.0,1.0)
+        R = L + 1.0
 
-        while (J > 0) and (z < self.slicelogp(L, x_init, direction)):
-            L = L - self.width
-            J = J - 1
-
-        while (K > 0) and (z < self.slicelogp(R, x_init, direction)):
-            R = R + self.width
-            K = K - 1
-
-        # Shrinkage procedure
+        n = 1
         while True:
+            n += 1
             x1 = L + np.random.uniform(0.0,1.0) * (R - L)
-
-            if (z < self.slicelogp(x1, x_init, direction)):
+            if (z < self._slicelogp(x1, x_init, direction)):
                 break
-
             if (x1 < 0.0):
                 L = x1
             elif (x1 > 0.0):
                 R = x1
 
-        self.X[w_k] = x1 * direction + x_init
-
-        return 1.0
+        return [k, w_k, x1, n]
 
 
-    def slicelogp(self, x, x_init, direction):
+    def _slicelogp(self, x, x_init, direction):
         """
         Evaluate the log probability in a point along a specific direction.
 
@@ -168,7 +164,6 @@ class sampler:
         Returns:
             The logp at direction * x + x_init
         """
-        self.nlogp += 1
         return self.logp(direction * x + x_init)
 
 

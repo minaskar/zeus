@@ -60,7 +60,9 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="cookbook.html#mcmc-sampling-recipes">MCMC Sampling Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cookbook.html#mcmc-sampling-recipes">MCMC Sampling recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cookbook.html#parallelisation-recipes">Parallelisation recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cookbook.html#autocorrelation-analysis-recipes">Autocorrelation Analysis recipes</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a><ul>
@@ -131,7 +133,7 @@
 <h2>zeus.sampler module<a class="headerlink" href="#zeus-sampler-module" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="zeus.sampler">
-<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">sampler</code><span class="sig-paren">(</span><em class="sig-param">logp</em>, <em class="sig-param">nwalkers</em>, <em class="sig-param">ndim</em>, <em class="sig-param">args=None</em>, <em class="sig-param">kwargs=None</em>, <em class="sig-param">width=1.0</em>, <em class="sig-param">maxsteps=1</em>, <em class="sig-param">mu=2.5</em>, <em class="sig-param">normalise=False</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">sampler</code><span class="sig-paren">(</span><em class="sig-param">logp</em>, <em class="sig-param">nwalkers</em>, <em class="sig-param">ndim</em>, <em class="sig-param">args=None</em>, <em class="sig-param">kwargs=None</em>, <em class="sig-param">mu=2.5</em>, <em class="sig-param">parallel=False</em>, <em class="sig-param">mpi=False</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler" title="Permalink to this definition">¶</a></dt>
 <dd><p>An ensemble slice MCMC sampler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -143,10 +145,8 @@ unnormalised posterior probability at that position.</p></li>
 <li><p><strong>ndim</strong> (<em>int</em>) – The number of dimensions/parameters.</p></li>
 <li><p><strong>args</strong> (<em>list</em>) – Extra arguments to be passed into the logp.</p></li>
 <li><p><strong>kwargs</strong> (<em>list</em>) – Extra arguments to be passed into the logp.</p></li>
-<li><p><strong>width</strong> (<em>float</em>) – Width of initial slice (default is 1.0, do not change that).</p></li>
-<li><p><strong>maxsteps</strong> (<em>float</em>) – Maximum number of steps for stepping-out procedure of Slice Sampler (default is 1, do not change that).</p></li>
 <li><p><strong>mu</strong> (<em>float</em>) – This is the mu coefficient (default value is 2.5). Numerical tests verify this as the optimal choice.</p></li>
-<li><p><strong>normalise</strong> (<em>bool</em>) – If True (default is False) then normalise the direction vector (no reason to do that, unless you also change the width and the maxsteps).</p></li>
+<li><p><strong>parallel</strong> (<em>bool</em>) – If True (default is False), use only 1 CPU, otherwise distribute to multiple.</p></li>
 </ul>
 </dd>
 </dl>
@@ -180,7 +180,7 @@ unnormalised posterior probability at that position.</p></li>
 
 <dl class="method">
 <dt id="zeus.sampler.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">start</em>, <em class="sig-param">nsteps=1000</em>, <em class="sig-param">thin=1</em>, <em class="sig-param">progress=True</em>, <em class="sig-param">parallel=False</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">start</em>, <em class="sig-param">nsteps=1000</em>, <em class="sig-param">thin=1</em>, <em class="sig-param">progress=True</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calling this method runs the mcmc sampler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -189,7 +189,6 @@ unnormalised posterior probability at that position.</p></li>
 <li><p><strong>nsteps</strong> (<em>int</em>) – Number of steps/generations (default is 1000).</p></li>
 <li><p><strong>thin</strong> (<em>float</em>) – Thin the chain by this number (default is 1 no thinning).</p></li>
 <li><p><strong>progress</strong> (<em>bool</em>) – If True (default), show progress bar (requires tqdm).</p></li>
-<li><p><strong>parallel</strong> (<em>bool</em>) – If True run the walkers in parallel (default is False).</p></li>
 </ul>
 </dd>
 </dl>
@@ -202,6 +201,12 @@ unnormalised posterior probability at that position.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>k_w</strong> (<em>int</em><em>,</em><em>int</em>) – index and label of walker.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[k, w_k, x1, n]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(list)</p>
 </dd>
 </dl>
 </dd></dl>
