@@ -3,12 +3,11 @@ from itertools import permutations, starmap
 import random
 from multiprocessing import Pool
 from schwimmbad import MPIPool
+from tqdm import tqdm
 
 from .samples import samples
 from .fwrapper import _FunctionWrapper
 from .start import jitter
-
-from tqdm import tqdm
 
 
 class sampler:
@@ -25,6 +24,7 @@ class sampler:
         kwargs (list): Extra arguments to be passed into the logp.
         mu (float): This is the mu coefficient (default value is 2.5). Numerical tests verify this as the optimal choice.
         parallel (bool): If True (default is False), use only 1 CPU, otherwise distribute to multiple.
+        mpi (bool): If True (default is False) and parallel=True then run walkers in parallel using MPI. 
     """
     def __init__(self,
                  logp,
@@ -42,6 +42,8 @@ class sampler:
         self.parallel = parallel
         self.mpi = mpi
         self.nlogp = 0
+        self.samples = samples()
+        self.X = None
 
 
     def run(self,
@@ -59,10 +61,11 @@ class sampler:
             progress (bool): If True (default), show progress bar (requires tqdm).
         '''
 
-        self.start = np.copy(start)
-        self.X = jitter(self.start, self.nwalkers, self.ndim)
+        if self.X is None:
+            self.start = np.copy(start)
+            self.X = jitter(self.start, self.nwalkers, self.ndim)
+
         self.nsteps = int(nsteps)
-        self.samples = samples(self.nsteps, self.nwalkers, self.ndim)
 
         walkers = np.arange(self.nwalkers)
         batches = np.array(list(map(np.random.permutation,np.broadcast_to(walkers, (nsteps,self.nwalkers)))))
@@ -88,17 +91,17 @@ class sampler:
                 active_i = np.vstack((np.arange(int(self.nwalkers/2)),active)).T
 
                 if not self.parallel:
-                    results = list(map(self.slice1d, active_i))
+                    results = list(map(self._slice1d, active_i))
                 else:
                     if not self.mpi:
                         with Pool() as pool:
-                            results = list(pool.map(self.slice1d, active_i))
+                            results = list(pool.map(self._slice1d, active_i))
                     else:
                         with MPIPool() as pool:
                             if not pool.is_master():
                                 pool.wait()
                                 sys.exit(0)
-                            results = list(pool.map(self.slice1d, active_i))
+                            results = list(pool.map(self._slice1d, active_i))
 
                 Xinit = np.copy(self.X)
                 for result in results:
@@ -114,7 +117,7 @@ class sampler:
             t.close()
 
 
-    def slice1d(self, k_w):
+    def _slice1d(self, k_w):
         '''
         Samples the next point along the chosen direction.
 
@@ -130,7 +133,7 @@ class sampler:
         x0 = np.linalg.norm(x_init)
         direction = self.directions[k]
 
-        z = self.slicelogp(0.0, x_init, direction) - np.random.exponential()
+        z = self._slicelogp(0.0, x_init, direction) - np.random.exponential()
 
         L = - np.random.uniform(0.0,1.0)
         R = L + 1.0
@@ -139,7 +142,7 @@ class sampler:
         while True:
             n += 1
             x1 = L + np.random.uniform(0.0,1.0) * (R - L)
-            if (z < self.slicelogp(x1, x_init, direction)):
+            if (z < self._slicelogp(x1, x_init, direction)):
                 break
             if (x1 < 0.0):
                 L = x1
@@ -149,7 +152,7 @@ class sampler:
         return [k, w_k, x1, n]
 
 
-    def slicelogp(self, x, x_init, direction):
+    def _slicelogp(self, x, x_init, direction):
         """
         Evaluate the log probability in a point along a specific direction.
 

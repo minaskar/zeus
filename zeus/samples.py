@@ -4,20 +4,12 @@ from collections import deque
 class samples:
     '''
     Creates object that stores the samples.
-    Args:
-        nsteps (int): Number of steps/generations.
-        nwalkers (int): Number of walkers.
-        ndim (int): Number of dimensions/paramters
-
     '''
 
-    def __init__(self, nsteps, nwalkers, ndim):
+    def __init__(self):
         """
         Initialise a deque object to store the samples.
         """
-        self.nsteps = nsteps
-        self.nwalkers = nwalkers
-        self.ndim = ndim
         self.samples = deque()
 
     def append(self, x):
@@ -43,6 +35,8 @@ class samples:
         Returns:
             2D object containing the ndim flattened chains.
         """
+        nsteps = np.shape(self.chain)[1]
+        ndim = np.shape(self.chain)[2]
         if burn is None:
-            burn = int(self.nsteps/2)
-        return self.chain[:,burn::thin,:].reshape(-1,self.ndim)
+            burn = int(nsteps/2)
+        return self.chain[:,burn::thin,:].reshape(-1,ndim)
