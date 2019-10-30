@@ -24,7 +24,7 @@ class sampler:
         kwargs (list): Extra arguments to be passed into the logp.
         mu (float): This is the mu coefficient (default value is 2.5). Numerical tests verify this as the optimal choice.
         parallel (bool): If True (default is False), use only 1 CPU, otherwise distribute to multiple.
-        mpi (bool): If True (default is False) and parallel=True then run walkers in parallel using MPI. 
+        mpi (bool): If True (default is False) and parallel=True then run walkers in parallel using MPI.
     """
     def __init__(self,
                  logp,
@@ -71,7 +71,16 @@ class sampler:
         batches = np.array(list(map(np.random.permutation,np.broadcast_to(walkers, (nsteps,self.nwalkers)))))
 
         def vec_diff(i, j):
-            ''' Returns the difference between two vectors'''
+            '''
+            Returns the difference between two vectors.
+
+            Args:
+                i (int): Index of first vector.
+                j (int): Index of second vector.
+
+            Returns:
+                The difference between the vector positions of the walkers i and j.
+            '''
             return self.X[i] - self.X[j]
 
         if progress:
@@ -89,6 +98,7 @@ class sampler:
                 pairs = random.sample(perms,int(self.nwalkers/2))
                 self.directions = self.mu * np.asarray(list(starmap(vec_diff,pairs)))
                 active_i = np.vstack((np.arange(int(self.nwalkers/2)),active)).T
+                loop = list(map(self.slice1d, active_i))
 
                 if not self.parallel:
                     results = list(map(self._slice1d, active_i))
