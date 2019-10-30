@@ -21,6 +21,6 @@ setuptools.setup(
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Mathematics',
     ],
-    install_requires=['numpy', 'scipy', 'tqdm', 'schwimmbad'],
+    install_requires=['numpy', 'statsmodels', 'tqdm', 'schwimmbad'],
     python_requires='>=3.6',
 )
