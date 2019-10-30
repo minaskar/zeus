@@ -98,7 +98,6 @@ class sampler:
                 pairs = random.sample(perms,int(self.nwalkers/2))
                 self.directions = self.mu * np.asarray(list(starmap(vec_diff,pairs)))
                 active_i = np.vstack((np.arange(int(self.nwalkers/2)),active)).T
-                loop = list(map(self.slice1d, active_i))
 
                 if not self.parallel:
                     results = list(map(self._slice1d, active_i))
