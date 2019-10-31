@@ -4,6 +4,7 @@ from itertools import permutations, starmap
 import random
 from multiprocessing import Pool
 from tqdm import tqdm
+import logging
 
 from .samples import samples
 from .fwrapper import _FunctionWrapper
@@ -34,6 +35,9 @@ class sampler:
                  kwargs=None,
                  mu=2.5,
                  parallel=False):
+
+        logging.basicConfig(level=logging.INFO)
+        logging.info('Started')
                  
         self.logp = _FunctionWrapper(logp, args, kwargs)
         self.nwalkers = int(nwalkers)
