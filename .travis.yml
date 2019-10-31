@@ -7,3 +7,13 @@ env:
   - NUMPY_VERSION=1.17
   - NUMPY_VERSION=1.16
   - NUMPY_VERSION=1.15
+
+
+install:
+  - travis_retry pip install --upgrade pip
+  - travis_retry pip install --upgrade setuptools
+  - travis_retry pip install --upgrade numpy==$NUMPY_VERSION
+  - pip install -vv .
+  - python -c 'import zeus;print(zeus.__version__)'
+  - travis_retry pip install --upgrade -r requirements.txt
+  - travis_retry python setup.py
