@@ -1,3 +1,5 @@
 __pycache__/
 zeus/_pycache__/
 *.py[cod]
+.ipynb_checkpoints/
+examples/.ipynb_checkpoints/
