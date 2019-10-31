@@ -2,3 +2,5 @@ numpy
 statsmodels
 tqdm
 psutil
+setuptools
+pytest
