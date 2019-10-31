@@ -32,5 +32,5 @@ def test_case3(seed=42):
     nwalkers = np.random.randint(2,300)
     ndim = np.random.randint(1,300)
     x = np.random.rand(ndim)
-    x_jittered = jitter(x, nnwalkers, ndim)
+    x_jittered = jitter(x, nwalkers, ndim)
     assert np.shape(x_jittered)==(nwalkers,ndim)
