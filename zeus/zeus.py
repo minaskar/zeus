@@ -26,7 +26,8 @@ class sampler:
         kwargs (list): Extra arguments to be passed into the logp.
         mu (float): This is the mu coefficient (default value is 2.5). Numerical tests verify this as the optimal choice.
         parallel (bool): If True (default is False), use only 1 CPU, otherwise distribute to multiple.
-        mpi (bool): If True (default is False) and parallel=True then run walkers in parallel using MPI.
+        ncores (bool): The maximum number of cores to use if parallel=True (default is None, meaning all of them).
+        verbose (bool): If True (default) print log statements.
     """
     def __init__(self,
                  logp,
