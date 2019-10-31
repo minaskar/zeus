@@ -1,8 +1,8 @@
+import sys
 import numpy as np
 from itertools import permutations, starmap
 import random
 from multiprocessing import Pool
-from schwimmbad import MPIPool
 from tqdm import tqdm
 
 from .samples import samples
@@ -33,14 +33,13 @@ class sampler:
                  args=None,
                  kwargs=None,
                  mu=2.5,
-                 parallel=False,
-                 mpi=False):
+                 parallel=False):
+                 
         self.logp = _FunctionWrapper(logp, args, kwargs)
         self.nwalkers = int(nwalkers)
         self.ndim = int(ndim)
         self.mu = mu
         self.parallel = parallel
-        self.mpi = mpi
         self.nlogp = 0
         self.samples = samples()
         self.X = None
@@ -102,15 +101,8 @@ class sampler:
                 if not self.parallel:
                     results = list(map(self._slice1d, active_i))
                 else:
-                    if not self.mpi:
-                        with Pool() as pool:
-                            results = list(pool.map(self._slice1d, active_i))
-                    else:
-                        with MPIPool() as pool:
-                            if not pool.is_master():
-                                pool.wait()
-                                sys.exit(0)
-                            results = list(pool.map(self._slice1d, active_i))
+                    with Pool() as pool:
+                        results = list(pool.map(self._slice1d, active_i))
 
                 Xinit = np.copy(self.X)
                 for result in results:
