@@ -1,4 +1,5 @@
 import numpy as np
+import logging
 
 def jitter(x , nwalkers, ndim):
 
@@ -11,4 +12,4 @@ def jitter(x , nwalkers, ndim):
     elif input_shape == (ndim,):
         return x * (1.0 + np.random.randn(nwalkers, ndim))
     else:
-        print('Please provide a valid starting point e.g. (nwalkers,ndim) or (ndim,)')
+        logging.warning('Please provide a valid starting point e.g. (nwalkers,ndim) or (ndim,)!')

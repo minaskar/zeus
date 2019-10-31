@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="zeus-mcmc",
-    version="0.9",
+    version="0.9.2",
     author="Minas Karamanis",
     author_email="minaskar@gmail.com",
     description="zeus: Lightning Fast MCMC",
@@ -21,6 +21,6 @@ setuptools.setup(
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Mathematics',
     ],
-    install_requires=['numpy', 'statsmodels', 'tqdm', 'schwimmbad'],
+    install_requires=['numpy', 'statsmodels', 'tqdm', 'psutil'],
     python_requires='>=3.6',
 )

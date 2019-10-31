@@ -1,9 +1,11 @@
+import sys
 import numpy as np
 from itertools import permutations, starmap
 import random
 from multiprocessing import Pool
-from schwimmbad import MPIPool
+from psutil import cpu_count
 from tqdm import tqdm
+import logging
 
 from .samples import samples
 from .fwrapper import _FunctionWrapper
@@ -24,7 +26,8 @@ class sampler:
         kwargs (list): Extra arguments to be passed into the logp.
         mu (float): This is the mu coefficient (default value is 2.5). Numerical tests verify this as the optimal choice.
         parallel (bool): If True (default is False), use only 1 CPU, otherwise distribute to multiple.
-        mpi (bool): If True (default is False) and parallel=True then run walkers in parallel using MPI.
+        ncores (bool): The maximum number of cores to use if parallel=True (default is None, meaning all of them).
+        verbose (bool): If True (default) print log statements.
     """
     def __init__(self,
                  logp,
@@ -34,16 +37,28 @@ class sampler:
                  kwargs=None,
                  mu=2.5,
                  parallel=False,
-                 mpi=False):
+                 ncores=None,
+                 verbose=True):
+
+        if verbose:
+            level = logging.INFO
+        else:
+            level = logging.WARNING
+        logging.basicConfig(format='%(asctime)s: %(levelname)-8s: %(message)s',
+                            datefmt='%d/%m/%Y %I:%M:%S %p', level=level)
+
         self.logp = _FunctionWrapper(logp, args, kwargs)
         self.nwalkers = int(nwalkers)
         self.ndim = int(ndim)
         self.mu = mu
         self.parallel = parallel
-        self.mpi = mpi
+        self.ncores = ncores
         self.nlogp = 0
         self.samples = samples()
         self.X = None
+
+        if self.ncores is None:
+            self.ncores = min(int(self.nwalkers/2.0),cpu_count(logical=False))
 
 
     def run(self,
@@ -61,14 +76,20 @@ class sampler:
             progress (bool): If True (default), show progress bar (requires tqdm).
         '''
 
+        if self.parallel:
+            logging.info('Parallelizing ensemble of walkers using %d CPUs...', self.ncores)
+
         if self.X is None:
             self.start = np.copy(start)
             self.X = jitter(self.start, self.nwalkers, self.ndim)
+            logging.info('Starting sampling...')
+        else:
+            logging.info('Continuing sampling...')
 
         self.nsteps = int(nsteps)
 
         walkers = np.arange(self.nwalkers)
-        batches = np.array(list(map(np.random.permutation,np.broadcast_to(walkers, (nsteps,self.nwalkers)))))
+        batches = np.array(list(map(np.random.permutation,np.broadcast_to(walkers,(nsteps,self.nwalkers)))))
 
         def vec_diff(i, j):
             '''
@@ -82,6 +103,7 @@ class sampler:
                 The difference between the vector positions of the walkers i and j.
             '''
             return self.X[i] - self.X[j]
+
 
         if progress:
             t = tqdm(total=nsteps)
@@ -102,15 +124,8 @@ class sampler:
                 if not self.parallel:
                     results = list(map(self._slice1d, active_i))
                 else:
-                    if not self.mpi:
-                        with Pool() as pool:
-                            results = list(pool.map(self._slice1d, active_i))
-                    else:
-                        with MPIPool() as pool:
-                            if not pool.is_master():
-                                pool.wait()
-                                sys.exit(0)
-                            results = list(pool.map(self._slice1d, active_i))
+                    with Pool(self.ncores) as pool:
+                        results = list(pool.map(self._slice1d, active_i))
 
                 Xinit = np.copy(self.X)
                 for result in results:
@@ -124,6 +139,7 @@ class sampler:
                 t.update()
         if progress:
             t.close()
+        logging.info('Sampling Complete!')
 
 
     def _slice1d(self, k_w):

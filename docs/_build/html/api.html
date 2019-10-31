@@ -133,7 +133,7 @@
 <h2>zeus.sampler module<a class="headerlink" href="#zeus-sampler-module" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="zeus.sampler">
-<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">sampler</code><span class="sig-paren">(</span><em class="sig-param">logp</em>, <em class="sig-param">nwalkers</em>, <em class="sig-param">ndim</em>, <em class="sig-param">args=None</em>, <em class="sig-param">kwargs=None</em>, <em class="sig-param">mu=2.5</em>, <em class="sig-param">parallel=False</em>, <em class="sig-param">mpi=False</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">sampler</code><span class="sig-paren">(</span><em class="sig-param">logp</em>, <em class="sig-param">nwalkers</em>, <em class="sig-param">ndim</em>, <em class="sig-param">args=None</em>, <em class="sig-param">kwargs=None</em>, <em class="sig-param">mu=2.5</em>, <em class="sig-param">parallel=False</em>, <em class="sig-param">ncores=None</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler" title="Permalink to this definition">¶</a></dt>
 <dd><p>An ensemble slice MCMC sampler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -147,6 +147,7 @@ unnormalised posterior probability at that position.</p></li>
 <li><p><strong>kwargs</strong> (<em>list</em>) – Extra arguments to be passed into the logp.</p></li>
 <li><p><strong>mu</strong> (<em>float</em>) – This is the mu coefficient (default value is 2.5). Numerical tests verify this as the optimal choice.</p></li>
 <li><p><strong>parallel</strong> (<em>bool</em>) – If True (default is False), use only 1 CPU, otherwise distribute to multiple.</p></li>
+<li><p><strong>mpi</strong> (<em>bool</em>) – If True (default is False) and parallel=True then run walkers in parallel using MPI.</p></li>
 </ul>
 </dd>
 </dl>
@@ -190,41 +191,6 @@ unnormalised posterior probability at that position.</p></li>
 <li><p><strong>thin</strong> (<em>float</em>) – Thin the chain by this number (default is 1 no thinning).</p></li>
 <li><p><strong>progress</strong> (<em>bool</em>) – If True (default), show progress bar (requires tqdm).</p></li>
 </ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="zeus.sampler.slice1d">
-<code class="sig-name descname">slice1d</code><span class="sig-paren">(</span><em class="sig-param">k_w</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler.slice1d" title="Permalink to this definition">¶</a></dt>
-<dd><p>Samples the next point along the chosen direction.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>k_w</strong> (<em>int</em><em>,</em><em>int</em>) – index and label of walker.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>[k, w_k, x1, n]</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(list)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="zeus.sampler.slicelogp">
-<code class="sig-name descname">slicelogp</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">x_init</em>, <em class="sig-param">direction</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler.slicelogp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluate the log probability in a point along a specific direction.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>ndarray</em>) – magnitude of new point along the chosen direction.</p></li>
-<li><p><strong>x_init</strong> (<em>ndarray</em>) – vector of initial point.</p></li>
-<li><p><strong>direction</strong> (<em>ndarray</em>) – vector of chosen direction.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The logp at direction * x + x_init</p>
 </dd>
 </dl>
 </dd></dl>
