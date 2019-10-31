@@ -147,7 +147,8 @@ unnormalised posterior probability at that position.</p></li>
 <li><p><strong>kwargs</strong> (<em>list</em>) – Extra arguments to be passed into the logp.</p></li>
 <li><p><strong>mu</strong> (<em>float</em>) – This is the mu coefficient (default value is 2.5). Numerical tests verify this as the optimal choice.</p></li>
 <li><p><strong>parallel</strong> (<em>bool</em>) – If True (default is False), use only 1 CPU, otherwise distribute to multiple.</p></li>
-<li><p><strong>mpi</strong> (<em>bool</em>) – If True (default is False) and parallel=True then run walkers in parallel using MPI.</p></li>
+<li><p><strong>ncores</strong> (<em>bool</em>) – The maximum number of cores to use if parallel=True (default is None, meaning all of them).</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – If True (default) print log statements.</p></li>
 </ul>
 </dd>
 </dl>
