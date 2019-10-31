@@ -6,7 +6,8 @@ import numpy as np
 import pytest
 
 #from start import jitter
-import zeus.jitter as jitter
+from zeus import jitter
+
 
 def test_case1(seed=123):
     np.random.seed(seed)
