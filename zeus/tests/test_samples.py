@@ -13,7 +13,7 @@ def test_chain(seed=42):
     for i in range(nsteps):
         x = np.random.rand(nwalkers,ndim)
         s.append(x)
-    assert np.shape(s.chain) == (nwalkes,nsteps,ndim)
+    assert np.shape(s.chain) == (nwalkers,nsteps,ndim)
 
 
 def test_flatten(seed=42):
