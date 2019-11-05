@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 #from zeus import fwrapper
-from zeus import _FunctionWrapper
+from zeus.fwrapper import _FunctionWrapper
 
 def func0(x):
     return - 0.5 * np.sum(x**2.0)
