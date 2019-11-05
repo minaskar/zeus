@@ -47,3 +47,14 @@ def test_args2(func=func2,seed=42):
     wrapped = _FunctionWrapper(func, args, kwargs)
     x = np.random.rand(ndim)
     assert np.allclose(wrapped(x),func(x,mu,ivar))
+
+
+def test_kwargs1(func=func1,seed=42):
+    np.random.seed(seed)
+    ndim = np.random.randint(2,200)
+    mu = np.random.rand(ndim)
+    args = None
+    kwargs = {mu}
+    wrapped = _FunctionWrapper(func, args, kwargs)
+    x = np.random.rand(ndim)
+    assert np.allclose(wrapped(x),func(x,mu))
