@@ -10,7 +10,7 @@ def logp(x):
 def test_mean(logp=logp,seed=42):
     ndim = np.random.randint(2,5)
     nwalkers = 2 * ndim
-    nsteps = np.random.randint(1000,2000)
+    nsteps = np.random.randint(3000,5000)
     sampler = zeus.sampler(logp,nwalkers,ndim,verbose=False)
     start = np.random.rand(nwalkers,ndim)
     sampler.run(start,nsteps)
@@ -20,7 +20,7 @@ def test_mean(logp=logp,seed=42):
 def test_std(logp=logp,seed=42):
     ndim = np.random.randint(2,5)
     nwalkers = 2 * ndim
-    nsteps = np.random.randint(1000,2000)
+    nsteps = np.random.randint(3000,5000)
     sampler = zeus.sampler(logp,nwalkers,ndim,verbose=False)
     start = np.random.rand(nwalkers,ndim)
     sampler.run(start,nsteps)
