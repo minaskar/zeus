@@ -4,7 +4,7 @@ import pytest
 import zeus
 
 def logp(x):
-    return -0.5 * np.sum(x**2.0)
+    return -0.5 * np.sum((x-1.0)**2.0)
 
 
 def test_mean(logp=logp,seed=42):
