@@ -14,7 +14,7 @@ def test_mean(logp=logp,seed=42):
     sampler = zeus.sampler(logp,nwalkers,ndim,verbose=False)
     start = np.random.rand(nwalkers,ndim)
     sampler.run(start,nsteps)
-    assert np.all(np.abs(np.mean(sampler.flatten(),axis=0))) < 0.05
+    assert np.all(np.abs(np.mean(sampler.flatten(),axis=0)-1.0)) < 0.05
 
 
 def test_std(logp=logp,seed=42):
@@ -24,4 +24,4 @@ def test_std(logp=logp,seed=42):
     sampler = zeus.sampler(logp,nwalkers,ndim,verbose=False)
     start = np.random.rand(nwalkers,ndim)
     sampler.run(start,nsteps)
-    assert np.all(np.abs(np.std(sampler.flatten(),axis=0))) < 0.1
+    assert np.all(np.abs(np.std(sampler.flatten(),axis=0)-1.0)) < 0.1
