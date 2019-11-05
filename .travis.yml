@@ -8,10 +8,10 @@ env:
   - NUMPY_VERSION=1.16
   - NUMPY_VERSION=1.15
 
-jobs:
-  include:
-    - python: "3.6"
-      env: NUMPY_VERSION=1.16
+#jobs:
+#  include:
+#    - python: "3.6"
+#      env: NUMPY_VERSION=1.16
 
 
 install:

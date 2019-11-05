@@ -69,4 +69,4 @@ def test_kwargs2(func=func2,seed=42):
     kwargs = {'mu' : mu, 'ivar' : ivar}
     wrapped = _FunctionWrapper(func, args, kwargs)
     x = np.random.rand(ndim)
-    assert np.allclose(wrapped(x),func(x,mu))
+    assert np.allclose(wrapped(x),func(x,mu,ivar))
