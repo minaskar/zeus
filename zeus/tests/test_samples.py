@@ -11,7 +11,7 @@ def test_chain(seed=42):
     ndim = np.random.randint(2,200)
     nwalkers = 2 * ndim
     for i in range(nsteps):
-        x = np.random.rand((nwalkers,ndim))
+        x = np.random.rand(nwalkers,ndim)
         s.append(x)
     assert np.shape(s.chain) == (nwalkes,nsteps,ndim)
 
@@ -23,7 +23,7 @@ def test_flatten(seed=42):
     ndim = np.random.randint(2,200)
     nwalkers = 2 * ndim
     for i in range(nsteps):
-        x = np.random.rand((nwalkers,ndim))
+        x = np.random.rand(nwalkers,ndim)
         s.append(x)
     burn = np.random.randint(2,100)
     thin = np.random.randint(1,10)
