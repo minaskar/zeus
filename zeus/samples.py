@@ -1,28 +1,48 @@
 import numpy as np
-from collections import deque
 
 class samples:
     '''
     Creates object that stores the samples.
+    Args:
+        nsteps (int): Number of steps/generations.
+        nwalkers (int): Number of walkers.
+        ndim (int): Number of dimensions/paramters
+
     '''
 
-    def __init__(self):
+    def __init__(self, ndim, nwalkers):
         """
-        Initialise a deque object to store the samples.
+        Initialise object to store the samples.
         """
-        self.samples = deque()
+        self.initialised = False
+        self.index = 0
+        self.ndim = ndim
+        self.nwalkers = nwalkers
 
-    def append(self, x):
+
+    def extend(self, n):
+        if self.initialised:
+            ext = np.empty((n,self.nwalkers,self.ndim))
+            self.samples = np.append(self.samples,ext)
+        else:
+            self.samples = np.empty((n,self.nwalkers,self.ndim))
+            self.initialised = True
+
+
+    def save(self, x):
         """
-        Append sample into the storage.
+        Save sample into the storage.
         Args:
             x (ndarray): Sample to be appended into the storage.
         """
-        self.samples.append(x.tolist())
+        self.samples[self.index] = x
+        self.index += 1
+
 
     @property
     def chain(self):
-        return np.swapaxes(np.array(self.samples), 0, 1)
+        return np.swapaxes(self.samples, 0, 1)
+
 
     def flatten(self, burn=None, thin=1):
         """
@@ -35,8 +55,9 @@ class samples:
         Returns:
             2D object containing the ndim flattened chains.
         """
+
         nsteps = np.shape(self.chain)[1]
-        ndim = np.shape(self.chain)[2]
+
         if burn is None:
             burn = int(nsteps/2)
-        return self.chain[:,burn::thin,:].reshape(-1,ndim)
+        return self.chain[:,burn::thin,:].reshape(-1,self.ndim)
