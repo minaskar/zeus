@@ -9,3 +9,4 @@ __description__ = "Lightning Fast MCMC"
 
 from .zeus import *
 from .autocorr import *
+from .start import *

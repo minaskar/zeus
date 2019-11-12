@@ -35,27 +35,34 @@ class sampler:
                  ndim,
                  args=None,
                  kwargs=None,
-                 mu=2.5,
+                 mu=3.44,
                  parallel=False,
                  ncores=None,
                  verbose=True):
 
+        # Set up logger
+        self.logger = logging.getLogger()
+        for handler in self.logger.handlers[:]:
+            self.logger.removeHandler(handler)
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter('%(asctime)s %(name)-2s %(levelname)-6s %(message)s')
+        handler.setFormatter(formatter)
+        self.logger.addHandler(handler)
         if verbose:
-            level = logging.INFO
+            self.logger.setLevel(logging.INFO)
         else:
-            level = logging.WARNING
-        logging.basicConfig(format='%(asctime)s: %(levelname)-8s: %(message)s',
-                            datefmt='%d/%m/%Y %I:%M:%S %p', level=level)
+            self.logger.setLevel(logging.WARNING)
 
         self.logp = _FunctionWrapper(logp, args, kwargs)
         self.nwalkers = int(nwalkers)
         self.ndim = int(ndim)
-        self.mu = mu
+        self.mu = mu * np.sqrt(2) / np.sqrt(self.ndim)
         self.parallel = parallel
         self.ncores = ncores
         self.nlogp = 0
-        self.samples = samples()
+        self.samples = samples(self.ndim, self.nwalkers)
         self.X = None
+        self.Z = None
 
         if self.ncores is None:
             self.ncores = min(int(self.nwalkers/2.0),cpu_count(logical=False))
@@ -79,17 +86,18 @@ class sampler:
         if self.parallel:
             logging.info('Parallelizing ensemble of walkers using %d CPUs...', self.ncores)
 
+        self.samples.extend(nsteps)
         if self.X is None:
             self.start = np.copy(start)
             self.X = jitter(self.start, self.nwalkers, self.ndim)
+            self.Z = np.asarray(list(map(self.logp,self.X)))
             logging.info('Starting sampling...')
         else:
             logging.info('Continuing sampling...')
 
         self.nsteps = int(nsteps)
 
-        walkers = np.arange(self.nwalkers)
-        batches = np.array(list(map(np.random.permutation,np.broadcast_to(walkers,(nsteps,self.nwalkers)))))
+        batch = list(np.arange(self.nwalkers))
 
         def vec_diff(i, j):
             '''
@@ -109,16 +117,15 @@ class sampler:
             t = tqdm(total=nsteps)
 
         for i in range(self.nsteps):
-            batch = batches[i]
-            batch0 = list(batch[:int(self.nwalkers/2)])
-            batch1 = list(batch[int(self.nwalkers/2):])
+            np.random.shuffle(batch)
+            batch0 = batch[:int(self.nwalkers/2)]
+            batch1 = batch[int(self.nwalkers/2):]
             sets = [[batch0,batch1],[batch1,batch0]]
-
             for ensembles in sets:
                 active, inactive = ensembles
                 perms = list(permutations(inactive,2))
                 pairs = random.sample(perms,int(self.nwalkers/2))
-                self.directions = self.mu * np.asarray(list(starmap(vec_diff,pairs)))
+                self.directions = self.mu * np.array(list(starmap(vec_diff,pairs)))
                 active_i = np.vstack((np.arange(int(self.nwalkers/2)),active)).T
 
                 if not self.parallel:
@@ -129,12 +136,13 @@ class sampler:
 
                 Xinit = np.copy(self.X)
                 for result in results:
-                    k, w_k, x1, n = result
+                    k, w_k, x1, logp1, n = result
                     self.X[w_k] = x1 * self.directions[k] + Xinit[w_k]
+                    self.Z[w_k] = logp1
                     self.nlogp += n
 
             if i % thin == 0:
-                self.samples.append(self.X)
+                self.samples.save(self.X)
             if progress:
                 t.update()
         if progress:
@@ -155,26 +163,26 @@ class sampler:
 
         k, w_k = k_w
         x_init = np.copy(self.X[w_k])
-        x0 = np.linalg.norm(x_init)
         direction = self.directions[k]
 
-        z = self._slicelogp(0.0, x_init, direction) - np.random.exponential()
+        z = self.Z[w_k] - np.random.exponential()
 
         L = - np.random.uniform(0.0,1.0)
         R = L + 1.0
 
-        n = 1
+        n = 0
         while True:
             n += 1
             x1 = L + np.random.uniform(0.0,1.0) * (R - L)
-            if (z < self._slicelogp(x1, x_init, direction)):
+            logp1 = self._slicelogp(x1, x_init, direction)
+            if (z < logp1):
                 break
             if (x1 < 0.0):
                 L = x1
             elif (x1 > 0.0):
                 R = x1
 
-        return [k, w_k, x1, n]
+        return [k, w_k, x1, logp1, n]
 
 
     def _slicelogp(self, x, x_init, direction):
