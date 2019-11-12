@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="zeus-mcmc",
-    version="0.9.2",
+    version="0.9.3",
     author="Minas Karamanis",
     author_email="minaskar@gmail.com",
     description="zeus: Lightning Fast MCMC",

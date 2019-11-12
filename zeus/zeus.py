@@ -24,7 +24,7 @@ class sampler:
         ndim (int): The number of dimensions/parameters.
         args (list): Extra arguments to be passed into the logp.
         kwargs (list): Extra arguments to be passed into the logp.
-        mu (float): This is the mu coefficient (default value is 2.5). Numerical tests verify this as the optimal choice.
+        mu (float): This is the mu coefficient (default value is 3.44). Numerical tests verify this as the optimal choice.
         parallel (bool): If True (default is False), use only 1 CPU, otherwise distribute to multiple.
         ncores (bool): The maximum number of cores to use if parallel=True (default is None, meaning all of them).
         verbose (bool): If True (default) print log statements.
