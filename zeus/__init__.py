@@ -1,5 +1,5 @@
 name = "zeus-mcmc"
-__version__ = "0.9.2"
+__version__ = "0.9.3"
 __url__ = "https://zeus-mcmc.readthedocs.io"
 __author__ = "Minas Karamanis"
 __email__ = "minaskar@gmail.com"

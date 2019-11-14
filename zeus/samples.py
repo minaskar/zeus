@@ -23,7 +23,7 @@ class samples:
     def extend(self, n):
         if self.initialised:
             ext = np.empty((n,self.nwalkers,self.ndim))
-            self.samples = np.append(self.samples,ext)
+            self.samples = np.concatenate((self.samples,ext),axis=0)
         else:
             self.samples = np.empty((n,self.nwalkers,self.ndim))
             self.initialised = True
