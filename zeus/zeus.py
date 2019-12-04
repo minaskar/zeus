@@ -86,7 +86,7 @@ class sampler:
         if self.parallel:
             logging.info('Parallelizing ensemble of walkers using %d CPUs...', self.ncores)
 
-        self.samples.extend(nsteps)
+        self.samples.extend(nsteps//thin)
         if self.X is None:
             self.start = np.copy(start)
             self.X = jitter(self.start, self.nwalkers, self.ndim)
@@ -117,6 +117,11 @@ class sampler:
             t = tqdm(total=nsteps)
 
         for i in range(self.nsteps):
+
+            gamma = 1.0
+            if np.random.uniform(0.0,1.0) > 0.9:
+                gamma = 2.0 / self.mu
+
             np.random.shuffle(batch)
             batch0 = batch[:int(self.nwalkers/2)]
             batch1 = batch[int(self.nwalkers/2):]
@@ -125,7 +130,7 @@ class sampler:
                 active, inactive = ensembles
                 perms = list(permutations(inactive,2))
                 pairs = random.sample(perms,int(self.nwalkers/2))
-                self.directions = self.mu * np.array(list(starmap(vec_diff,pairs)))
+                self.directions = self.mu * np.array(list(starmap(vec_diff,pairs))) * gamma
                 active_i = np.vstack((np.arange(int(self.nwalkers/2)),active)).T
 
                 if not self.parallel:
@@ -141,7 +146,7 @@ class sampler:
                     self.Z[w_k] = logp1
                     self.nlogp += n
 
-            if i % thin == 0:
+            if (i+1) % thin == 0:
                 self.samples.save(self.X)
             if progress:
                 t.update()
