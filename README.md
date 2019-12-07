@@ -1,7 +1,7 @@
 
 # zeus: Lightning Fast MCMC
 
-![](zeus.gif)
+![](logo.png)
 
 zeus is an efficient parallel Python implementation of the ensemble slice MCMC method. The latter is a combination of _Slice Sampling_ \(Neal 2003\) and _Adaptive Direction Sampling_ \(Gilks, Roberts, George 1993\) in a parallel ensemble framework with a few extra tricks. **The result is a fast and easy-to-use general-purpose MCMC sampler that works out-of-the-box without the need to tune any hyperparameters or provide a proposal distribution.** zeus produces independent samples of extremely low autocorrelation and converges to the target distribution faster than any other general-purpose gradient-free MCMC sampler.
 

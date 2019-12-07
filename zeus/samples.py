@@ -44,20 +44,22 @@ class samples:
         return np.swapaxes(self.samples, 0, 1)
 
 
-    def flatten(self, burn=None, thin=1):
+    @property
+    def length(self):
+        _, length, _ = np.shape(self.chain)
+        return length
+
+
+    def flatten(self, burn=0, thin=1):
         """
         Flatten samples by thinning them, removing the burn in phase, and combining all the walkers.
 
         Args:
-            burn (int): Number of burn-in steps to be removed from each walker.
+            burn (int): Number of burn-in steps to be removed from each walker (default is 0).
             thin (int): Thinning parameter (the default value is 1).
 
         Returns:
             2D object containing the ndim flattened chains.
         """
 
-        nsteps = np.shape(self.chain)[1]
-
-        if burn is None:
-            burn = int(nsteps/2)
-        return self.chain[:,burn::thin,:].reshape(-1,self.ndim)
+        return self.chain[:,burn::thin,:].reshape((-1,self.ndim), order='F')

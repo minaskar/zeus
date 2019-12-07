@@ -10,6 +10,7 @@ import logging
 from .samples import samples
 from .fwrapper import _FunctionWrapper
 from .start import jitter
+from .autocorr import _autocorr_time
 
 
 class sampler:
@@ -24,6 +25,7 @@ class sampler:
         ndim (int): The number of dimensions/parameters.
         args (list): Extra arguments to be passed into the logp.
         kwargs (list): Extra arguments to be passed into the logp.
+        jump (float): Probability of random jump (Default is 0.1). It has to be <1 and >0.
         mu (float): This is the mu coefficient (default value is 3.44). Numerical tests verify this as the optimal choice.
         parallel (bool): If True (default is False), use only 1 CPU, otherwise distribute to multiple.
         ncores (bool): The maximum number of cores to use if parallel=True (default is None, meaning all of them).
@@ -35,7 +37,8 @@ class sampler:
                  ndim,
                  args=None,
                  kwargs=None,
-                 mu=3.44,
+                 jump=0.1,
+                 mu=3.7,
                  parallel=False,
                  ncores=None,
                  verbose=True):
@@ -45,8 +48,6 @@ class sampler:
         for handler in self.logger.handlers[:]:
             self.logger.removeHandler(handler)
         handler = logging.StreamHandler()
-        formatter = logging.Formatter('%(asctime)s %(name)-2s %(levelname)-6s %(message)s')
-        handler.setFormatter(formatter)
         self.logger.addHandler(handler)
         if verbose:
             self.logger.setLevel(logging.INFO)
@@ -56,10 +57,11 @@ class sampler:
         self.logp = _FunctionWrapper(logp, args, kwargs)
         self.nwalkers = int(nwalkers)
         self.ndim = int(ndim)
+        self.jump = jump
         self.mu = mu * np.sqrt(2) / np.sqrt(self.ndim)
         self.parallel = parallel
         self.ncores = ncores
-        self.nlogp = 0
+        self.neval = 0
         self.samples = samples(self.ndim, self.nwalkers)
         self.X = None
         self.Z = None
@@ -87,15 +89,14 @@ class sampler:
             logging.info('Parallelizing ensemble of walkers using %d CPUs...', self.ncores)
 
         self.samples.extend(nsteps//thin)
-        if self.X is None:
-            self.start = np.copy(start)
-            self.X = jitter(self.start, self.nwalkers, self.ndim)
-            self.Z = np.asarray(list(map(self.logp,self.X)))
-            logging.info('Starting sampling...')
-        else:
-            logging.info('Continuing sampling...')
+        self.start = np.copy(start)
+        self.X = jitter(self.start, self.nwalkers, self.ndim)
+        self.Z = np.asarray(list(map(self.logp,self.X)))
+        logging.info('Starting sampling...')
+
 
         self.nsteps = int(nsteps)
+        self.thin = int(thin)
 
         batch = list(np.arange(self.nwalkers))
 
@@ -119,7 +120,7 @@ class sampler:
         for i in range(self.nsteps):
 
             gamma = 1.0
-            if np.random.uniform(0.0,1.0) > 0.9:
+            if np.random.uniform(0.0,1.0) > 1.0 - self.jump:
                 gamma = 2.0 / self.mu
 
             np.random.shuffle(batch)
@@ -144,15 +145,28 @@ class sampler:
                     k, w_k, x1, logp1, n = result
                     self.X[w_k] = x1 * self.directions[k] + Xinit[w_k]
                     self.Z[w_k] = logp1
-                    self.nlogp += n
+                    self.neval += n
 
-            if (i+1) % thin == 0:
+            if (i+1) % self.thin == 0:
                 self.samples.save(self.X)
             if progress:
                 t.update()
         if progress:
             t.close()
         logging.info('Sampling Complete!')
+
+        if np.any(self.nsteps * self.nwalkers < 50.0 * self.autocorr_time):
+            logging.info('The total length of chain is smaller than 50 times the autocorrelation time.')
+            logging.info('Convergence is uncertain!')
+            logging.info('Running the sampler for longer is recommended.')
+
+
+    def reset(self):
+        """
+        Reset the state of the sampler. Delete any samples stored in memory.
+        """
+        self.samples = samples(self.ndim, self.nwalkers)
+
 
 
     def _slice1d(self, k_w):
@@ -179,7 +193,7 @@ class sampler:
         while True:
             n += 1
             x1 = L + np.random.uniform(0.0,1.0) * (R - L)
-            logp1 = self._slicelogp(x1, x_init, direction)
+            logp1 = self.logp(direction * x1 + x_init)
             if (z < logp1):
                 break
             if (x1 < 0.0):
@@ -188,21 +202,6 @@ class sampler:
                 R = x1
 
         return [k, w_k, x1, logp1, n]
-
-
-    def _slicelogp(self, x, x_init, direction):
-        """
-        Evaluate the log probability in a point along a specific direction.
-
-        Args:
-            x (ndarray): magnitude of new point along the chosen direction.
-            x_init (ndarray): vector of initial point.
-            direction (ndarray): vector of chosen direction.
-
-        Returns:
-            The logp at direction * x + x_init
-        """
-        return self.logp(direction * x + x_init)
 
 
     @property
@@ -216,15 +215,79 @@ class sampler:
         return self.samples.chain
 
 
-    def flatten(self, burn=None, thin=1):
+    def flatten(self, burn=0, thin=1):
         """
         Flatten the chain.
 
         Args:
-            burn (int): The number of burn-in steps to remove from each walker (default is None, which results to Nsteps/2).
+            burn (int): The number of burn-in steps to remove from each walker (default is 0).
             thin (int): The ammount to thin the chain (default is 1, no thinning).
 
         Returns:
             2D Flattened chain.
         """
         return self.samples.flatten(burn, thin)
+
+
+    @property
+    def last(self):
+        """
+        Last position of the walkers.
+
+        Returns:
+            (array) : The last position of the walkers.
+        """
+        return self.X
+
+
+    @property
+    def autocorr_time(self):
+        """
+        Integrated Autocorrelation Time (IAT) of the Markov Chain.
+
+        Returns:
+            Array with the IAT of each parameter.
+        """
+        return _autocorr_time(self.chain[:,int(self.nsteps/(self.thin*2.0)):,:])
+
+
+    @property
+    def ess(self):
+        """
+        Effective Sampling Size (ESS) of the Markov Chain.
+
+        Returns:
+            ESS
+        """
+        return self.nwalkers * self.nsteps / np.mean(self.autocorr_time)
+
+
+    @property
+    def efficiency(self):
+        """
+        Effective Samples per Log Probability Evaluation.
+
+        Returns:
+            efficiency
+        """
+        return self.ess / self.neval
+
+
+    @property
+    def summary(self):
+        """
+        Summary of the MCMC run.
+        """
+        logging.info('Summary')
+        logging.info('-------')
+        logging.info('Number of Generations: ' + str(self.nsteps))
+        logging.info('Number of Parameters: ' + str(self.ndim))
+        logging.info('Number of Walkers: ' + str(self.nwalkers))
+        logging.info('Mean Integrated Autocorrelation Time: ' + str(round(np.mean(self.autocorr_time),2)))
+        logging.info('Effective Sample Size: ' + str(round(self.ess,2)))
+        logging.info('Number of Log Probability Evaluations: ' + str(self.neval))
+        logging.info('Effective Samples per Log Probability Evaluation: ' + str(round(self.efficiency,6)))
+        if self.parallel:
+            logging.info('Number of CPUs: ' + str(self.ncores))
+        if self.thin > 1:
+            logging.info('Thinning rate: ' + str(self.thin))
