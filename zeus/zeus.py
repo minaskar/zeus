@@ -26,8 +26,8 @@ class sampler:
         args (list): Extra arguments to be passed into the logp.
         kwargs (list): Extra arguments to be passed into the logp.
         jump (float): Probability of random jump (Default is 0.1). It has to be <1 and >0.
-        mu (float): This is the mu coefficient (default value is 3.44). Numerical tests verify this as the optimal choice.
-        parallel (bool): If True (default is False), use only 1 CPU, otherwise distribute to multiple.
+        mu (float): This is the mu coefficient (default value is 3.7). Numerical tests verify this as the optimal choice.
+        parallel (bool): If True (default is False) distribute workload to multiple CPUs.
         ncores (bool): The maximum number of cores to use if parallel=True (default is None, meaning all of them).
         verbose (bool): If True (default) print log statements.
     """
@@ -155,7 +155,7 @@ class sampler:
             t.close()
         logging.info('Sampling Complete!')
 
-        if np.any(self.nsteps * self.nwalkers < 50.0 * self.autocorr_time):
+        if np.any(self.samples.length * self.nwalkers < 50.0 * self.autocorr_time):
             logging.info('The total length of chain is smaller than 50 times the autocorrelation time.')
             logging.info('Convergence is uncertain!')
             logging.info('Running the sampler for longer is recommended.')
@@ -259,7 +259,7 @@ class sampler:
         Returns:
             ESS
         """
-        return self.nwalkers * self.nsteps / np.mean(self.autocorr_time)
+        return self.nwalkers * self.samples.length / np.mean(self.autocorr_time)
 
 
     @property
@@ -280,7 +280,7 @@ class sampler:
         """
         logging.info('Summary')
         logging.info('-------')
-        logging.info('Number of Generations: ' + str(self.nsteps))
+        logging.info('Number of Generations: ' + str(self.samples.length))
         logging.info('Number of Parameters: ' + str(self.ndim))
         logging.info('Number of Walkers: ' + str(self.nwalkers))
         logging.info('Mean Integrated Autocorrelation Time: ' + str(round(np.mean(self.autocorr_time),2)))
