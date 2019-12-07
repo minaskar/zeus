@@ -1,16 +1,20 @@
 .. title:: zeus documentation
 
-.. image:: ./../zeus.gif
+.. figure:: ./../logo.png
 
-Lightning Fast MCMC
-===================
+**zeus is a pure-Python implementation of the ensemble slice sampling method.**
 
-**zeus** is an efficient parallel Python implementation of the ensemble slice MCMC method.
-The latter is a combination of Slice Sampling (Neal 2003) and Adaptive Direction Sampling (Gilks, Roberts, George 1993)
-in a parallel ensemble framework with a few extra tricks. **The result is a fast and easy-to-use general-purpose
-MCMC sampler that works out-of-the-box without the need to tune any hyperparameters or provide a proposal distribution.**
-zeus produces independent samples of extremely low autocorrelation and converges to the target
-distribution faster than any other general-purpose gradient-free MCMC sampler.
+Doing *Bayesian Inference* with **zeus** is both simple and fast, since there is no need to hand-tune any
+hyperparameters or provide a proposal distribution. The algorithm exhibits excellent performance in terms
+of autocorrelation time and convergence rate. **zeus** works out-of-the-box and can scale to multiple CPUs
+without any extra effort.
+
+.. image:: https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue
+    :target: https://github.com/minaskar/zeus
+.. image:: https://travis-ci.com/minaskar/zeus.svg?token=xnVWRZ3TFg1zxQYQyLs4&branch=master
+    :target: https://travis-ci.com/minaskar/zeus
+.. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
+    :target: https://github.com/minaskar/zeus/blob/master/LICENSE
 
 Basic usage
 ===========

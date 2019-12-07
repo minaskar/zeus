@@ -74,7 +74,6 @@
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#zeus-sampler-module">zeus.sampler module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#zeus-autocorrtime-function">zeus.autocorrtime function</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/normal_distribution.html">Sampling from a multivariate Normal distribution</a></li>
@@ -93,7 +92,6 @@
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">API</a><ul>
 <li><a class="reference internal" href="#zeus-sampler-module">zeus.sampler module</a></li>
-<li><a class="reference internal" href="#zeus-autocorrtime-function">zeus.autocorrtime function</a></li>
 </ul>
 </li>
 </ul>
@@ -133,7 +131,7 @@
 <h2>zeus.sampler module<a class="headerlink" href="#zeus-sampler-module" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="zeus.sampler">
-<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">sampler</code><span class="sig-paren">(</span><em class="sig-param">logp</em>, <em class="sig-param">nwalkers</em>, <em class="sig-param">ndim</em>, <em class="sig-param">args=None</em>, <em class="sig-param">kwargs=None</em>, <em class="sig-param">mu=3.44</em>, <em class="sig-param">parallel=False</em>, <em class="sig-param">ncores=None</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">sampler</code><span class="sig-paren">(</span><em class="sig-param">logp</em>, <em class="sig-param">nwalkers</em>, <em class="sig-param">ndim</em>, <em class="sig-param">args=None</em>, <em class="sig-param">kwargs=None</em>, <em class="sig-param">jump=0.1</em>, <em class="sig-param">mu=3.7</em>, <em class="sig-param">parallel=False</em>, <em class="sig-param">ncores=None</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler" title="Permalink to this definition">¶</a></dt>
 <dd><p>An ensemble slice MCMC sampler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -145,6 +143,7 @@ unnormalised posterior probability at that position.</p></li>
 <li><p><strong>ndim</strong> (<em>int</em>) – The number of dimensions/parameters.</p></li>
 <li><p><strong>args</strong> (<em>list</em>) – Extra arguments to be passed into the logp.</p></li>
 <li><p><strong>kwargs</strong> (<em>list</em>) – Extra arguments to be passed into the logp.</p></li>
+<li><p><strong>jump</strong> (<em>float</em>) – Probability of random jump (Default is 0.1). It has to be &lt;1 and &gt;0.</p></li>
 <li><p><strong>mu</strong> (<em>float</em>) – This is the mu coefficient (default value is 3.44). Numerical tests verify this as the optimal choice.</p></li>
 <li><p><strong>parallel</strong> (<em>bool</em>) – If True (default is False), use only 1 CPU, otherwise distribute to multiple.</p></li>
 <li><p><strong>ncores</strong> (<em>bool</em>) – The maximum number of cores to use if parallel=True (default is None, meaning all of them).</p></li>
@@ -152,6 +151,17 @@ unnormalised posterior probability at that position.</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="method">
+<dt id="zeus.sampler.autocorr_time">
+<em class="property">property </em><code class="sig-name descname">autocorr_time</code><a class="headerlink" href="#zeus.sampler.autocorr_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integrated Autocorrelation Time (IAT) of the Markov Chain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Array with the IAT of each parameter.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="method">
 <dt id="zeus.sampler.chain">
 <em class="property">property </em><code class="sig-name descname">chain</code><a class="headerlink" href="#zeus.sampler.chain" title="Permalink to this definition">¶</a></dt>
@@ -164,13 +174,35 @@ unnormalised posterior probability at that position.</p></li>
 </dd></dl>
 
 <dl class="method">
+<dt id="zeus.sampler.efficiency">
+<em class="property">property </em><code class="sig-name descname">efficiency</code><a class="headerlink" href="#zeus.sampler.efficiency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Effective Samples per Log Probability Evaluation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>efficiency</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="zeus.sampler.ess">
+<em class="property">property </em><code class="sig-name descname">ess</code><a class="headerlink" href="#zeus.sampler.ess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Effective Sampling Size (ESS) of the Markov Chain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>ESS</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="zeus.sampler.flatten">
-<code class="sig-name descname">flatten</code><span class="sig-paren">(</span><em class="sig-param">burn=None</em>, <em class="sig-param">thin=1</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler.flatten" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">flatten</code><span class="sig-paren">(</span><em class="sig-param">burn=0</em>, <em class="sig-param">thin=1</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler.flatten" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flatten the chain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>burn</strong> (<em>int</em>) – The number of burn-in steps to remove from each walker (default is None, which results to Nsteps/2).</p></li>
+<li><p><strong>burn</strong> (<em>int</em>) – The number of burn-in steps to remove from each walker (default is 0).</p></li>
 <li><p><strong>thin</strong> (<em>int</em>) – The ammount to thin the chain (default is 1, no thinning).</p></li>
 </ul>
 </dd>
@@ -178,6 +210,26 @@ unnormalised posterior probability at that position.</p></li>
 <dd class="field-even"><p>2D Flattened chain.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="zeus.sampler.last">
+<em class="property">property </em><code class="sig-name descname">last</code><a class="headerlink" href="#zeus.sampler.last" title="Permalink to this definition">¶</a></dt>
+<dd><p>Last position of the walkers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The last position of the walkers.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="zeus.sampler.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the state of the sampler. Delete any samples stored in memory.</p>
 </dd></dl>
 
 <dl class="method">
@@ -196,26 +248,12 @@ unnormalised posterior probability at that position.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="zeus.sampler.summary">
+<em class="property">property </em><code class="sig-name descname">summary</code><a class="headerlink" href="#zeus.sampler.summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary of the MCMC run.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="zeus-autocorrtime-function">
-<h2>zeus.autocorrtime function<a class="headerlink" href="#zeus-autocorrtime-function" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="zeus.autocorrtime">
-<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">autocorrtime</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">c=5.0</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.autocorrtime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the integrated autocorrelation time of a chain according to the recipe of Sokal.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>ndarray</em>) – 1D chain to be analysed.</p></li>
-<li><p><strong>c</strong> (<em>float</em>) – Parameter c of Sokal’s recipe (default values is 5.0).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The autocorrelation time of the chain.</p>
-</dd>
-</dl>
 </dd></dl>
 
 </div>
@@ -234,7 +272,7 @@ unnormalised posterior probability at that position.</p></li>
     </p>
     <p>
         &copy; Copyright 2019, Minas Karamanis.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.<br/>
     </p>
   </div>
 </footer>

@@ -1,9 +1,12 @@
+![logo](logo.png)
 
-# zeus: Lightning Fast MCMC
+**zeus is a pure-Python implementation of the *differential slice sampling* method.**
 
-![](logo.png)
+ Doing *Bayesian Inference* with **zeus** is both simple and fast, since there is no need to hand-tune any hyperparameters or provide a proposal distribution. The algorithm exhibits excellent performance in terms of autocorrelation time and convergence rate. **zeus** works out-of-the-box and can scale to multiple CPUs without any extra effort.
 
-zeus is an efficient parallel Python implementation of the ensemble slice MCMC method. The latter is a combination of _Slice Sampling_ \(Neal 2003\) and _Adaptive Direction Sampling_ \(Gilks, Roberts, George 1993\) in a parallel ensemble framework with a few extra tricks. **The result is a fast and easy-to-use general-purpose MCMC sampler that works out-of-the-box without the need to tune any hyperparameters or provide a proposal distribution.** zeus produces independent samples of extremely low autocorrelation and converges to the target distribution faster than any other general-purpose gradient-free MCMC sampler.
+[![GitHub](https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue)](https://github.com/minaskar/zeus)
+[![Build Status](https://travis-ci.com/minaskar/zeus.svg?token=xnVWRZ3TFg1zxQYQyLs4&branch=master)](https://travis-ci.com/minaskar/zeus)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/minaskar/zeus/blob/master/LICENSE)
 
 ## Example
 
@@ -24,6 +27,11 @@ sampler = zeus.sampler(logp, nwalkers, ndim, args=[ivar])
 sampler.run(start, nsteps)
 ```
 
+## Documentation
+
+Read the docs at [zeus-mcmc.readthedocs.io](https://zeus-mcmc.readthedocs.io)
+
+
 ## Installation
 
 To install zeus using pip run
@@ -34,6 +42,6 @@ pip install git+https://github.com/minaskar/zeus
 
 ## Licence
 
-Copyright 2019-2019 Minas Karamanis and contributors.
+Copyright 2019 Minas Karamanis and contributors.
 
-zeus is free software made available under the GPL-3.0 License. For details see the `LICENSE`.
+zeus is free software made available under the GPL-3.0 License. For details see the `LICENSE` file.
