@@ -9,7 +9,6 @@ import logging
 
 from .samples import samples
 from .fwrapper import _FunctionWrapper
-from .start import jitter
 from .autocorr import _autocorr_time
 
 
@@ -84,21 +83,27 @@ class sampler:
             thin (float): Thin the chain by this number (default is 1 no thinning).
             progress (bool): If True (default), show progress bar (requires tqdm).
         '''
+        # Initialise ensemble of walkers
+        self.X = np.copy(start)
+
+        if np.shape(self.X) != (self.nwalkers, self.ndim):
+            raise ValueError("Incompatible input dimensions! Please provide array of shape (nwalkers, ndim) as the starting position.")
 
         if self.parallel:
             logging.info('Parallelizing ensemble of walkers using %d CPUs...', self.ncores)
+        else:
+            logging.info('Initialising ensemble of %d walkers...', self.nwalkers)
 
-        self.samples.extend(nsteps//thin)
-        self.start = np.copy(start)
-        self.X = jitter(self.start, self.nwalkers, self.ndim)
         self.Z = np.asarray(list(map(self.logp,self.X)))
-        logging.info('Starting sampling...')
 
+        batch = list(np.arange(self.nwalkers))
 
+        # Extend saving space
         self.nsteps = int(nsteps)
         self.thin = int(thin)
 
-        batch = list(np.arange(self.nwalkers))
+        self.samples.extend(self.nsteps//self.thin)
+
 
         def vec_diff(i, j):
             '''
@@ -115,18 +120,21 @@ class sampler:
 
 
         if progress:
-            t = tqdm(total=nsteps)
+            t = tqdm(total=nsteps, desc='Sampling progress : ')
 
         for i in range(self.nsteps):
 
+            # Random jump
             gamma = 1.0
             if np.random.uniform(0.0,1.0) > 1.0 - self.jump:
                 gamma = 2.0 / self.mu
 
+            # Shuffle ensemble
             np.random.shuffle(batch)
             batch0 = batch[:int(self.nwalkers/2)]
             batch1 = batch[int(self.nwalkers/2):]
             sets = [[batch0,batch1],[batch1,batch0]]
+
             for ensembles in sets:
                 active, inactive = ensembles
                 perms = list(permutations(inactive,2))
@@ -155,11 +163,6 @@ class sampler:
             t.close()
         logging.info('Sampling Complete!')
 
-        if np.any(self.samples.length * self.nwalkers < 50.0 * self.autocorr_time):
-            logging.info('The total length of chain is smaller than 50 times the autocorrelation time.')
-            logging.info('Convergence is uncertain!')
-            logging.info('Running the sampler for longer is recommended.')
-
 
     def reset(self):
         """
@@ -177,7 +180,7 @@ class sampler:
             k_w (int,int): index and label of walker.
 
         Returns:
-            (list) : [k, w_k, x1, n]
+            (list) : [k, w_k, x1, logp1, n]
         '''
 
         k, w_k = k_w
@@ -291,3 +294,9 @@ class sampler:
             logging.info('Number of CPUs: ' + str(self.ncores))
         if self.thin > 1:
             logging.info('Thinning rate: ' + str(self.thin))
+
+
+    @property
+    def one_sigma(self):
+        fits = np.percentile(self.flatten(burn=int(self.nsteps/2.0)), [16, 50, 84], axis=0)
+        return list(map(lambda v: (v[1], v[2]-v[1], v[1]-v[0]), zip(*fits)))

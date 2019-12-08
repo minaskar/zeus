@@ -21,6 +21,12 @@ class samples:
 
 
     def extend(self, n):
+        """
+        Method to extend saving space.
+
+        Args:
+            n (int) : Extend space by n slots.
+        """
         if self.initialised:
             ext = np.empty((n,self.nwalkers,self.ndim))
             self.samples = np.concatenate((self.samples,ext),axis=0)
@@ -41,11 +47,23 @@ class samples:
 
     @property
     def chain(self):
+        """
+        Chain property.
+
+        Returns:
+            3D array of shape (nwalkers,nsteps,ndim) containing the samples.
+        """
         return np.swapaxes(self.samples, 0, 1)
 
 
     @property
     def length(self):
+        """
+        Number of samples per walker.
+
+        Returns:
+            The total number of samples per walker.
+        """
         _, length, _ = np.shape(self.chain)
         return length
 
