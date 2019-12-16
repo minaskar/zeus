@@ -142,18 +142,37 @@ class sampler:
                 self.directions = self.mu * np.array(list(starmap(vec_diff,pairs))) * gamma
                 active_i = np.vstack((np.arange(int(self.nwalkers/2)),active)).T
 
-                if not self.parallel:
-                    results = list(map(self._slice1d, active_i))
-                else:
-                    with Pool(self.ncores) as pool:
-                        results = list(pool.map(self._slice1d, active_i))
 
-                Xinit = np.copy(self.X)
-                for result in results:
-                    k, w_k, x1, logp1, n = result
-                    self.X[w_k] = x1 * self.directions[k] + Xinit[w_k]
-                    self.Z[w_k] = logp1
-                    self.neval += n
+                zs = self.Z[active] - np.random.exponential(size=int(self.nwalkers/2))
+
+                Ls = - np.random.uniform(0.0,1.0,size=int(self.nwalkers/2))
+                Rs = Ls + 1.0
+
+                while True:
+
+                    x1s = Ls + np.random.uniform(0.0,1.0,size=int(self.nwalkers/2)) * (Rs - Ls)
+                    new_vectors = self.direction * x1s + self.X
+                    logp1s = np.asarray(list(map(self.logp,new_vectors)))
+                    
+                    if (z < logp1):
+                        break
+                    if (x1 < 0.0):
+                        L = x1
+                    elif (x1 > 0.0):
+                        R = x1
+
+                #if not self.parallel:
+                #    results = list(map(self._slice1d, active_i))
+                #else:
+                #    with Pool(self.ncores) as pool:
+                #        results = list(pool.map(self._slice1d, active_i))
+
+                #Xinit = np.copy(self.X)
+                #for result in results:
+                #    k, w_k, x1, logp1, n = result
+                #    self.X[w_k] = x1 * self.directions[k] + Xinit[w_k]
+                #    self.Z[w_k] = logp1
+                #    self.neval += n
 
             if (i+1) % self.thin == 0:
                 self.samples.save(self.X)
