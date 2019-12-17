@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from zeus.autocorr import _autocorr_time
+from zeus.autocorr import _autocorr_time_1d
 
 def get_chain(seed=42, ndim=5, N=100000):
     np.random.seed(seed)
