@@ -13,6 +13,8 @@ def get_chain(seed=42, ndim=5, N=100000):
     return x
 
 def test_1d(seed=42):
-    chain = get_chain(seed, ndim=1)
+    walker0 = get_chain(seed, ndim=1)
+    walker1 = get_chain(seed+1, ndim=1)
+    chain = np.vstack((walker0,walker1))
     tau = _autocorr_time_1d(chain)
     assert tau < 15.0
