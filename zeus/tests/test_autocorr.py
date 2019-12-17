@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from zeus import autocorrtime
+from zeus import _autocorr_time
 
 def get_chain(seed=42, ndim=5, N=100000):
     np.random.seed(seed)
@@ -14,5 +14,5 @@ def get_chain(seed=42, ndim=5, N=100000):
 
 def test_1d(seed=42):
     chain = get_chain(seed, ndim=1)
-    tau = autocorrtime(chain)
+    tau = _autocorr_time_1d(chain)
     assert tau < 15.0
