@@ -7,9 +7,9 @@ from mpi4py.futures import MPIPoolExecutor
 def logp(x):
     return -0.5*np.dot(x-1.0,x-1.0)
 
-ndim = 2
+ndim = 500
 nwalkers = 2*ndim
-nsteps = 5000
+nsteps = 50
 
 start = 0.1* np.random.randn(nwalkers,ndim) - 1.0
 

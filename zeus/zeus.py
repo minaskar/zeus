@@ -1,10 +1,6 @@
-import sys
 import numpy as np
-from itertools import permutations, starmap
+from itertools import permutations
 import random
-from multiprocessing import Pool
-from mpi4py.futures import MPIPoolExecutor
-from psutil import cpu_count
 from tqdm import tqdm
 import logging
 
@@ -15,7 +11,7 @@ from .autocorr import _autocorr_time
 
 class sampler:
     """
-    An ensemble slice MCMC sampler.
+    A Differential Slice MCMC sampler.
 
     Args:
         logprob (callable): A python function that takes a vector in the
@@ -53,13 +49,21 @@ class sampler:
         else:
             self.logger.setLevel(logging.WARNING)
 
-        self.logprob = _FunctionWrapper(logprob, args, kwargs)
         self.nwalkers = int(nwalkers)
         self.ndim = int(ndim)
+        if self.nwalkers < 2 * self.ndim:
+            raise ValueError("Please provide at least (2 * ndim) walkers.")
+        elif self.nwalkers % 2 == 1:
+            raise ValueError("Please provide an even number of walkers.")
+
+        self.logprob = _FunctionWrapper(logprob, args, kwargs)
+
         self.jump = jump
+        if self.jump < 0.0 or self.jump > 1.0:
+            raise ValueError("Please provide jump probability in the range [0,1].")
+
         self.mu = mu * np.sqrt(2) / np.sqrt(self.ndim)
         self.pool = pool
-        self.neval = 0
         self.samples = samples(self.ndim, self.nwalkers)
 
 
@@ -92,6 +96,9 @@ class sampler:
         self.thin = int(thin)
         self.samples.extend(self.nsteps//self.thin)
 
+        # Devine Number of Log Prob Evaluations vector
+        self.neval = np.zeros(self.nsteps)
+
         # Define task distributer
         if self.pool is None:
             distribute = map
@@ -102,8 +109,8 @@ class sampler:
         if progress:
             t = tqdm(total=nsteps, desc='Sampling progress : ')
 
+        # Main Loop
         for i in range(self.nsteps):
-
             # Random jump
             gamma = 1.0
             if np.random.uniform(0.0,1.0) > 1.0 - self.jump:
@@ -115,8 +122,9 @@ class sampler:
             batch1 = batch[int(self.nwalkers/2):]
             sets = [[batch0,batch1],[batch1,batch0]]
 
+            # Loop over two sets
             for ensembles in sets:
-                # Define active-inactive sets
+                # Define active-inactive ensembles
                 active, inactive = ensembles
 
                 # Compute Random Pair direction vectors
@@ -124,28 +132,36 @@ class sampler:
                 pairs = np.asarray(random.sample(perms,int(self.nwalkers/2))).T
                 directions = self.mu * (X[pairs[0]]-X[pairs[1]]) * gamma
 
-                mask = np.full(int(self.nwalkers/2),True)
-
+                # Get Z0 = LogP(x0)
                 Z0 = Z[active] - np.random.exponential(size=int(self.nwalkers/2))
+
+                # Set Initial Interval Boundaries
                 L = - np.random.uniform(0.0,1.0,size=int(self.nwalkers/2))
                 R = L + 1.0
 
+                # Initialise slice quantities
                 Widths = np.empty(int(self.nwalkers/2))
                 Z_prime = np.empty(int(self.nwalkers/2))
                 X_prime = np.empty((int(self.nwalkers/2),self.ndim))
-
+                mask = np.full(int(self.nwalkers/2),True)
                 indeces = np.arange(int(self.nwalkers/2))
 
+                # Set number of logp calls to 0
+                ncall = 0
                 while len(mask[mask])>0:
-
+                    # Update Widths of intervals
                     Widths[mask] = L[mask] + np.random.uniform(0.0,1.0,size=len(mask[mask])) * (R[mask] - L[mask])
 
+                    # Compute New Positions
                     X_prime[mask] = directions[mask] * Widths[mask][:,np.newaxis] + X[active][mask]
 
+                    # Calculate LogP of New Positions
                     Z_prime[mask] = np.asarray(list(distribute(self.logprob,X_prime[mask])))
 
-                    self.neval += len(mask[mask])
+                    # Count LogProb calls
+                    ncall += len(mask[mask])
 
+                    # Shrink slices
                     for j in indeces[mask]:
                         if Z0[j] < Z_prime[j]:
                             mask[j] = False
@@ -154,15 +170,24 @@ class sampler:
                         elif Widths[j] > 0.0:
                             R[j] = Widths[j]
 
+                # Update Positions
                 X[active] = X_prime
                 Z[active] = Z_prime
+                self.neval[i] += ncall
 
+            # Save samples
             if (i+1) % self.thin == 0:
                 self.samples.save(X)
+
+            # Update progress bar
             if progress:
                 t.update()
+
+        # Close progress bar
         if progress:
             t.close()
+
+        # Log success message
         logging.info('Sampling Complete!')
 
 
@@ -221,6 +246,17 @@ class sampler:
 
 
     @property
+    def ncall(self):
+        """
+        Number of Log Prob calls.
+
+        Returns:
+            ncall
+        """
+        return np.sum(self.neval)
+
+
+    @property
     def efficiency(self):
         """
         Effective Samples per Log Probability Evaluation.
@@ -228,7 +264,7 @@ class sampler:
         Returns:
             efficiency
         """
-        return self.ess / self.neval
+        return self.ess / self.ncall
 
 
     @property
@@ -243,7 +279,7 @@ class sampler:
         logging.info('Number of Walkers: ' + str(self.nwalkers))
         logging.info('Mean Integrated Autocorrelation Time: ' + str(round(np.mean(self.autocorr_time),2)))
         logging.info('Effective Sample Size: ' + str(round(self.ess,2)))
-        logging.info('Number of Log Probability Evaluations: ' + str(self.neval))
+        logging.info('Number of Log Probability Evaluations: ' + str(self.ncall))
         logging.info('Effective Samples per Log Probability Evaluation: ' + str(round(self.efficiency,6)))
         if self.thin > 1:
             logging.info('Thinning rate: ' + str(self.thin))
