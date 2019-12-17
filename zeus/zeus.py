@@ -3,6 +3,7 @@ import numpy as np
 from itertools import permutations, starmap
 import random
 from multiprocessing import Pool
+from mpi4py.futures import MPIPoolExecutor
 from psutil import cpu_count
 from tqdm import tqdm
 import logging
@@ -38,8 +39,7 @@ class sampler:
                  kwargs=None,
                  jump=0.1,
                  mu=3.7,
-                 parallel=False,
-                 ncores=None,
+                 pool=None,
                  verbose=True):
 
         # Set up logger
@@ -58,15 +58,11 @@ class sampler:
         self.ndim = int(ndim)
         self.jump = jump
         self.mu = mu * np.sqrt(2) / np.sqrt(self.ndim)
-        self.parallel = parallel
-        self.ncores = ncores
+        self.pool = pool
         self.neval = 0
         self.samples = samples(self.ndim, self.nwalkers)
         self.X = None
         self.Z = None
-
-        if self.ncores is None:
-            self.ncores = min(int(self.nwalkers/2.0),cpu_count(logical=False))
 
 
     def run(self,
@@ -84,15 +80,12 @@ class sampler:
             progress (bool): If True (default), show progress bar (requires tqdm).
         '''
         # Initialise ensemble of walkers
+        logging.info('Initialising ensemble of %d walkers...', self.nwalkers)
+
         self.X = np.copy(start)
 
         if np.shape(self.X) != (self.nwalkers, self.ndim):
             raise ValueError("Incompatible input dimensions! Please provide array of shape (nwalkers, ndim) as the starting position.")
-
-        if self.parallel:
-            logging.info('Parallelizing ensemble of walkers using %d CPUs...', self.ncores)
-        else:
-            logging.info('Initialising ensemble of %d walkers...', self.nwalkers)
 
         self.Z = np.asarray(list(map(self.logp,self.X)))
 
@@ -104,19 +97,10 @@ class sampler:
 
         self.samples.extend(self.nsteps//self.thin)
 
-
-        def vec_diff(i, j):
-            '''
-            Returns the difference between two vectors.
-
-            Args:
-                i (int): Index of first vector.
-                j (int): Index of second vector.
-
-            Returns:
-                The difference between the vector positions of the walkers i and j.
-            '''
-            return self.X[i] - self.X[j]
+        if self.pool is None:
+            distribute = map
+        else:
+            distribute = self.pool.map
 
 
         if progress:
@@ -138,41 +122,41 @@ class sampler:
             for ensembles in sets:
                 active, inactive = ensembles
                 perms = list(permutations(inactive,2))
-                pairs = random.sample(perms,int(self.nwalkers/2))
-                self.directions = self.mu * np.array(list(starmap(vec_diff,pairs))) * gamma
-                active_i = np.vstack((np.arange(int(self.nwalkers/2)),active)).T
+                pairs = np.asarray(random.sample(perms,int(self.nwalkers/2))).T
+                directions = self.mu * (self.X[pairs[0]]-self.X[pairs[1]]) * gamma
 
+                mask = np.full(int(self.nwalkers/2),True)
 
-                zs = self.Z[active] - np.random.exponential(size=int(self.nwalkers/2))
-
+                Zs = self.Z[active] - np.random.exponential(size=int(self.nwalkers/2))
                 Ls = - np.random.uniform(0.0,1.0,size=int(self.nwalkers/2))
                 Rs = Ls + 1.0
 
-                while True:
+                x1s = np.empty(int(self.nwalkers/2))
+                logp1s = np.empty(int(self.nwalkers/2))
+                new_vectors = np.empty((int(self.nwalkers/2),self.ndim))
 
-                    x1s = Ls + np.random.uniform(0.0,1.0,size=int(self.nwalkers/2)) * (Rs - Ls)
-                    new_vectors = self.direction * x1s + self.X
-                    logp1s = np.asarray(list(map(self.logp,new_vectors)))
-                    
-                    if (z < logp1):
-                        break
-                    if (x1 < 0.0):
-                        L = x1
-                    elif (x1 > 0.0):
-                        R = x1
+                indeces = np.arange(int(self.nwalkers/2))
 
-                #if not self.parallel:
-                #    results = list(map(self._slice1d, active_i))
-                #else:
-                #    with Pool(self.ncores) as pool:
-                #        results = list(pool.map(self._slice1d, active_i))
+                while len(mask[mask])>0:
 
-                #Xinit = np.copy(self.X)
-                #for result in results:
-                #    k, w_k, x1, logp1, n = result
-                #    self.X[w_k] = x1 * self.directions[k] + Xinit[w_k]
-                #    self.Z[w_k] = logp1
-                #    self.neval += n
+                    x1s[mask] = Ls[mask] + np.random.uniform(0.0,1.0,size=len(mask[mask])) * (Rs[mask] - Ls[mask])
+
+                    new_vectors[mask] = directions[mask] * x1s[mask][:,np.newaxis] + self.X[active][mask]
+
+                    logp1s[mask] = np.asarray(list(distribute(self.logp,new_vectors[mask])))
+
+                    self.neval += len(mask[mask])
+
+                    for j in indeces[mask]:
+                        if Zs[j] < logp1s[j]:
+                            mask[j] = False
+                        if x1s[j] < 0.0:
+                            Ls[j] = x1s[j]
+                        elif x1s[j] > 0.0:
+                            Rs[j] = x1s[j]
+
+                self.X[active] = new_vectors
+                self.Z[active] = logp1s
 
             if (i+1) % self.thin == 0:
                 self.samples.save(self.X)
@@ -188,42 +172,6 @@ class sampler:
         Reset the state of the sampler. Delete any samples stored in memory.
         """
         self.samples = samples(self.ndim, self.nwalkers)
-
-
-
-    def _slice1d(self, k_w):
-        '''
-        Samples the next point along the chosen direction.
-
-        Args:
-            k_w (int,int): index and label of walker.
-
-        Returns:
-            (list) : [k, w_k, x1, logp1, n]
-        '''
-
-        k, w_k = k_w
-        x_init = np.copy(self.X[w_k])
-        direction = self.directions[k]
-
-        z = self.Z[w_k] - np.random.exponential()
-
-        L = - np.random.uniform(0.0,1.0)
-        R = L + 1.0
-
-        n = 0
-        while True:
-            n += 1
-            x1 = L + np.random.uniform(0.0,1.0) * (R - L)
-            logp1 = self.logp(direction * x1 + x_init)
-            if (z < logp1):
-                break
-            if (x1 < 0.0):
-                L = x1
-            elif (x1 > 0.0):
-                R = x1
-
-        return [k, w_k, x1, logp1, n]
 
 
     @property
@@ -309,8 +257,6 @@ class sampler:
         logging.info('Effective Sample Size: ' + str(round(self.ess,2)))
         logging.info('Number of Log Probability Evaluations: ' + str(self.neval))
         logging.info('Effective Samples per Log Probability Evaluation: ' + str(round(self.efficiency,6)))
-        if self.parallel:
-            logging.info('Number of CPUs: ' + str(self.ncores))
         if self.thin > 1:
             logging.info('Thinning rate: ' + str(self.thin))
 
