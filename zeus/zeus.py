@@ -33,6 +33,7 @@ class sampler:
                  ndim,
                  args=None,
                  kwargs=None,
+                 maxsteps=100,
                  jump=0.1,
                  mu=3.7,
                  pool=None,
@@ -63,6 +64,7 @@ class sampler:
             raise ValueError("Please provide jump probability in the range [0,1].")
 
         self.mu = mu * np.sqrt(2) / np.sqrt(self.ndim)
+        self.maxsteps = maxsteps
         self.pool = pool
         self.samples = samples(self.ndim, self.nwalkers)
 
@@ -122,6 +124,7 @@ class sampler:
 
             # Loop over two sets
             for ensembles in sets:
+                indeces = np.arange(int(self.nwalkers/2))
                 # Define active-inactive ensembles
                 active, inactive = ensembles
 
@@ -137,12 +140,43 @@ class sampler:
                 L = - np.random.uniform(0.0,1.0,size=int(self.nwalkers/2))
                 R = L + 1.0
 
+                # Parallel stepping-out
+                J = np.floor(self.maxsteps * np.random.uniform(0.0,1.0,size=int(self.nwalkers/2)))
+                K = (self.maxsteps - 1) - J
+
+                mask_J = np.full(int(self.nwalkers/2),True)
+                Z_L = np.empty(int(self.nwalkers/2))
+                X_L = np.empty((int(self.nwalkers/2),self.ndim))
+                while len(mask_J[mask_J])>0:
+                    X_L[mask_J] = directions[mask_J] * L[mask_J][:,np.newaxis] + X[active][mask_J]
+                    Z_L[mask_J] = np.asarray(list(distribute(self.logprob,X_L[mask_J])))
+                    for j in indeces[mask_J]:
+                        if J[j] > 0.0 and z0 < Z_L[j]:
+                            L[j] = L[j] - 1.0
+                            J[j] = J[j] - 1
+                        else:
+                            mask_J[j] = False
+
+                mask_K = np.full(int(self.nwalkers/2),True)
+                Z_R = np.empty(int(self.nwalkers/2))
+                X_R = np.empty((int(self.nwalkers/2),self.ndim))
+                while len(mask_K[mask_K])>0:
+                    X_R[mask_K] = directions[mask_K] * R[mask_K][:,np.newaxis] + X[active][mask_K]
+                    Z_R[mask_K] = np.asarray(list(distribute(self.logprob,X_R[mask_K])))
+                    for j in indeces[mask_K]:
+                        if K[j] > 0.0 and z0 < Z_R[j]:
+                            R[j] = R[j] + 1.0
+                            K[j] = K[j] - 1
+                        else:
+                            mask_K[j] = False
+
+
                 # Initialise slice quantities
                 Widths = np.empty(int(self.nwalkers/2))
                 Z_prime = np.empty(int(self.nwalkers/2))
                 X_prime = np.empty((int(self.nwalkers/2),self.ndim))
                 mask = np.full(int(self.nwalkers/2),True)
-                indeces = np.arange(int(self.nwalkers/2))
+
 
                 # Set number of logp calls to 0
                 ncall = 0
