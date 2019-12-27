@@ -62,6 +62,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Cookbook</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#mcmc-sampling-recipes">MCMC Sampling recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#parallelisation-recipes">Parallelisation recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#saving-progress-recipes">Saving Progress recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#autocorrelation-analysis-recipes">Autocorrelation Analysis recipes</a></li>
 </ul>
 </li>
@@ -74,7 +75,6 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api.html#zeus-sampler-module">zeus.sampler module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#zeus-autocorrtime-function">zeus.autocorrtime function</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/normal_distribution.html">Sampling from a multivariate Normal distribution</a></li>
@@ -94,6 +94,7 @@
 <li><a class="reference internal" href="#">Cookbook</a><ul>
 <li><a class="reference internal" href="#mcmc-sampling-recipes">MCMC Sampling recipes</a></li>
 <li><a class="reference internal" href="#parallelisation-recipes">Parallelisation recipes</a></li>
+<li><a class="reference internal" href="#saving-progress-recipes">Saving Progress recipes</a></li>
 <li><a class="reference internal" href="#autocorrelation-analysis-recipes">Autocorrelation Analysis recipes</a></li>
 </ul>
 </li>
@@ -151,7 +152,22 @@ realistic scenarios.</p>
 <h2>Parallelisation recipes<a class="headerlink" href="#parallelisation-recipes" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><dl class="simple">
-<dt>Parallel walkers</dt><dd><p>Use many CPUs to sample from an expensive-to-evaluate probability distribution even faster.</p>
+<dt>Multiprocessing</dt><dd><p>Use many CPUs to sample from an expensive-to-evaluate probability distribution even faster.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>MPI</dt><dd><p>Distribute calculation to huge computer clusters.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="saving-progress-recipes">
+<h2>Saving Progress recipes<a class="headerlink" href="#saving-progress-recipes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Save progress using h5py.</dt><dd><p>Save chains into a file.</p>
 </dd>
 </dl>
 </li>
@@ -184,7 +200,7 @@ size of the chain.</p>
     </p>
     <p>
         &copy; Copyright 2019, Minas Karamanis.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.2.<br/>
     </p>
   </div>
 </footer>

@@ -20,8 +20,20 @@ MCMC Sampling recipes
 Parallelisation recipes
 =======================
 
-- Parallel walkers
+- Multiprocessing
     Use many CPUs to sample from an expensive-to-evaluate probability distribution even faster.
+
+- MPI
+    Distribute calculation to huge computer clusters.
+
+
+
+Saving Progress recipes
+=======================
+
+- Save progress using h5py.
+    Save chains into a file.
+
 
 
 Autocorrelation Analysis recipes

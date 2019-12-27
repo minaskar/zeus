@@ -131,12 +131,12 @@
 <h2>zeus.sampler module<a class="headerlink" href="#zeus-sampler-module" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="zeus.sampler">
-<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">sampler</code><span class="sig-paren">(</span><em class="sig-param">logp</em>, <em class="sig-param">nwalkers</em>, <em class="sig-param">ndim</em>, <em class="sig-param">args=None</em>, <em class="sig-param">kwargs=None</em>, <em class="sig-param">jump=0.1</em>, <em class="sig-param">mu=3.7</em>, <em class="sig-param">parallel=False</em>, <em class="sig-param">ncores=None</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler" title="Permalink to this definition">¶</a></dt>
-<dd><p>An ensemble slice MCMC sampler.</p>
+<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">sampler</code><span class="sig-paren">(</span><em class="sig-param">logprob</em>, <em class="sig-param">nwalkers</em>, <em class="sig-param">ndim</em>, <em class="sig-param">args=None</em>, <em class="sig-param">kwargs=None</em>, <em class="sig-param">jump=0.1</em>, <em class="sig-param">mu=3.7</em>, <em class="sig-param">pool=None</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Differential Slice MCMC sampler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>logp</strong> (<em>callable</em>) – A python function that takes a vector in the
+<li><p><strong>logprob</strong> (<em>callable</em>) – A python function that takes a vector in the
 parameter space as input and returns the natural logarithm of the
 unnormalised posterior probability at that position.</p></li>
 <li><p><strong>nwalkers</strong> (<em>int</em>) – The number of walkers in the ensemble.</p></li>
@@ -144,8 +144,8 @@ unnormalised posterior probability at that position.</p></li>
 <li><p><strong>args</strong> (<em>list</em>) – Extra arguments to be passed into the logp.</p></li>
 <li><p><strong>kwargs</strong> (<em>list</em>) – Extra arguments to be passed into the logp.</p></li>
 <li><p><strong>jump</strong> (<em>float</em>) – Probability of random jump (Default is 0.1). It has to be &lt;1 and &gt;0.</p></li>
-<li><p><strong>mu</strong> (<em>float</em>) – This is the mu coefficient (default value is 3.44). Numerical tests verify this as the optimal choice.</p></li>
-<li><p><strong>parallel</strong> (<em>bool</em>) – If True (default is False), use only 1 CPU, otherwise distribute to multiple.</p></li>
+<li><p><strong>mu</strong> (<em>float</em>) – This is the mu coefficient (default value is 3.7). Numerical tests verify this as the optimal choice.</p></li>
+<li><p><strong>pool</strong> (<em>bool</em>) – External pool of workers to distribute workload to multiple CPUs (default is None).</p></li>
 <li><p><strong>ncores</strong> (<em>bool</em>) – The maximum number of cores to use if parallel=True (default is None, meaning all of them).</p></li>
 <li><p><strong>verbose</strong> (<em>bool</em>) – If True (default) print log statements.</p></li>
 </ul>
@@ -213,18 +213,20 @@ unnormalised posterior probability at that position.</p></li>
 </dd></dl>
 
 <dl class="method">
-<dt id="zeus.sampler.last">
-<em class="property">property </em><code class="sig-name descname">last</code><a class="headerlink" href="#zeus.sampler.last" title="Permalink to this definition">¶</a></dt>
-<dd><p>Last position of the walkers.</p>
+<dt id="zeus.sampler.ncall">
+<em class="property">property </em><code class="sig-name descname">ncall</code><a class="headerlink" href="#zeus.sampler.ncall" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of Log Prob calls.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The last position of the walkers.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>(array)</p>
+<dd class="field-odd"><p>ncall</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="method">
+<dt id="zeus.sampler.one_sigma">
+<em class="property">property </em><code class="sig-name descname">one_sigma</code><a class="headerlink" href="#zeus.sampler.one_sigma" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="zeus.sampler.reset">
@@ -272,7 +274,7 @@ unnormalised posterior probability at that position.</p></li>
     </p>
     <p>
         &copy; Copyright 2019, Minas Karamanis.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.2.<br/>
     </p>
   </div>
 </footer>

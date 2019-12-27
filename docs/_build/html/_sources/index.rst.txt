@@ -2,7 +2,7 @@
 
 .. figure:: ./../logo.png
 
-**zeus is a pure-Python implementation of the ensemble slice sampling method.**
+**zeus is a pure-Python implementation of the Differential Slice Sampling method.**
 
 Doing *Bayesian Inference* with **zeus** is both simple and fast, since there is no need to hand-tune any
 hyperparameters or provide a proposal distribution. The algorithm exhibits excellent performance in terms
@@ -29,10 +29,11 @@ For instance, if you wanted to draw samples from a 10-dimensional Gaussian, you 
 
     nsteps, nwalkers, ndim = 1000, 100, 10
     ivar = 1.0 / np.random.rand(ndim)
-    start = np.random.rand(ndim)
+    start = np.random.randn(nwalkers, ndim)
 
     sampler = zeus.sampler(logp, nwalkers, ndim, args=[ivar])
     sampler.run(start, nsteps)
+    print(sampler.chain)
 
 
 Installation
@@ -53,7 +54,7 @@ Getting Started
 Licence
 =======
 
-Copyright 2019-2019 Minas Karamanis and contributors.
+Copyright 2019 Minas Karamanis and contributors.
 
 zeus is free software made available under the GPL-3.0 License.
 

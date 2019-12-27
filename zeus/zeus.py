@@ -83,12 +83,10 @@ class sampler:
         '''
         # Initialise ensemble of walkers
         logging.info('Initialising ensemble of %d walkers...', self.nwalkers)
-
         if np.shape(start) != (self.nwalkers, self.ndim):
             raise ValueError("Incompatible input dimensions! Please provide array of shape (nwalkers, ndim) as the starting position.")
         X = np.copy(start)
         Z = np.asarray(list(map(self.logprob,X)))
-
         batch = list(np.arange(self.nwalkers))
 
         # Extend saving space
@@ -186,9 +184,6 @@ class sampler:
         # Close progress bar
         if progress:
             t.close()
-
-        # Log success message
-        logging.info('Sampling Complete!')
 
 
     def reset(self):
