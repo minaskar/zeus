@@ -151,34 +151,35 @@ class sampler:
                 Z_L = np.empty(int(self.nwalkers/2))
                 X_L = np.empty((int(self.nwalkers/2),self.ndim))
                 while len(mask_J[mask_J])>0:
+                    for j in indeces[mask_J]:
+                        if J[j] < 1:
+                            mask_J[j] = False
                     X_L[mask_J] = directions[mask_J] * L[mask_J][:,np.newaxis] + X[active][mask_J]
                     Z_L[mask_J] = np.asarray(list(distribute(self.logprob,X_L[mask_J])))
                     for j in indeces[mask_J]:
-                        if J[j] > 0.0:
-                            if Z0[j] < Z_L[j]:
-                                L[j] = L[j] - 1.0
-                                J[j] = J[j] - 1
-                            else:
-                                mask_J[j] = False
-                                ncall += 1
+                        ncall += 1
+                        if Z0[j] < Z_L[j]:
+                            L[j] = L[j] - 1.0
+                            J[j] = J[j] - 1
                         else:
                             mask_J[j] = False
+
 
                 # Right stepping-out
                 mask_K = np.full(int(self.nwalkers/2),True)
                 Z_R = np.empty(int(self.nwalkers/2))
                 X_R = np.empty((int(self.nwalkers/2),self.ndim))
                 while len(mask_K[mask_K])>0:
+                    for j in indeces[mask_K]:
+                        if K[j] < 1:
+                            mask_K[j] = False
                     X_R[mask_K] = directions[mask_K] * R[mask_K][:,np.newaxis] + X[active][mask_K]
                     Z_R[mask_K] = np.asarray(list(distribute(self.logprob,X_R[mask_K])))
                     for j in indeces[mask_K]:
-                        if K[j] > 0.0:
-                            if Z0[j] < Z_R[j]:
-                                R[j] = R[j] + 1.0
-                                K[j] = K[j] - 1
-                            else:
-                                mask_K[j] = False
-                                ncall += 1
+                        ncall += 1
+                        if Z0[j] < Z_R[j]:
+                            R[j] = R[j] + 1.0
+                            K[j] = K[j] - 1
                         else:
                             mask_K[j] = False
 
