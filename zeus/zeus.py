@@ -21,10 +21,11 @@ class sampler:
         ndim (int): The number of dimensions/parameters.
         args (list): Extra arguments to be passed into the logp.
         kwargs (list): Extra arguments to be passed into the logp.
+        maxsteps (int): Number of maximum stepping-out steps (Default is 10^4).
         jump (float): Probability of random jump (Default is 0.1). It has to be <1 and >0.
-        mu (float): This is the mu coefficient (default value is 3.7). Numerical tests verify this as the optimal choice.
+        mu (float): Scale factor (Default value is 10), this will be tuned if tune=True.
+        tune (bool): Tune the scale factor to optimize performance (Default is True.)
         pool (bool): External pool of workers to distribute workload to multiple CPUs (default is None).
-        ncores (bool): The maximum number of cores to use if parallel=True (default is None, meaning all of them).
         verbose (bool): If True (default) print log statements.
     """
     def __init__(self,
@@ -33,10 +34,10 @@ class sampler:
                  ndim,
                  args=None,
                  kwargs=None,
-                 maxsteps=100,
+                 maxsteps=10000,
                  jump=0.1,
-                 mu=3.7,
-                 tune=False,
+                 mu=1.0,
+                 tune=True,
                  pool=None,
                  verbose=True):
 
@@ -64,13 +65,14 @@ class sampler:
         if self.jump < 0.0 or self.jump > 1.0:
             raise ValueError("Please provide jump probability in the range [0,1].")
 
-        self.mu = mu * np.sqrt(2) / np.sqrt(self.ndim)
+        self.mu = mu #* np.sqrt(2) / np.sqrt(self.ndim)
         self.tune = tune
         self.maxsteps = maxsteps
         self.pool = pool
         self.samples = samples(self.ndim, self.nwalkers)
 
         self.mus = []
+        self.nconverge = 0
 
 
     def run(self,
@@ -116,6 +118,7 @@ class sampler:
         # Main Loop
         for i in range(self.nsteps):
 
+            # Initialise number of expansions & contractions
             nexp = 0
             ncon = 0
 
@@ -152,12 +155,14 @@ class sampler:
                 J = np.floor(self.maxsteps * np.random.uniform(0.0,1.0,size=int(self.nwalkers/2)))
                 K = (self.maxsteps - 1) - J
 
+                # Initialise number of Log prob calls
                 ncall = 0
 
                 # Left stepping-out
                 mask_J = np.full(int(self.nwalkers/2),True)
                 Z_L = np.empty(int(self.nwalkers/2))
                 X_L = np.empty((int(self.nwalkers/2),self.ndim))
+                
                 while len(mask_J[mask_J])>0:
                     for j in indeces[mask_J]:
                         if J[j] < 1:
@@ -178,6 +183,7 @@ class sampler:
                 mask_K = np.full(int(self.nwalkers/2),True)
                 Z_R = np.empty(int(self.nwalkers/2))
                 X_R = np.empty((int(self.nwalkers/2),self.ndim))
+
                 while len(mask_K[mask_K])>0:
                     for j in indeces[mask_K]:
                         if K[j] < 1:
@@ -194,7 +200,7 @@ class sampler:
                             mask_K[j] = False
 
 
-                # Initialise slice quantities
+                # Shrinking procedure
                 Widths = np.empty(int(self.nwalkers/2))
                 Z_prime = np.empty(int(self.nwalkers/2))
                 X_prime = np.empty((int(self.nwalkers/2),self.ndim))
@@ -228,10 +234,14 @@ class sampler:
                 Z[active] = Z_prime
                 self.neval[i] += ncall
 
-
+            # Tune scale factor using Robbins-Monro optimization
             if self.tune:
-                self.mu = self.mu * 2.0 * nexp / (nexp + ncon)
+                self.mu *= 2.0 * nexp / (nexp + ncon)
                 self.mus.append(self.mu)
+                if np.abs(nexp / (nexp + ncon) - 0.5) < 0.05:
+                    self.nconverge += 1
+                if self.nconverge > 5:
+                    self.tune = False
 
             # Save samples
             if (i+1) % self.thin == 0:
