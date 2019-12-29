@@ -36,6 +36,7 @@ class sampler:
                  maxsteps=100,
                  jump=0.1,
                  mu=3.7,
+                 tune=False,
                  pool=None,
                  verbose=True):
 
@@ -64,9 +65,12 @@ class sampler:
             raise ValueError("Please provide jump probability in the range [0,1].")
 
         self.mu = mu * np.sqrt(2) / np.sqrt(self.ndim)
+        self.tune = tune
         self.maxsteps = maxsteps
         self.pool = pool
         self.samples = samples(self.ndim, self.nwalkers)
+
+        self.mus = []
 
 
     def run(self,
@@ -111,6 +115,10 @@ class sampler:
 
         # Main Loop
         for i in range(self.nsteps):
+
+            nexp = 0
+            ncon = 0
+
             # Random jump
             gamma = 1.0
             if np.random.uniform(0.0,1.0) > 1.0 - self.jump:
@@ -158,6 +166,7 @@ class sampler:
                     Z_L[mask_J] = np.asarray(list(distribute(self.logprob,X_L[mask_J])))
                     for j in indeces[mask_J]:
                         ncall += 1
+                        nexp += 1
                         if Z0[j] < Z_L[j]:
                             L[j] = L[j] - 1.0
                             J[j] = J[j] - 1
@@ -177,6 +186,7 @@ class sampler:
                     Z_R[mask_K] = np.asarray(list(distribute(self.logprob,X_R[mask_K])))
                     for j in indeces[mask_K]:
                         ncall += 1
+                        nexp += 1
                         if Z0[j] < Z_R[j]:
                             R[j] = R[j] + 1.0
                             K[j] = K[j] - 1
@@ -202,6 +212,7 @@ class sampler:
 
                     # Count LogProb calls
                     ncall += len(mask[mask])
+                    ncon += len(mask[mask])
 
                     # Shrink slices
                     for j in indeces[mask]:
@@ -216,6 +227,11 @@ class sampler:
                 X[active] = X_prime
                 Z[active] = Z_prime
                 self.neval[i] += ncall
+
+
+            if self.tune:
+                self.mu = self.mu * 2.0 * nexp / (nexp + ncon)
+                self.mus.append[self.mu]
 
             # Save samples
             if (i+1) % self.thin == 0:
