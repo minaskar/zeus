@@ -231,7 +231,7 @@ class sampler:
 
             if self.tune:
                 self.mu = self.mu * 2.0 * nexp / (nexp + ncon)
-                self.mus.append[self.mu]
+                self.mus.append(self.mu)
 
             # Save samples
             if (i+1) % self.thin == 0:
