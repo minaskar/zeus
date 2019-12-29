@@ -124,7 +124,7 @@ class sampler:
 
             # Random jump
             gamma = 1.0
-            if np.random.uniform(0.0,1.0) > 1.0 - self.jump:
+            if np.random.uniform(0.0,1.0) > 1.0 - self.jump and (self.tune==False):
                 gamma = 2.0 / self.mu
 
             # Shuffle ensemble
@@ -162,7 +162,7 @@ class sampler:
                 mask_J = np.full(int(self.nwalkers/2),True)
                 Z_L = np.empty(int(self.nwalkers/2))
                 X_L = np.empty((int(self.nwalkers/2),self.ndim))
-                
+
                 while len(mask_J[mask_J])>0:
                     for j in indeces[mask_J]:
                         if J[j] < 1:
