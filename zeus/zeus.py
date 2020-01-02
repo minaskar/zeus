@@ -237,11 +237,15 @@ class sampler:
             # Tune scale factor using Robbins-Monro optimization
             if self.tune:
                 self.mu *= 2.0 * nexp / (nexp + ncon)
+                print(nexp/(nexp+ncon))
                 self.mus.append(self.mu)
                 if np.abs(nexp / (nexp + ncon) - 0.5) < 0.05:
                     self.nconverge += 1
                 if self.nconverge > 5:
                     self.tune = False
+
+
+
 
             # Save samples
             if (i+1) % self.thin == 0:
