@@ -38,6 +38,7 @@ class sampler:
                  jump=0.1,
                  mu=1.0,
                  tune=True,
+                 walk=False,
                  pool=None,
                  verbose=True):
 
@@ -70,6 +71,8 @@ class sampler:
         self.maxsteps = maxsteps
         self.pool = pool
         self.samples = samples(self.ndim, self.nwalkers)
+
+        self.walk = walk
 
         self.mus = []
         self.nconverge = 0
@@ -139,10 +142,15 @@ class sampler:
                 # Define active-inactive ensembles
                 active, inactive = ensembles
 
-                # Compute Random Pair direction vectors
-                perms = list(permutations(inactive,2))
-                pairs = np.asarray(random.sample(perms,int(self.nwalkers/2))).T
-                directions = self.mu * (X[pairs[0]]-X[pairs[1]]) * gamma
+                if not self.walk:
+                    # Compute Random Pair direction vectors
+                    perms = list(permutations(inactive,2))
+                    pairs = np.asarray(random.sample(perms,int(self.nwalkers/2))).T
+                    directions = self.mu * (X[pairs[0]]-X[pairs[1]]) * gamma
+                else:
+                    mean = np.mean(X[inactive], axis=0)
+                    cov = np.cov(X[inactive], rowvar=False)
+                    directions = self.mu * np.random.multivariate_normal(mean,cov,size=int(self.nwalkers/2))
 
                 # Get Z0 = LogP(x0)
                 Z0 = Z[active] - np.random.exponential(size=int(self.nwalkers/2))
@@ -237,7 +245,7 @@ class sampler:
             # Tune scale factor using Robbins-Monro optimization
             if self.tune:
                 self.mu *= 2.0 * nexp / (nexp + ncon)
-                print(nexp/(nexp+ncon))
+                #print(nexp/(nexp+ncon))
                 self.mus.append(self.mu)
                 if np.abs(nexp / (nexp + ncon) - 0.5) < 0.05:
                     self.nconverge += 1
