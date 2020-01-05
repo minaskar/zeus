@@ -1,6 +1,6 @@
 ![logo](logo.png)
 
-**zeus is a pure-Python implementation of the *differential slice sampling* method.**
+**zeus is a pure-Python implementation of the *Ensemble Slice Sampling* method.**
 
  Doing *Bayesian Inference* with **zeus** is both simple and fast, since there is no need to hand-tune any hyperparameters or provide a proposal distribution. The algorithm exhibits excellent performance in terms of autocorrelation time and convergence rate. **zeus** works out-of-the-box and can scale to multiple CPUs without any extra effort.
 
