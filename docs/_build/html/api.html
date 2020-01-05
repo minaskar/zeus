@@ -62,6 +62,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="cookbook.html#mcmc-sampling-recipes">MCMC Sampling recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cookbook.html#parallelisation-recipes">Parallelisation recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cookbook.html#saving-progress-recipes">Saving Progress recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cookbook.html#autocorrelation-analysis-recipes">Autocorrelation Analysis recipes</a></li>
 </ul>
 </li>
@@ -131,7 +132,7 @@
 <h2>zeus.sampler module<a class="headerlink" href="#zeus-sampler-module" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="zeus.sampler">
-<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">sampler</code><span class="sig-paren">(</span><em class="sig-param">logprob</em>, <em class="sig-param">nwalkers</em>, <em class="sig-param">ndim</em>, <em class="sig-param">args=None</em>, <em class="sig-param">kwargs=None</em>, <em class="sig-param">jump=0.1</em>, <em class="sig-param">mu=3.7</em>, <em class="sig-param">pool=None</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">sampler</code><span class="sig-paren">(</span><em class="sig-param">logprob</em>, <em class="sig-param">nwalkers</em>, <em class="sig-param">ndim</em>, <em class="sig-param">args=None</em>, <em class="sig-param">kwargs=None</em>, <em class="sig-param">proposal={'differential': 1.0</em>, <em class="sig-param">'gaussian': 0.0</em>, <em class="sig-param">'jump': 0.0</em>, <em class="sig-param">'random': 0.0}</em>, <em class="sig-param">tune=True</em>, <em class="sig-param">tolerance=0.05</em>, <em class="sig-param">patience=5</em>, <em class="sig-param">maxsteps=1000</em>, <em class="sig-param">mu=1.0</em>, <em class="sig-param">pool=None</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler" title="Permalink to this definition">¶</a></dt>
 <dd><p>A Differential Slice MCMC sampler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -143,10 +144,13 @@ unnormalised posterior probability at that position.</p></li>
 <li><p><strong>ndim</strong> (<em>int</em>) – The number of dimensions/parameters.</p></li>
 <li><p><strong>args</strong> (<em>list</em>) – Extra arguments to be passed into the logp.</p></li>
 <li><p><strong>kwargs</strong> (<em>list</em>) – Extra arguments to be passed into the logp.</p></li>
-<li><p><strong>jump</strong> (<em>float</em>) – Probability of random jump (Default is 0.1). It has to be &lt;1 and &gt;0.</p></li>
-<li><p><strong>mu</strong> (<em>float</em>) – This is the mu coefficient (default value is 3.7). Numerical tests verify this as the optimal choice.</p></li>
+<li><p><strong>proposal</strong> (<em>dict</em>) – Dictionary containing the probability of each proposal (Default is {‘differential’ : 1.0, ‘gaussian’ : 0.0, ‘jump’ : 0.0, ‘random’ : 0.0}).</p></li>
+<li><p><strong>tune</strong> (<em>bool</em>) – Tune the scale factor to optimize performance (Default is True.)</p></li>
+<li><p><strong>tolerance</strong> (<em>float</em>) – Tuning optimization tolerance (Default is 0.05).</p></li>
+<li><p><strong>patience</strong> (<em>int</em>) – Number of tuning steps to wait to make sure that tuning is done (Default is 5).</p></li>
+<li><p><strong>maxsteps</strong> (<em>int</em>) – Number of maximum stepping-out steps (Default is 10^3).</p></li>
+<li><p><strong>mu</strong> (<em>float</em>) – Scale factor (Default value is 1.0), this will be tuned if tune=True.</p></li>
 <li><p><strong>pool</strong> (<em>bool</em>) – External pool of workers to distribute workload to multiple CPUs (default is None).</p></li>
-<li><p><strong>ncores</strong> (<em>bool</em>) – The maximum number of cores to use if parallel=True (default is None, meaning all of them).</p></li>
 <li><p><strong>verbose</strong> (<em>bool</em>) – If True (default) print log statements.</p></li>
 </ul>
 </dd>
@@ -224,11 +228,6 @@ unnormalised posterior probability at that position.</p></li>
 </dd></dl>
 
 <dl class="method">
-<dt id="zeus.sampler.one_sigma">
-<em class="property">property </em><code class="sig-name descname">one_sigma</code><a class="headerlink" href="#zeus.sampler.one_sigma" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="zeus.sampler.reset">
 <code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler.reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reset the state of the sampler. Delete any samples stored in memory.</p>
@@ -246,6 +245,17 @@ unnormalised posterior probability at that position.</p></li>
 <li><p><strong>thin</strong> (<em>float</em>) – Thin the chain by this number (default is 1 no thinning).</p></li>
 <li><p><strong>progress</strong> (<em>bool</em>) – If True (default), show progress bar (requires tqdm).</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="zeus.sampler.scale_factor">
+<em class="property">property </em><code class="sig-name descname">scale_factor</code><a class="headerlink" href="#zeus.sampler.scale_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale factor values during tuning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>scale factor mu</p>
 </dd>
 </dl>
 </dd></dl>
@@ -274,7 +284,7 @@ unnormalised posterior probability at that position.</p></li>
     </p>
     <p>
         &copy; Copyright 2019, Minas Karamanis.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.2.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.0.<br/>
     </p>
   </div>
 </footer>

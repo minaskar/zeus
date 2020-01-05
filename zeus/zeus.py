@@ -67,6 +67,7 @@ class sampler:
         # Set up Log Probability
         self.logprob = _FunctionWrapper(logprob, args, kwargs)
 
+        # Set up Slice parameters
         self.mu = mu
         self.mus = []
         self.tune = tune
@@ -74,7 +75,10 @@ class sampler:
         self.patience = patience
         self.tolerance = tolerance
 
+        # Set up pool of workers
         self.pool = pool
+
+        # Initialise Saving space for samples
         self.samples = samples(self.ndim, self.nwalkers)
 
         # Set up Proposals
@@ -164,7 +168,6 @@ class sampler:
 
                 # Compute directions
                 if move == 'differential':
-                    # Compute Random Pair direction vectors
                     perms = list(permutations(inactive,2))
                     pairs = np.asarray(random.sample(perms,int(self.nwalkers/2))).T
                     directions = self.mu * (X[pairs[0]]-X[pairs[1]])
@@ -214,7 +217,6 @@ class sampler:
                             nexp += 1
                         else:
                             mask_J[j] = False
-
 
                 # Right stepping-out
                 mask_K = np.full(int(self.nwalkers/2),True)

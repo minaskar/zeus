@@ -128,7 +128,7 @@
   <div class="figure align-default">
 <img alt="_images/logo.png" src="_images/logo.png" />
 </div>
-<p><strong>zeus is a pure-Python implementation of the Differential Slice Sampling method.</strong></p>
+<p><strong>zeus is a pure-Python implementation of the Ensemble Slice Sampling method.</strong></p>
 <p>Doing <em>Bayesian Inference</em> with <strong>zeus</strong> is both simple and fast, since there is no need to hand-tune any
 hyperparameters or provide a proposal distribution. The algorithm exhibits excellent performance in terms
 of autocorrelation time and convergence rate. <strong>zeus</strong> works out-of-the-box and can scale to multiple CPUs
@@ -142,14 +142,14 @@ without any extra effort.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">zeus</span>
 
-<span class="k">def</span> <span class="nf">logp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ivar</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">logprob</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ivar</span><span class="p">):</span>
     <span class="k">return</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ivar</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mf">2.0</span><span class="p">)</span>
 
 <span class="n">nsteps</span><span class="p">,</span> <span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span>
 <span class="n">ivar</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
 <span class="n">start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
 
-<span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="n">logp</span><span class="p">,</span> <span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">ivar</span><span class="p">])</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="n">logprob</span><span class="p">,</span> <span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">ivar</span><span class="p">])</span>
 <span class="n">sampler</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">sampler</span><span class="o">.</span><span class="n">chain</span><span class="p">)</span>
 </pre></div>
@@ -191,7 +191,7 @@ without any extra effort.</p>
     </p>
     <p>
         &copy; Copyright 2019, Minas Karamanis.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.2.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.0.<br/>
     </p>
   </div>
 </footer>
