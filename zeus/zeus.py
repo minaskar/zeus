@@ -21,10 +21,12 @@ class sampler:
         ndim (int): The number of dimensions/parameters.
         args (list): Extra arguments to be passed into the logp.
         kwargs (list): Extra arguments to be passed into the logp.
-        maxsteps (int): Number of maximum stepping-out steps (Default is 10^4).
-        jump (float): Probability of random jump (Default is 0.1). It has to be <1 and >0.
-        mu (float): Scale factor (Default value is 10), this will be tuned if tune=True.
+        proposal (dict): Dictionary containing the probability of each proposal (Default is {'differential' : 1.0, 'gaussian' : 0.0, 'jump' : 0.0, 'random' : 0.0}).
         tune (bool): Tune the scale factor to optimize performance (Default is True.)
+        tolerance (float): Tuning optimization tolerance (Default is 0.05).
+        patience (int): Number of tuning steps to wait to make sure that tuning is done (Default is 5).
+        maxsteps (int): Number of maximum stepping-out steps (Default is 10^3).
+        mu (float): Scale factor (Default value is 1.0), this will be tuned if tune=True.
         pool (bool): External pool of workers to distribute workload to multiple CPUs (default is None).
         verbose (bool): If True (default) print log statements.
     """
@@ -34,11 +36,12 @@ class sampler:
                  ndim,
                  args=None,
                  kwargs=None,
-                 maxsteps=10000,
-                 jump=0.1,
-                 mu=1.0,
+                 proposal={'differential' : 1.0, 'gaussian' : 0.0, 'jump' : 0.0, 'random' : 0.0},
                  tune=True,
-                 walk=False,
+                 tolerance=0.05,
+                 patience=5,
+                 maxsteps=1000,
+                 mu=1.0,
                  pool=None,
                  verbose=True):
 
@@ -53,6 +56,7 @@ class sampler:
         else:
             self.logger.setLevel(logging.WARNING)
 
+        # Set up walkers
         self.nwalkers = int(nwalkers)
         self.ndim = int(ndim)
         if self.nwalkers < 2 * self.ndim:
@@ -60,22 +64,33 @@ class sampler:
         elif self.nwalkers % 2 == 1:
             raise ValueError("Please provide an even number of walkers.")
 
+        # Set up Log Probability
         self.logprob = _FunctionWrapper(logprob, args, kwargs)
 
-        self.jump = jump
-        if self.jump < 0.0 or self.jump > 1.0:
-            raise ValueError("Please provide jump probability in the range [0,1].")
-
-        self.mu = mu #* np.sqrt(2) / np.sqrt(self.ndim)
+        self.mu = mu
+        self.mus = []
         self.tune = tune
         self.maxsteps = maxsteps
+        self.patience = patience
+        self.tolerance = tolerance
+
         self.pool = pool
         self.samples = samples(self.ndim, self.nwalkers)
 
-        self.walk = walk
+        # Set up Proposals
+        self.proposal = proposal
+        if ('differential' not in self.proposal) and ('gaussian' not in self.proposal) and ('jump' not in self.proposal) and ('random' not in self.proposal):
+            raise ValueError("Please provide at least one of the following proposals: differential, gaussian, jump, and random.")
+        total = 0.0
+        for key in self.proposal:
+            if (self.proposal[key] < 0.0) or (self.proposal[key] > 1.0):
+                raise ValueError("Please provide a dictionary with the probability of each proposal in the range [0,1].")
+            if key not in ['differential', 'gaussian', 'jump', 'random']:
+                raise ValueError("Proposal not recognised! Please provide a valid proposal (i.e. differential, gaussian, jump, or random).")
+            total += self.proposal[key]
+        if round(total,4) != 1.0:
+            raise ValueError("The total probability of all proposals must be equal to 1.0.")
 
-        self.mus = []
-        self.nconverge = 0
 
 
     def run(self,
@@ -114,6 +129,9 @@ class sampler:
         else:
             distribute = self.pool.map
 
+        # Define tuning count
+        ncount = 0
+
         # Initialise progress bar
         if progress:
             t = tqdm(total=nsteps, desc='Sampling progress : ')
@@ -125,10 +143,12 @@ class sampler:
             nexp = 0
             ncon = 0
 
-            # Random jump
-            gamma = 1.0
-            if np.random.uniform(0.0,1.0) > 1.0 - self.jump and (self.tune==False):
-                gamma = 2.0 / self.mu
+            # Choose proposal
+            if self.tune:
+                # During tuning use the most probable proposal
+                move = max(self.proposal, key=self.proposal.get)
+            else:
+                move = np.random.choice(list(self.proposal.keys()),p=list(self.proposal.values()))
 
             # Shuffle ensemble
             np.random.shuffle(batch)
@@ -142,15 +162,24 @@ class sampler:
                 # Define active-inactive ensembles
                 active, inactive = ensembles
 
-                if not self.walk:
+                # Compute directions
+                if move == 'differential':
                     # Compute Random Pair direction vectors
                     perms = list(permutations(inactive,2))
                     pairs = np.asarray(random.sample(perms,int(self.nwalkers/2))).T
-                    directions = self.mu * (X[pairs[0]]-X[pairs[1]]) * gamma
-                else:
+                    directions = self.mu * (X[pairs[0]]-X[pairs[1]])
+                elif move == 'gaussian':
                     mean = np.mean(X[inactive], axis=0)
                     cov = np.cov(X[inactive], rowvar=False)
                     directions = self.mu * np.random.multivariate_normal(mean,cov,size=int(self.nwalkers/2))
+                elif move == 'jump':
+                    perms = list(permutations(inactive,2))
+                    pairs = np.asarray(random.sample(perms,int(self.nwalkers/2))).T
+                    directions = 2.0 * (X[pairs[0]]-X[pairs[1]])
+                elif move == 'random':
+                    directions = np.random.normal(0.0,1.0,size=(int(self.nwalkers/2),self.ndim))
+                    directions /= np.linalg.norm(directions, axis=0)
+                    directions *= self.mu
 
                 # Get Z0 = LogP(x0)
                 Z0 = Z[active] - np.random.exponential(size=int(self.nwalkers/2))
@@ -179,10 +208,10 @@ class sampler:
                     Z_L[mask_J] = np.asarray(list(distribute(self.logprob,X_L[mask_J])))
                     for j in indeces[mask_J]:
                         ncall += 1
-                        nexp += 1
                         if Z0[j] < Z_L[j]:
                             L[j] = L[j] - 1.0
                             J[j] = J[j] - 1
+                            nexp += 1
                         else:
                             mask_J[j] = False
 
@@ -200,10 +229,10 @@ class sampler:
                     Z_R[mask_K] = np.asarray(list(distribute(self.logprob,X_R[mask_K])))
                     for j in indeces[mask_K]:
                         ncall += 1
-                        nexp += 1
                         if Z0[j] < Z_R[j]:
                             R[j] = R[j] + 1.0
                             K[j] = K[j] - 1
+                            nexp += 1
                         else:
                             mask_K[j] = False
 
@@ -226,7 +255,6 @@ class sampler:
 
                     # Count LogProb calls
                     ncall += len(mask[mask])
-                    ncon += len(mask[mask])
 
                     # Shrink slices
                     for j in indeces[mask]:
@@ -234,8 +262,10 @@ class sampler:
                             mask[j] = False
                         if Widths[j] < 0.0:
                             L[j] = Widths[j]
+                            ncon += 1
                         elif Widths[j] > 0.0:
                             R[j] = Widths[j]
+                            ncon += 1
 
                 # Update Positions
                 X[active] = X_prime
@@ -245,15 +275,11 @@ class sampler:
             # Tune scale factor using Robbins-Monro optimization
             if self.tune:
                 self.mu *= 2.0 * nexp / (nexp + ncon)
-                #print(nexp/(nexp+ncon))
                 self.mus.append(self.mu)
-                if np.abs(nexp / (nexp + ncon) - 0.5) < 0.05:
-                    self.nconverge += 1
-                if self.nconverge > 5:
+                if np.abs(nexp / (nexp + ncon) - 0.5) < self.tolerance:
+                    ncount += 1
+                if ncount > self.patience:
                     self.tune = False
-
-
-
 
             # Save samples
             if (i+1) % self.thin == 0:
@@ -345,6 +371,17 @@ class sampler:
 
 
     @property
+    def scale_factor(self):
+        """
+        Scale factor values during tuning.
+
+        Returns:
+            scale factor mu
+        """
+        return np.asarray(self.mus)
+
+
+    @property
     def summary(self):
         """
         Summary of the MCMC run.
@@ -354,15 +391,11 @@ class sampler:
         logging.info('Number of Generations: ' + str(self.samples.length))
         logging.info('Number of Parameters: ' + str(self.ndim))
         logging.info('Number of Walkers: ' + str(self.nwalkers))
+        logging.info('Number of Tuning Generations: ' + str(len(self.mus)))
+        logging.info('Scale Factor: ' + str(round(self.mu,6)))
         logging.info('Mean Integrated Autocorrelation Time: ' + str(round(np.mean(self.autocorr_time),2)))
         logging.info('Effective Sample Size: ' + str(round(self.ess,2)))
         logging.info('Number of Log Probability Evaluations: ' + str(self.ncall))
         logging.info('Effective Samples per Log Probability Evaluation: ' + str(round(self.efficiency,6)))
         if self.thin > 1:
             logging.info('Thinning rate: ' + str(self.thin))
-
-
-    @property
-    def one_sigma(self):
-        fits = np.percentile(self.flatten(burn=int(self.nsteps/2.0)), [16, 50, 84], axis=0)
-        return list(map(lambda v: (v[1], v[2]-v[1], v[1]-v[0]), zip(*fits)))

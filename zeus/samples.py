@@ -11,9 +11,6 @@ class samples:
     '''
 
     def __init__(self, ndim, nwalkers):
-        """
-        Initialise object to store the samples.
-        """
         self.initialised = False
         self.index = 0
         self.ndim = ndim
@@ -23,7 +20,6 @@ class samples:
     def extend(self, n):
         """
         Method to extend saving space.
-
         Args:
             n (int) : Extend space by n slots.
         """
