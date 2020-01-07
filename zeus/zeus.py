@@ -70,6 +70,7 @@ class sampler:
         # Set up Slice parameters
         self.mu = mu
         self.mus = []
+        self.mus.append(self.mu)
         self.tune = tune
         self.maxsteps = maxsteps
         self.patience = patience
