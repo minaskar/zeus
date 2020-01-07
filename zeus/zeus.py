@@ -276,6 +276,7 @@ class sampler:
 
             # Tune scale factor using Robbins-Monro optimization
             if self.tune:
+                nexp = max(1, nexp) # This prevents the optimizer from getting stuck
                 self.mu *= 2.0 * nexp / (nexp + ncon)
                 self.mus.append(self.mu)
                 if np.abs(nexp / (nexp + ncon) - 0.5) < self.tolerance:
