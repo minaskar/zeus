@@ -262,12 +262,13 @@ class sampler:
                     for j in indeces[mask]:
                         if Z0[j] < Z_prime[j]:
                             mask[j] = False
-                        if Widths[j] < 0.0:
-                            L[j] = Widths[j]
-                            ncon += 1
-                        elif Widths[j] > 0.0:
-                            R[j] = Widths[j]
-                            ncon += 1
+                        else:
+                            if Widths[j] < 0.0:
+                                L[j] = Widths[j]
+                                ncon += 1
+                            elif Widths[j] > 0.0:
+                                R[j] = Widths[j]
+                                ncon += 1
 
                 # Update Positions
                 X[active] = X_prime
