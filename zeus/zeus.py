@@ -1,5 +1,5 @@
 import numpy as np
-from itertools import permutations
+from itertools import permutations, combinations
 import random
 from tqdm import tqdm
 import logging
@@ -177,8 +177,15 @@ class sampler:
                     cov = np.cov(X[inactive], rowvar=False)
                     directions = self.mu * np.random.multivariate_normal(mean,cov,size=int(self.nwalkers/2))
                 elif move == 'jump':
-                    perms = list(permutations(inactive,2))
-                    pairs = np.asarray(random.sample(perms,int(self.nwalkers/2))).T
+                    #perms = list(permutations(inactive,2))
+                    #pairs = np.asarray(random.sample(perms,int(self.nwalkers/2))).T
+                    #directions = 2.0 * (X[pairs[0]]-X[pairs[1]])
+
+                    combs = np.asarray(list(combinations(inactive,2)))
+                    norms = np.linalg.norm(X[combs.T[0]]-X[combs.T[1]],axis=1)
+                    sorted_indeces = np.flip(np.argsort(norms))
+                    greatest_indeces = sorted_indeces[:int(self.nwalkers/2)]
+                    pairs = combs[greatest_indeces].T
                     directions = 2.0 * (X[pairs[0]]-X[pairs[1]])
                 elif move == 'random':
                     directions = np.random.normal(0.0,1.0,size=(int(self.nwalkers/2),self.ndim))
