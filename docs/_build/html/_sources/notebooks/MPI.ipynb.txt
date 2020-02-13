@@ -1,0 +1,105 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Parallelizing sampling using MPI"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "To take advantage of modern high performance computing facilities such as clusters with hundreds of CPUs we recommend to use MPI instead of multiprocessing.\n",
+    "\n",
+    "To do this we will use the MPIPoolExecutor of mpi4py.futures package.\n",
+    "\n",
+    "In order to run this example, copy and paste the following script into a file called 'test_mpi.py' and run the following command in the terminal:\n",
+    "\n",
+    "```\n",
+    "mpiexec -n 1 python3 test_mpi.py\n",
+    "```\n",
+    "\n",
+    "This will spawn 1 MPI process initially, and only add more when actually needed. Unfortunately MPI is not compatible with Jupyter notebooks."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Save this as 'test_mpi.py'\n",
+    "\n",
+    "```python\n",
+    "\n",
+    "import numpy as np\n",
+    "import zeus\n",
+    "from mpi4py.futures import MPIPoolExecutor\n",
+    "\n",
+    "ndim = 5\n",
+    "nwalkers = 2 * ndim\n",
+    "nsteps = 100\n",
+    "\n",
+    "def logprob(x):\n",
+    "    return -0.5 * np.sum(x**2.0)\n",
+    "\n",
+    "start = np.random.randn(nwalkers, ndim)\n",
+    "\n",
+    "\n",
+    "if __name__ == '__main__':\n",
+    "\n",
+    "    with MPIPoolExecutor() as executor:\n",
+    "        sampler = zeus.sampler(logprob,nwalkers, ndim, pool=executor)\n",
+    "        sampler.run(start, nsteps)\n",
+    "        \n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.6"
+  },
+  "toc": {
+   "base_numbering": 1,
+   "nav_menu": {},
+   "number_sections": false,
+   "sideBar": true,
+   "skip_h1_title": false,
+   "title_cell": "Table of Contents",
+   "title_sidebar": "Contents",
+   "toc_cell": false,
+   "toc_position": {
+    "height": "calc(100% - 180px)",
+    "left": "10px",
+    "top": "150px",
+    "width": "288px"
+   },
+   "toc_section_display": true,
+   "toc_window_display": false
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

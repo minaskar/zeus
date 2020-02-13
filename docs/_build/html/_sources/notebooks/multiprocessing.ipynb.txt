@@ -1,0 +1,188 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Parallelizing sampling using multiprocessing"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We are going to use the multiprocessing Pool to parallelize and accelerate sampling.\n",
+    "\n",
+    "This approach is ideal for personal computers, laptops, or small clusters and should work even in Jupyter notebooks. \n",
+    "\n",
+    "In order to simulate a computationaly expensive log probability density function we will use the time package."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import zeus\n",
+    "import numpy as np\n",
+    "import time\n",
+    "from multiprocessing import Pool"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We define an uncorrelated normal distribution as our target distribution."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "ndim = 5\n",
+    "nwalkers = 2 * ndim\n",
+    "nsteps = 100\n",
+    "\n",
+    "def logprob(x):\n",
+    "    time.sleep(0.003)\n",
+    "    return -0.5 * np.sum(x**2.0)\n",
+    "\n",
+    "start = np.random.randn(nwalkers, ndim)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We first run the sampler without in serial, without multiprocessing:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Initialising ensemble of 10 walkers...\n",
+      "Sampling progress : 100%|██████████| 100/100 [00:19<00:00,  5.12it/s]"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Serial took 19.6 seconds\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "t0 = time.time()\n",
+    "\n",
+    "sampler = zeus.sampler(logprob, nwalkers, ndim)\n",
+    "sampler.run(start, nsteps)\n",
+    "\n",
+    "print(\"Serial took {0:.1f} seconds\".format(time.time()-t0))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "And then run the sampler with multiprocessing:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Initialising ensemble of 10 walkers...\n",
+      "Sampling progress : 100%|██████████| 100/100 [00:07<00:00, 13.64it/s]"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Multiprocessing took 7.4 seconds\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "t0 = time.time()\n",
+    "\n",
+    "with Pool() as pool:\n",
+    "    sampler = zeus.sampler(logprob,nwalkers, ndim, pool=pool)\n",
+    "    sampler.run(start, nsteps)\n",
+    "\n",
+    "print(\"Multiprocessing took {0:.1f} seconds\".format(time.time()-t0))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.6"
+  },
+  "toc": {
+   "base_numbering": 1,
+   "nav_menu": {},
+   "number_sections": false,
+   "sideBar": true,
+   "skip_h1_title": false,
+   "title_cell": "Table of Contents",
+   "title_sidebar": "Contents",
+   "toc_cell": false,
+   "toc_position": {},
+   "toc_section_display": true,
+   "toc_window_display": false
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

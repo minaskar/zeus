@@ -77,6 +77,11 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/normal_distribution.html">Sampling from a multivariate Normal distribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/multiprocessing.html">Parallelizing sampling using multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MPI.html">Parallelizing sampling using MPI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MPI.html#Save-this-as-‘test_mpi.py’">Save this as ‘test_mpi.py’</a></li>
+</ul>
+</li>
 </ul>
 </ul>
 </li>
@@ -129,16 +134,18 @@
 <img alt="_images/logo.png" src="_images/logo.png" />
 </div>
 <p><strong>zeus is a pure-Python implementation of the Ensemble Slice Sampling method.</strong></p>
-<p>Doing <em>Bayesian Inference</em> with <strong>zeus</strong> is both simple and fast, since there is no need to hand-tune any
-hyperparameters or provide a proposal distribution. The algorithm exhibits excellent performance in terms
-of autocorrelation time and convergence rate. <strong>zeus</strong> works out-of-the-box and can scale to multiple CPUs
-without any extra effort.</p>
+<ul class="simple">
+<li><p>Fast &amp; Robust <em>Bayesian Inference</em>,</p></li>
+<li><p>No hand-tuning,</p></li>
+<li><p>Excellent performance in terms of autocorrelation time and convergence rate,</p></li>
+<li><p>Scale to multiple CPUs without any extra effort.</p></li>
+</ul>
 <a class="reference external image-reference" href="https://github.com/minaskar/zeus"><img alt="https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue" src="https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue" /></a>
 <a class="reference external image-reference" href="https://travis-ci.com/minaskar/zeus"><img alt="https://travis-ci.com/minaskar/zeus.svg?token=xnVWRZ3TFg1zxQYQyLs4&amp;branch=master" src="https://travis-ci.com/minaskar/zeus.svg?token=xnVWRZ3TFg1zxQYQyLs4&amp;branch=master" /></a>
 <a class="reference external image-reference" href="https://github.com/minaskar/zeus/blob/master/LICENSE"><img alt="https://img.shields.io/badge/License-GPLv3-blue.svg" src="https://img.shields.io/badge/License-GPLv3-blue.svg" /></a>
 <div class="section" id="basic-usage">
 <h1>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h1>
-<p>For instance, if you wanted to draw samples from a 10-dimensional Gaussian, you would do:</p>
+<p>For instance, if you wanted to draw samples from a 10-dimensional Gaussian, you would do something like:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">zeus</span>
 
@@ -172,7 +179,7 @@ without any extra effort.</p>
 </div>
 <div class="section" id="licence">
 <h1>Licence<a class="headerlink" href="#licence" title="Permalink to this headline">¶</a></h1>
-<p>Copyright 2019 Minas Karamanis and contributors.</p>
+<p>Copyright 2019-2020 Minas Karamanis and contributors.</p>
 <p>zeus is free software made available under the GPL-3.0 License.</p>
 <div class="toctree-wrapper compound">
 </div>
@@ -191,7 +198,7 @@ without any extra effort.</p>
     </p>
     <p>
         &copy; Copyright 2019, Minas Karamanis.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.<br/>
     </p>
   </div>
 </footer>

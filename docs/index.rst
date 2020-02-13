@@ -4,10 +4,10 @@
 
 **zeus is a pure-Python implementation of the Ensemble Slice Sampling method.**
 
-Doing *Bayesian Inference* with **zeus** is both simple and fast, since there is no need to hand-tune any
-hyperparameters or provide a proposal distribution. The algorithm exhibits excellent performance in terms
-of autocorrelation time and convergence rate. **zeus** works out-of-the-box and can scale to multiple CPUs
-without any extra effort.
+- Fast & Robust *Bayesian Inference*,
+- No hand-tuning,
+- Excellent performance in terms of autocorrelation time and convergence rate,
+- Scale to multiple CPUs without any extra effort.
 
 .. image:: https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue
     :target: https://github.com/minaskar/zeus
@@ -19,7 +19,7 @@ without any extra effort.
 Basic usage
 ===========
 
-For instance, if you wanted to draw samples from a 10-dimensional Gaussian, you would do::
+For instance, if you wanted to draw samples from a 10-dimensional Gaussian, you would do something like::
 
     import numpy as np
     import zeus
@@ -54,7 +54,7 @@ Getting Started
 Licence
 =======
 
-Copyright 2019 Minas Karamanis and contributors.
+Copyright 2019-2020 Minas Karamanis and contributors.
 
 zeus is free software made available under the GPL-3.0 License.
 
@@ -68,3 +68,5 @@ zeus is free software made available under the GPL-3.0 License.
    faq
    api
    notebooks/normal_distribution.ipynb
+   notebooks/multiprocessing.ipynb
+   notebooks/MPI.ipynb
