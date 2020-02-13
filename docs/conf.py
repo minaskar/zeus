@@ -18,7 +18,7 @@ import sys
 sys.path.insert(0, os.path.abspath('../../zeus/'))
 #sys.path.insert(0, os.path.abspath('./../'))
 
-extensions = ['sphinx_bootstrap_theme']
+#extensions = ['sphinx_bootstrap_theme']
 import sphinx_bootstrap_theme
 
 
