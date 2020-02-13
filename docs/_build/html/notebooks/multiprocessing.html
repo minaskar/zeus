@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Parallelizing sampling using multiprocessing &#8212; zeus 0.9.3 documentation</title>
+    <title>Parallelizing sampling using multiprocessing &#8212; zeus 1.0.0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/_static/default.css" />
@@ -15,6 +15,8 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Parallelizing sampling using MPI" href="MPI.html" />
+    <link rel="prev" title="Sampling from a multivariate Normal distribution" href="normal_distribution.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -56,7 +58,7 @@
      href="../index.html">Site <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><ul>
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../cookbook.html#mcmc-sampling-recipes">MCMC Sampling recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cookbook.html#parallelisation-recipes">Parallelisation recipes</a></li>
@@ -76,6 +78,11 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="normal_distribution.html">Sampling from a multivariate Normal distribution</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Parallelizing sampling using multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MPI.html">Parallelizing sampling using MPI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="MPI.html#Save-this-as-‘test_mpi.py’">Save this as ‘test_mpi.py’</a></li>
+</ul>
+</li>
 </ul>
 </ul>
 </li>
@@ -460,7 +467,7 @@ Multiprocessing took 7.4 seconds
       
     </p>
     <p>
-        &copy; Copyright 2019, Minas Karamanis.<br/>
+        &copy; Copyright 2019-2020, Minas Karamanis.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.<br/>
     </p>
   </div>
