@@ -11,7 +11,7 @@ from .autocorr import _autocorr_time
 
 class sampler:
     """
-    A Differential Slice MCMC sampler.
+    A Ensemble Slice MCMC sampler.
 
     Args:
         logprob (callable): A python function that takes a vector in the
