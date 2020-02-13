@@ -146,11 +146,10 @@ its acceptance rate is identically 1 always. This is because of the Slice Sample
 <p>The first reason you should think of using <strong>zeus</strong> is due to the fact that it doesn’t require
 any hand tuning at all. There is no need to adjust any hyperparameters or provide a proposal
 distribution.</p>
-<p>Moreover, unlike other black-box MCMC methods (e.g. Affine Invariant Ensemble Sampler) <strong>zeus</strong> is
-more robust to the curse of dimensionality. By construction, <strong>zeus</strong> converges to the true distribution
-orders of magnitude faster than its competition. For instance, numerical tests indicate that in order
-for the Affine Invariant Ensemble Sampler to match <strong>zeus</strong>’ performance, it often requires 10-100
-times more walkers and 10-1000 times more steps than <strong>zeus</strong>.</p>
+<dl class="simple">
+<dt>Moreover, unlike other black-box MCMC methods <strong>zeus</strong> is more robust to the curse of</dt><dd><p>dimensionality and handle challenging distributions better.</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="what-are-the-walkers">
 <h2>What are the walkers?<a class="headerlink" href="#what-are-the-walkers" title="Permalink to this headline">¶</a></h2>

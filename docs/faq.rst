@@ -16,17 +16,14 @@ The first reason you should think of using **zeus** is due to the fact that it d
 any hand tuning at all. There is no need to adjust any hyperparameters or provide a proposal
 distribution.
 
-Moreover, unlike other black-box MCMC methods (e.g. Affine Invariant Ensemble Sampler) **zeus** is
-more robust to the curse of dimensionality. By construction, **zeus** converges to the true distribution
-orders of magnitude faster than its competition. For instance, numerical tests indicate that in order
-for the Affine Invariant Ensemble Sampler to match **zeus**' performance, it often requires 10-100
-times more walkers and 10-1000 times more steps than **zeus**.
+Moreover, unlike other black-box MCMC methods **zeus** is more robust to the curse of
+ dimensionality and handle challenging distributions better.
 
 What are the walkers?
 =====================
 
 Walkers are the members of the ensemble and the explore the parameter space in parallel. Collectively,
-the converge to the target distribution. 
+the converge to the target distribution.
 
 
 How many walkers should I use?
