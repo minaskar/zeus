@@ -15,6 +15,8 @@
     :target: https://travis-ci.com/minaskar/zeus
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
     :target: https://github.com/minaskar/zeus/blob/master/LICENSE
+.. image:: https://readthedocs.org/projects/zeus-mcmc/badge/?version=latest&token=4455dbf495c5a4eaba52de26ac56628aad85eb3eadc90badfd1703d0a819a0f9
+    :target: https://zeus-mcmc.readthedocs.io/en/latest/?badge=latest
 
 Basic usage
 ===========
