@@ -112,12 +112,18 @@ class sampler:
             thin (float): Thin the chain by this number (default is 1 no thinning).
             progress (bool): If True (default), show progress bar (requires tqdm).
         '''
+        # Define task distributer
+        if self.pool is None:
+            distribute = map
+        else:
+            distribute = self.pool.map
+
         # Initialise ensemble of walkers
         logging.info('Initialising ensemble of %d walkers...', self.nwalkers)
         if np.shape(start) != (self.nwalkers, self.ndim):
             raise ValueError("Incompatible input dimensions! Please provide array of shape (nwalkers, ndim) as the starting position.")
         X = np.copy(start)
-        Z = np.asarray(list(map(self.logprob,X)))
+        Z = np.asarray(list(distribute(self.logprob,X)))
         batch = list(np.arange(self.nwalkers))
 
         # Extend saving space
@@ -127,12 +133,6 @@ class sampler:
 
         # Devine Number of Log Prob Evaluations vector
         self.neval = np.zeros(self.nsteps)
-
-        # Define task distributer
-        if self.pool is None:
-            distribute = map
-        else:
-            distribute = self.pool.map
 
         # Define tuning count
         ncount = 0
