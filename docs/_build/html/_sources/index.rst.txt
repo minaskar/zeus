@@ -43,7 +43,7 @@ Installation
 
 To install **zeus** using pip run::
 
-    pip install git+https://github.com/minaskar/zeus
+    pip install zeus-mcmc
 
 
 Getting Started

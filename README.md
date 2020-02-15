@@ -42,7 +42,7 @@ Read the docs at [zeus-mcmc.readthedocs.io](https://zeus-mcmc.readthedocs.io)
 To install zeus using pip run
 
 ```bash
-pip install git+https://github.com/minaskar/zeus
+pip install zeus-mcmc
 ```
 
 ## Licence
