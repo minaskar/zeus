@@ -373,7 +373,7 @@ div.rendered_html tbody tr:hover {
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">ndim</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">nwalkers</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">ndim</span>
-<span class="n">nsteps</span><span class="o">=</span> <span class="mi">1000</span>
+<span class="n">nsteps</span><span class="o">=</span> <span class="mi">5000</span>
 
 <span class="n">C</span> <span class="o">=</span> <span class="n">make_spd_matrix</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
@@ -382,12 +382,12 @@ div.rendered_html tbody tr:hover {
 
 <span class="n">icov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
 
-<span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span> <span class="o">*</span> <span class="mf">100.0</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">logprob</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">icov</span><span class="p">):</span>
     <span class="k">return</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">icov</span><span class="p">),(</span><span class="n">x</span><span class="o">-</span><span class="n">mu</span><span class="p">))</span>
 
-<span class="n">start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -419,7 +419,8 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-100%|██████████| 1000/1000 [00:00&lt;00:00, 1212.14it/s]
+Initialising ensemble of 20 walkers...
+Sampling progress : 100%|██████████| 5000/5000 [00:06&lt;00:00, 794.29it/s]
 </pre></div></div>
 </div>
 <p>Alright, lets plot our chains to see what we’ve got. The chains are stored in the <em>sampler.chain</em> property, their shape is (nwalkers, nsteps, ndim). So we want to iterate over all dimensions and plot the results. We also plot the true values of the parameters so that we can compare the results.</p>
@@ -445,14 +446,14 @@ div.rendered_html tbody tr:hover {
 <img alt="../_images/notebooks_normal_distribution_8_0.png" src="../_images/notebooks_normal_distribution_8_0.png" />
 </div>
 </div>
-<p>Great! This looks very good. It seems that the <em>burn-in</em> is over after the first ~200 iterations.</p>
-<p>Now lets cut this burn-in phase off. We can either do this manually using <em>numpy</em> or even better use <em>zeus</em>’s flatten method. By default, flatten() removes the first half of the chains and the combines them. If we to remove a different number of samples from the begining of the chains we can provide this number as the burn argument (e.g. flatten(burn=200)).</p>
+<p>Great! This looks very good.</p>
+<p>Now lets cut this burn-in phase off. We can either do this manually using <em>numpy</em> or even better use <em>zeus</em>’s flatten method. We are going to discard (or burn) the first half of the chain.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">trace</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+<span></span><span class="n">trace</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">burn</span><span class="o">=</span><span class="mi">2500</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -477,23 +478,23 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Percentiles
-[[35.44128283 87.33368542 93.2232653  52.13939042 91.78686689 22.24251685
-  62.66801216 67.73587913 92.11769649 57.98211142]
- [36.72129953 88.21998231 94.04229248 53.66818633 93.71041321 23.08239156
-  63.89670541 69.33720429 93.32936123 59.056393  ]
- [37.95967991 89.12159239 94.85543672 55.20385514 95.49618461 23.92367601
-  65.08601848 70.9355874  94.57842813 60.09220583]]
+[[-1.07514182 -1.00667248 -0.17712471  0.30415    -1.5426101  -0.74603194
+  -0.34562918 -0.67316016 -0.83652267 -0.35077991]
+ [ 0.01378648  0.27152833  0.9676218   0.983946    0.33792812  0.59981224
+   0.87745243  0.18557217  0.55157682  0.37196898]
+ [ 1.08289848  1.5603967   2.11849231  1.69537195  2.24642875  1.96902629
+   2.09289028  1.0575715   1.95919416  1.06579829]]
 Mean
-[36.71009401 88.22433007 94.04484845 53.67248135 93.67387989 23.08846437
- 63.89783867 69.3341384  93.33623404 59.04039871]
+[0.0099296  0.27531041 0.96849967 0.99235714 0.34672692 0.61010357
+ 0.87566165 0.19064315 0.55731011 0.36250751]
 Standard Deviation
-[1.25104439 0.90328425 0.8179669  1.55434571 1.86666956 0.85489014
- 1.23702735 1.65341908 1.25522631 1.06101876]
+[1.08027787 1.28116862 1.15124578 0.70463967 1.88250156 1.37246776
+ 1.23027002 0.86626702 1.40395042 0.71407385]
 </pre></div></div>
 </div>
 <p>Last but not least, we can also plot the marginalised posterior distributions:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
