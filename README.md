@@ -47,8 +47,7 @@ pip install zeus-mcmc
 
 ## Attribution
 
-Please cite `Karamanis & Beutler (2020)
-<https://arxiv.org/abs/2002.06212>`_ if you find this code useful in your
+Please cite [Karamanis & Beutler (2020)](https://arxiv.org/abs/2002.06212) if you find this code useful in your
 research. The BibTeX entry for the paper is:
 
 ```bash
