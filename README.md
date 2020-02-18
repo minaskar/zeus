@@ -45,6 +45,21 @@ To install zeus using pip run
 pip install zeus-mcmc
 ```
 
+## Attribution
+
+Please cite `Karamanis & Beutler (2020)
+<https://arxiv.org/abs/2002.06212>`_ if you find this code useful in your
+research. The BibTeX entry for the paper is::
+
+  @misc{zeus,
+        title={Ensemble Slice Sampling},
+        author={Minas Karamanis and Florian Beutler},
+        year={2020},
+        eprint={2002.06212},
+        archivePrefix={arXiv},
+        primaryClass={stat.ML}
+      }
+
 ## Licence
 
 Copyright 2019-2020 Minas Karamanis and contributors.
