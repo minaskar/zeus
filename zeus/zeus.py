@@ -226,7 +226,9 @@ class sampler:
                             mask_J[j] = False
                     cnt += 1
                     if cnt > self.maxiter:
-                        raise RuntimeError('Number of expansions exceeded maximum limit. Make sure your pdf is well-defined and the walkers are initilised inside the prior volume.')
+                        raise RuntimeError('Number of expansions exceeded maximum limit! \n' +
+                                           'Make sure your pdf is well-defined and the walkers are initialised inside the prior volume. \n' +
+                                           'Otherwise increase the maximum limit (maxiter=1000 by default).')
 
                 # Right stepping-out
                 mask_K = np.full(int(self.nwalkers/2),True)
@@ -250,8 +252,9 @@ class sampler:
                             mask_K[j] = False
                     cnt += 1
                     if cnt > self.maxiter:
-                        raise RuntimeError('Number of expansions exceeded maximum limit. Make sure your pdf is well-defined and the walkers are initilised inside the prior volume.')
-
+                        raise RuntimeError('Number of expansions exceeded maximum limit! \n' +
+                                           'Make sure your pdf is well-defined and the walkers are initialised inside the prior volume. \n' +
+                                           'Otherwise increase the maximum limit (maxiter=1000 by default).')
 
                 # Shrinking procedure
                 Widths = np.empty(int(self.nwalkers/2))
@@ -287,8 +290,9 @@ class sampler:
 
                     cnt += 1
                     if cnt > self.maxiter:
-                        raise RuntimeError('Number of Contractions exceeded maximum limit. Make sure your pdf is well-defined and the walkers are initilised inside the prior volume.')
-
+                        raise RuntimeError('Number of contractions exceeded maximum limit! \n' +
+                                           'Make sure your pdf is well-defined and the walkers are initialised inside the prior volume. \n' +
+                                           'Otherwise increase the maximum limit (maxiter=1000 by default).')
 
                 # Update Positions
                 X[active] = X_prime
