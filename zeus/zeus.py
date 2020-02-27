@@ -11,7 +11,8 @@ from .autocorr import _autocorr_time
 
 class sampler:
     """
-    A Ensemble Slice MCMC sampler.
+    An Ensemble Slice MCMC sampler.
+    arXiv:2002.06212
 
     Args:
         logprob (callable): A python function that takes a vector in the
@@ -25,9 +26,9 @@ class sampler:
         tune (bool): Tune the scale factor to optimize performance (Default is True.)
         tolerance (float): Tuning optimization tolerance (Default is 0.05).
         patience (int): Number of tuning steps to wait to make sure that tuning is done (Default is 5).
-        maxsteps (int): Number of maximum stepping-out steps (Default is 10^3).
+        maxsteps (int): Number of maximum stepping-out steps (Default is 10^4).
         mu (float): Scale factor (Default value is 1.0), this will be tuned if tune=True.
-        maxiter (int): Number of maximum Expansions/Contractions (Default is 10^3).
+        maxiter (int): Number of maximum Expansions/Contractions (Default is 10^4).
         pool (bool): External pool of workers to distribute workload to multiple CPUs (default is None).
         verbose (bool): If True (default) print log statements.
     """
@@ -41,9 +42,9 @@ class sampler:
                  tune=True,
                  tolerance=0.05,
                  patience=5,
-                 maxsteps=1000,
+                 maxsteps=10000,
                  mu=1.0,
-                 maxiter=1000,
+                 maxiter=10000,
                  pool=None,
                  verbose=True):
 
@@ -126,7 +127,8 @@ class sampler:
         # Initialise ensemble of walkers
         logging.info('Initialising ensemble of %d walkers...', self.nwalkers)
         if np.shape(start) != (self.nwalkers, self.ndim):
-            raise ValueError("Incompatible input dimensions! Please provide array of shape (nwalkers, ndim) as the starting position.")
+            raise ValueError('Incompatible input dimensions! \n' +
+                             'Please provide array of shape (nwalkers, ndim) as the starting position.')
         X = np.copy(start)
         Z = np.asarray(list(distribute(self.logprob,X)))
         batch = list(np.arange(self.nwalkers))
@@ -228,7 +230,7 @@ class sampler:
                     if cnt > self.maxiter:
                         raise RuntimeError('Number of expansions exceeded maximum limit! \n' +
                                            'Make sure your pdf is well-defined and the walkers are initialised inside the prior volume. \n' +
-                                           'Otherwise increase the maximum limit (maxiter=1000 by default).')
+                                           'Otherwise increase the maximum limit (maxiter=10^4 by default).')
 
                 # Right stepping-out
                 mask_K = np.full(int(self.nwalkers/2),True)
@@ -254,7 +256,7 @@ class sampler:
                     if cnt > self.maxiter:
                         raise RuntimeError('Number of expansions exceeded maximum limit! \n' +
                                            'Make sure your pdf is well-defined and the walkers are initialised inside the prior volume. \n' +
-                                           'Otherwise increase the maximum limit (maxiter=1000 by default).')
+                                           'Otherwise increase the maximum limit (maxiter=10^4 by default).')
 
                 # Shrinking procedure
                 Widths = np.empty(int(self.nwalkers/2))
@@ -292,7 +294,7 @@ class sampler:
                     if cnt > self.maxiter:
                         raise RuntimeError('Number of contractions exceeded maximum limit! \n' +
                                            'Make sure your pdf is well-defined and the walkers are initialised inside the prior volume. \n' +
-                                           'Otherwise increase the maximum limit (maxiter=1000 by default).')
+                                           'Otherwise increase the maximum limit (maxiter=10^4 by default).')
 
                 # Update Positions
                 X[active] = X_prime

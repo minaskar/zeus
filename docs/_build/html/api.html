@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>API &#8212; zeus 1.0.0 documentation</title>
+    <title>API &#8212; zeus 1.0.1 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/_static/default.css" />
@@ -137,8 +137,9 @@
 <h2>zeus.sampler module<a class="headerlink" href="#zeus-sampler-module" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="zeus.sampler">
-<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">sampler</code><span class="sig-paren">(</span><em class="sig-param">logprob</em>, <em class="sig-param">nwalkers</em>, <em class="sig-param">ndim</em>, <em class="sig-param">args=None</em>, <em class="sig-param">kwargs=None</em>, <em class="sig-param">proposal={'differential': 1.0</em>, <em class="sig-param">'gaussian': 0.0</em>, <em class="sig-param">'jump': 0.0</em>, <em class="sig-param">'random': 0.0}</em>, <em class="sig-param">tune=True</em>, <em class="sig-param">tolerance=0.05</em>, <em class="sig-param">patience=5</em>, <em class="sig-param">maxsteps=1000</em>, <em class="sig-param">mu=1.0</em>, <em class="sig-param">pool=None</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler" title="Permalink to this definition">¶</a></dt>
-<dd><p>A Ensemble Slice MCMC sampler.</p>
+<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">sampler</code><span class="sig-paren">(</span><em class="sig-param">logprob</em>, <em class="sig-param">nwalkers</em>, <em class="sig-param">ndim</em>, <em class="sig-param">args=None</em>, <em class="sig-param">kwargs=None</em>, <em class="sig-param">proposal={'differential': 1.0</em>, <em class="sig-param">'gaussian': 0.0</em>, <em class="sig-param">'jump': 0.0</em>, <em class="sig-param">'random': 0.0}</em>, <em class="sig-param">tune=True</em>, <em class="sig-param">tolerance=0.05</em>, <em class="sig-param">patience=5</em>, <em class="sig-param">maxsteps=10000</em>, <em class="sig-param">mu=1.0</em>, <em class="sig-param">maxiter=10000</em>, <em class="sig-param">pool=None</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>An Ensemble Slice MCMC sampler.
+arXiv:2002.06212</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -153,8 +154,9 @@ unnormalised posterior probability at that position.</p></li>
 <li><p><strong>tune</strong> (<em>bool</em>) – Tune the scale factor to optimize performance (Default is True.)</p></li>
 <li><p><strong>tolerance</strong> (<em>float</em>) – Tuning optimization tolerance (Default is 0.05).</p></li>
 <li><p><strong>patience</strong> (<em>int</em>) – Number of tuning steps to wait to make sure that tuning is done (Default is 5).</p></li>
-<li><p><strong>maxsteps</strong> (<em>int</em>) – Number of maximum stepping-out steps (Default is 10^3).</p></li>
+<li><p><strong>maxsteps</strong> (<em>int</em>) – Number of maximum stepping-out steps (Default is 10^4).</p></li>
 <li><p><strong>mu</strong> (<em>float</em>) – Scale factor (Default value is 1.0), this will be tuned if tune=True.</p></li>
+<li><p><strong>maxiter</strong> (<em>int</em>) – Number of maximum Expansions/Contractions (Default is 10^4).</p></li>
 <li><p><strong>pool</strong> (<em>bool</em>) – External pool of workers to distribute workload to multiple CPUs (default is None).</p></li>
 <li><p><strong>verbose</strong> (<em>bool</em>) – If True (default) print log statements.</p></li>
 </ul>

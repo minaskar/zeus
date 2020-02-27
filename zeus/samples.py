@@ -4,9 +4,8 @@ class samples:
     '''
     Creates object that stores the samples.
     Args:
-        nsteps (int): Number of steps/generations.
-        nwalkers (int): Number of walkers.
         ndim (int): Number of dimensions/paramters
+        nwalkers (int): Number of walkers.
 
     '''
 
