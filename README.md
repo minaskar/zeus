@@ -3,6 +3,7 @@
 **zeus is a pure-Python implementation of the *Ensemble Slice Sampling* method.**
 
 - Fast & Robust *Bayesian Inference*,
+- Efficient Markov Chain Monte Carlo,
 - No hand-tuning,
 - Excellent performance in terms of autocorrelation time and convergence rate,
 - Scale to multiple CPUs without any extra effort.
@@ -52,7 +53,7 @@ Please cite [Karamanis & Beutler (2020)](https://arxiv.org/abs/2002.06212) if yo
 research. The BibTeX entry for the paper is:
 
 ```bash
-@misc{zeus,
+@article{zeus,
       title={Ensemble Slice Sampling},
       author={Minas Karamanis and Florian Beutler},
       year={2020},
