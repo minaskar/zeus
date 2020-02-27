@@ -226,7 +226,7 @@ class sampler:
                             mask_J[j] = False
                     cnt += 1
                     if cnt > self.maxiter:
-                        raise('Number of expansions exceeded maximum limit. Make sure your pdf is well-defined and the walkers are initilised inside the prior volume.')
+                        raise RuntimeError('Number of expansions exceeded maximum limit. Make sure your pdf is well-defined and the walkers are initilised inside the prior volume.')
 
                 # Right stepping-out
                 mask_K = np.full(int(self.nwalkers/2),True)
@@ -250,7 +250,7 @@ class sampler:
                             mask_K[j] = False
                     cnt += 1
                     if cnt > self.maxiter:
-                        raise('Number of expansions exceeded maximum limit. Make sure your pdf is well-defined and the walkers are initilised inside the prior volume.')
+                        raise RuntimeError('Number of expansions exceeded maximum limit. Make sure your pdf is well-defined and the walkers are initilised inside the prior volume.')
 
 
                 # Shrinking procedure
@@ -287,7 +287,7 @@ class sampler:
 
                     cnt += 1
                     if cnt > self.maxiter:
-                        raise('Number of Contractions exceeded maximum limit. Make sure your pdf is well-defined and the walkers are initilised inside the prior volume.')
+                        raise RuntimeError('Number of Contractions exceeded maximum limit. Make sure your pdf is well-defined and the walkers are initilised inside the prior volume.')
 
 
                 # Update Positions
