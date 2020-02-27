@@ -27,6 +27,7 @@ class sampler:
         patience (int): Number of tuning steps to wait to make sure that tuning is done (Default is 5).
         maxsteps (int): Number of maximum stepping-out steps (Default is 10^3).
         mu (float): Scale factor (Default value is 1.0), this will be tuned if tune=True.
+        maxiter (int): Number of maximum Expansions/Contractions (Default is 10^3).
         pool (bool): External pool of workers to distribute workload to multiple CPUs (default is None).
         verbose (bool): If True (default) print log statements.
     """
@@ -42,6 +43,7 @@ class sampler:
                  patience=5,
                  maxsteps=1000,
                  mu=1.0,
+                 maxiter=1000,
                  pool=None,
                  verbose=True):
 
@@ -75,6 +77,9 @@ class sampler:
         self.maxsteps = maxsteps
         self.patience = patience
         self.tolerance = tolerance
+
+        # Set up maximum number of Expansions/Contractions
+        self.maxiter = maxiter
 
         # Set up pool of workers
         self.pool = pool
@@ -204,6 +209,7 @@ class sampler:
                 Z_L = np.empty(int(self.nwalkers/2))
                 X_L = np.empty((int(self.nwalkers/2),self.ndim))
 
+                cnt = 0
                 while len(mask_J[mask_J])>0:
                     for j in indeces[mask_J]:
                         if J[j] < 1:
@@ -218,12 +224,16 @@ class sampler:
                             nexp += 1
                         else:
                             mask_J[j] = False
+                    cnt += 1
+                    if cnt > self.maxiter:
+                        raise('Number of expansions exceeded maximum limit. Make sure your pdf is well-defined and the walkers are initilised inside the prior volume.')
 
                 # Right stepping-out
                 mask_K = np.full(int(self.nwalkers/2),True)
                 Z_R = np.empty(int(self.nwalkers/2))
                 X_R = np.empty((int(self.nwalkers/2),self.ndim))
 
+                cnt = 0
                 while len(mask_K[mask_K])>0:
                     for j in indeces[mask_K]:
                         if K[j] < 1:
@@ -238,6 +248,9 @@ class sampler:
                             nexp += 1
                         else:
                             mask_K[j] = False
+                    cnt += 1
+                    if cnt > self.maxiter:
+                        raise('Number of expansions exceeded maximum limit. Make sure your pdf is well-defined and the walkers are initilised inside the prior volume.')
 
 
                 # Shrinking procedure
@@ -246,6 +259,7 @@ class sampler:
                 X_prime = np.empty((int(self.nwalkers/2),self.ndim))
                 mask = np.full(int(self.nwalkers/2),True)
 
+                cnt = 0
                 while len(mask[mask])>0:
                     # Update Widths of intervals
                     Widths[mask] = L[mask] + np.random.uniform(0.0,1.0,size=len(mask[mask])) * (R[mask] - L[mask])
@@ -270,6 +284,11 @@ class sampler:
                             elif Widths[j] > 0.0:
                                 R[j] = Widths[j]
                                 ncon += 1
+
+                    cnt += 1
+                    if cnt > self.maxiter:
+                        raise('Number of Contractions exceeded maximum limit. Make sure your pdf is well-defined and the walkers are initilised inside the prior volume.')
+
 
                 # Update Positions
                 X[active] = X_prime
