@@ -18,7 +18,4 @@ install:
   - travis_retry python setup.py develop
 
 script:
-  - pytest zeus/tests --cov zeus
-
-after_success:
-  - coveralls
+  - pytest zeus/tests
