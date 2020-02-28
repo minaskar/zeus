@@ -131,6 +131,9 @@ class sampler:
                              'Please provide array of shape (nwalkers, ndim) as the starting position.')
         X = np.copy(start)
         Z = np.asarray(list(distribute(self.logprob,X)))
+        if not np.all(np.isfinite(Z)):
+            raise ValueError('Invalid walker initial positions! \n' +
+                             'Initialise walkers from positions of finite log probability.')
         batch = list(np.arange(self.nwalkers))
 
         # Extend saving space
@@ -229,7 +232,7 @@ class sampler:
                     cnt += 1
                     if cnt > self.maxiter:
                         raise RuntimeError('Number of expansions exceeded maximum limit! \n' +
-                                           'Make sure your pdf is well-defined and the walkers are initialised inside the prior volume. \n' +
+                                           'Make sure that the pdf is well-defined. \n' +
                                            'Otherwise increase the maximum limit (maxiter=10^4 by default).')
 
                 # Right stepping-out
@@ -255,7 +258,7 @@ class sampler:
                     cnt += 1
                     if cnt > self.maxiter:
                         raise RuntimeError('Number of expansions exceeded maximum limit! \n' +
-                                           'Make sure your pdf is well-defined and the walkers are initialised inside the prior volume. \n' +
+                                           'Make sure that the pdf is well-defined. \n' +
                                            'Otherwise increase the maximum limit (maxiter=10^4 by default).')
 
                 # Shrinking procedure
@@ -293,7 +296,7 @@ class sampler:
                     cnt += 1
                     if cnt > self.maxiter:
                         raise RuntimeError('Number of contractions exceeded maximum limit! \n' +
-                                           'Make sure your pdf is well-defined and the walkers are initialised inside the prior volume. \n' +
+                                           'Make sure that the pdf is well-defined. \n' +
                                            'Otherwise increase the maximum limit (maxiter=10^4 by default).')
 
                 # Update Positions
