@@ -19,3 +19,6 @@ install:
 
 script:
   - pytest zeus/tests
+
+after_success:
+  - coveralls
