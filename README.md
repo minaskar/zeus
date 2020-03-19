@@ -28,7 +28,7 @@ def logp(x, ivar):
 
 nsteps, nwalkers, ndim = 1000, 100, 10
 ivar = 1.0 / np.random.rand(ndim)
-start = np.random.rand(ndim)
+start = np.random.randn(nwalkers,ndim)
 
 sampler = zeus.sampler(logp, nwalkers, ndim, args=[ivar])
 sampler.run(start, nsteps)
