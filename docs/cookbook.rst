@@ -9,12 +9,13 @@ MCMC Sampling recipes
     Demonstrates how to sample from a correlated multivariate Gaussian distribution and how to perform
     the post-processing of the samples.
 
-- Fitting a model to data (soon)
+- `Fitting a model to data`_
     In this recipe we are going to produce some mock data and use them to illustrate how *zeus* works in
     realistic scenarios.
 
 .. _Sampling from a multivariate Normal distribution: notebooks/normal_distribution.ipynb
 
+.. _Fitting a model to data: notebooks/datafit.ipynb
 
 
 Parallelisation recipes

@@ -91,3 +91,4 @@ zeus is free software made available under the GPL-3.0 License.
    notebooks/normal_distribution.ipynb
    notebooks/multiprocessing.ipynb
    notebooks/MPI.ipynb
+   notebooks/datafit.ipynb
