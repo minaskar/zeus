@@ -30,6 +30,7 @@ class sampler:
         mu (float): Scale factor (Default value is 1.0), this will be tuned if tune=True.
         maxiter (int): Number of maximum Expansions/Contractions (Default is 10^4).
         pool (bool): External pool of workers to distribute workload to multiple CPUs (default is None).
+        vectorize (bool): If true, logprob receives not just one point but an array of points, and returns an array of likelihoods.
         verbose (bool): If True (default) print log statements.
     """
     def __init__(self,
@@ -46,7 +47,8 @@ class sampler:
                  mu=1.0,
                  maxiter=10000,
                  pool=None,
-                 verbose=True):
+                 verbose=True,
+                 vectorize=False):
 
         # Set up logger
         self.logger = logging.getLogger()
@@ -84,6 +86,7 @@ class sampler:
 
         # Set up pool of workers
         self.pool = pool
+        self.vectorize = vectorize
 
         # Initialise Saving space for samples
         self.samples = samples(self.ndim, self.nwalkers)
@@ -102,7 +105,8 @@ class sampler:
         if round(total,4) != 1.0:
             raise ValueError("The total probability of all proposals must be equal to 1.0.")
 
-
+    def run_mcmc(self, *args, **kwargs):
+        return self.run(*args, **kwargs)
 
     def run(self,
             start,
@@ -130,7 +134,10 @@ class sampler:
             raise ValueError('Incompatible input dimensions! \n' +
                              'Please provide array of shape (nwalkers, ndim) as the starting position.')
         X = np.copy(start)
-        Z = np.asarray(list(distribute(self.logprob,X)))
+        if self.vectorize:
+            Z = np.asarray(self.logprob(X))
+        else:
+            Z = np.asarray(list(distribute(self.logprob,X)))
         if not np.all(np.isfinite(Z)):
             raise ValueError('Invalid walker initial positions! \n' +
                              'Initialise walkers from positions of finite log probability.')
@@ -220,7 +227,10 @@ class sampler:
                         if J[j] < 1:
                             mask_J[j] = False
                     X_L[mask_J] = directions[mask_J] * L[mask_J][:,np.newaxis] + X[active][mask_J]
-                    Z_L[mask_J] = np.asarray(list(distribute(self.logprob,X_L[mask_J])))
+                    if self.vectorize:
+                        Z_L[mask_J] = np.asarray(self.logprob(X_L[mask_J]))
+                    else:
+                        Z_L[mask_J] = np.asarray(list(distribute(self.logprob,X_L[mask_J])))
                     for j in indeces[mask_J]:
                         ncall += 1
                         if Z0[j] < Z_L[j]:
@@ -246,7 +256,10 @@ class sampler:
                         if K[j] < 1:
                             mask_K[j] = False
                     X_R[mask_K] = directions[mask_K] * R[mask_K][:,np.newaxis] + X[active][mask_K]
-                    Z_R[mask_K] = np.asarray(list(distribute(self.logprob,X_R[mask_K])))
+                    if self.vectorize:
+                        Z_R[mask_K] = np.asarray(self.logprob(X_R[mask_K]))
+                    else:
+                        Z_R[mask_K] = np.asarray(list(distribute(self.logprob,X_R[mask_K])))
                     for j in indeces[mask_K]:
                         ncall += 1
                         if Z0[j] < Z_R[j]:
@@ -276,7 +289,10 @@ class sampler:
                     X_prime[mask] = directions[mask] * Widths[mask][:,np.newaxis] + X[active][mask]
 
                     # Calculate LogP of New Positions
-                    Z_prime[mask] = np.asarray(list(distribute(self.logprob,X_prime[mask])))
+                    if self.vectorize:
+                        Z_prime[mask] = np.asarray(self.logprob(X_prime[mask]))
+                    else:
+                        Z_prime[mask] = np.asarray(list(distribute(self.logprob,X_prime[mask])))
 
                     # Count LogProb calls
                     ncall += len(mask[mask])
@@ -316,7 +332,7 @@ class sampler:
 
             # Save samples
             if (i+1) % self.thin == 0:
-                self.samples.save(X)
+                self.samples.save(X, Z)
 
             # Update progress bar
             if progress:
@@ -333,6 +349,17 @@ class sampler:
         """
         self.samples = samples(self.ndim, self.nwalkers)
 
+    def get_chain(self, flat=False, thin=1):
+        if flat:
+            return self.flatten(thin=thin)
+        else:
+            return self.chain
+    
+    def get_log_prob(self, flat=False, thin=1):
+        if flat:
+            return self.samples.get_log_prob(thin=thin)
+        else:
+            return self.samples.logp
 
     @property
     def chain(self):
@@ -367,7 +394,7 @@ class sampler:
         Returns:
             Array with the IAT of each parameter.
         """
-        return _autocorr_time(self.chain[:,int(self.nsteps/(self.thin*2.0)):,:])
+        return _autocorr_time(np.swapaxes(self.chain[int(self.nsteps/(self.thin*2.0)):,:,:]), 0, 1)
 
 
     @property
