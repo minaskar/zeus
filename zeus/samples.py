@@ -33,11 +33,12 @@ class samples:
             self.initialised = True
 
 
-    def save(self, x):
+    def save(self, x, logp):
         """
         Save sample into the storage.
         Args:
-            x (ndarray): Sample to be appended into the storage.
+            x (ndarray): Samples to be appended into the storage.
+            logp (ndarray): Logprob values to be appended into the storage.
         """
         self.samples[self.index] = x
         self.logp[self.index] = logp
