@@ -15,7 +15,7 @@ class sampler:
     arXiv:2002.06212
 
     Args:
-        logprob (callable): A python function that takes a vector in the
+        logprob_fn (callable): A python function that takes a vector in the
             parameter space as input and returns the natural logarithm of the
             unnormalised posterior probability at that position.
         nwalkers (int): The number of walkers in the ensemble.
@@ -30,10 +30,11 @@ class sampler:
         mu (float): Scale factor (Default value is 1.0), this will be tuned if tune=True.
         maxiter (int): Number of maximum Expansions/Contractions (Default is 10^4).
         pool (bool): External pool of workers to distribute workload to multiple CPUs (default is None).
+        vectorize (bool): If true (default is False), logprob_fn receives not just one point but an array of points, and returns an array of likelihoods.
         verbose (bool): If True (default) print log statements.
     """
     def __init__(self,
-                 logprob,
+                 logprob_fn,
                  nwalkers,
                  ndim,
                  args=None,
@@ -46,6 +47,7 @@ class sampler:
                  mu=1.0,
                  maxiter=10000,
                  pool=None,
+                 vectorize=False,
                  verbose=True):
 
         # Set up logger
@@ -68,7 +70,7 @@ class sampler:
             raise ValueError("Please provide an even number of walkers.")
 
         # Set up Log Probability
-        self.logprob = _FunctionWrapper(logprob, args, kwargs)
+        self.logprob_fn = _FunctionWrapper(logprob_fn, args, kwargs)
 
         # Set up Slice parameters
         self.mu = mu
@@ -84,6 +86,7 @@ class sampler:
 
         # Set up pool of workers
         self.pool = pool
+        self.vectorize = vectorize
 
         # Initialise Saving space for samples
         self.samples = samples(self.ndim, self.nwalkers)
@@ -123,6 +126,8 @@ class sampler:
             distribute = map
         else:
             distribute = self.pool.map
+        if self.vectorize:
+            distribute = lambda func, x : func(x)
 
         # Initialise ensemble of walkers
         logging.info('Initialising ensemble of %d walkers...', self.nwalkers)
@@ -130,7 +135,7 @@ class sampler:
             raise ValueError('Incompatible input dimensions! \n' +
                              'Please provide array of shape (nwalkers, ndim) as the starting position.')
         X = np.copy(start)
-        Z = np.asarray(list(distribute(self.logprob,X)))
+        Z = np.asarray(list(distribute(self.logprob_fn,X)))
         if not np.all(np.isfinite(Z)):
             raise ValueError('Invalid walker initial positions! \n' +
                              'Initialise walkers from positions of finite log probability.')
@@ -220,7 +225,7 @@ class sampler:
                         if J[j] < 1:
                             mask_J[j] = False
                     X_L[mask_J] = directions[mask_J] * L[mask_J][:,np.newaxis] + X[active][mask_J]
-                    Z_L[mask_J] = np.asarray(list(distribute(self.logprob,X_L[mask_J])))
+                    Z_L[mask_J] = np.asarray(list(distribute(self.logprob_fn,X_L[mask_J])))
                     for j in indeces[mask_J]:
                         ncall += 1
                         if Z0[j] < Z_L[j]:
@@ -246,7 +251,7 @@ class sampler:
                         if K[j] < 1:
                             mask_K[j] = False
                     X_R[mask_K] = directions[mask_K] * R[mask_K][:,np.newaxis] + X[active][mask_K]
-                    Z_R[mask_K] = np.asarray(list(distribute(self.logprob,X_R[mask_K])))
+                    Z_R[mask_K] = np.asarray(list(distribute(self.logprob_fn,X_R[mask_K])))
                     for j in indeces[mask_K]:
                         ncall += 1
                         if Z0[j] < Z_R[j]:
@@ -276,7 +281,7 @@ class sampler:
                     X_prime[mask] = directions[mask] * Widths[mask][:,np.newaxis] + X[active][mask]
 
                     # Calculate LogP of New Positions
-                    Z_prime[mask] = np.asarray(list(distribute(self.logprob,X_prime[mask])))
+                    Z_prime[mask] = np.asarray(list(distribute(self.logprob_fn,X_prime[mask])))
 
                     # Count LogProb calls
                     ncall += len(mask[mask])
@@ -316,7 +321,7 @@ class sampler:
 
             # Save samples
             if (i+1) % self.thin == 0:
-                self.samples.save(X)
+                self.samples.save(X, Z)
 
             # Update progress bar
             if progress:
@@ -345,18 +350,18 @@ class sampler:
         return self.samples.chain
 
 
-    def flatten(self, burn=0, thin=1):
+    def flatten(self, discard=0, thin=1):
         """
         Flatten the chain.
 
         Args:
-            burn (int): The number of burn-in steps to remove from each walker (default is 0).
+            discard (int): The number of burn-in steps to remove from each walker (default is 0).
             thin (int): The ammount to thin the chain (default is 1, no thinning).
 
         Returns:
             2D Flattened chain.
         """
-        return self.samples.flatten(burn, thin)
+        return self.samples.flatten(discard, thin)
 
 
     @property
@@ -367,7 +372,7 @@ class sampler:
         Returns:
             Array with the IAT of each parameter.
         """
-        return _autocorr_time(self.chain[:,int(self.nsteps/(self.thin*2.0)):,:])
+        return _autocorr_time(np.swapaxes(self.chain[int(self.nsteps/(self.thin*2.0)):,:,:]), 0, 1)
 
 
     @property
@@ -432,3 +437,54 @@ class sampler:
         logging.info('Effective Samples per Log Probability Evaluation: ' + str(round(self.efficiency,6)))
         if self.thin > 1:
             logging.info('Thinning rate: ' + str(self.thin))
+
+
+    def get_chain(self, flat=False, thin=1, discard=0):
+        """
+        Get the Markov chain containing the samples.
+
+        Args:
+            flat (bool) : If True then flatten the chain into a 2D array by combining all walkers (default is False).
+            thin (int) : Thinning parameter (the default value is 1).
+            discard (int) : Number of burn-in steps to be removed from each walker (default is 0).
+
+        Returns:
+            Array object containg the Markov chain samples (2D if flat=True, 3D if flat=False).
+        """
+        if flat:
+            return self.flatten(discard=discard, thin=thin)
+        else:
+            return self.chain[discard::thin,:,:]
+
+
+    def get_log_prob(self, flat=False, thin=1, discard=0):
+        """
+        Get the value of the log probability function evalutated at the samples of the Markov chain.
+
+        Args:
+            flat (bool) : If True then flatten the chain into a 1D array by combining all walkers (default is False).
+            thin (int) : Thinning parameter (the default value is 1).
+            discard (int) : Number of burn-in steps to be removed from each walker (default is 0).
+
+        Returns:
+            Array containing the value of the log probability at the samples of the Markov chain (1D if flat=True, 2D otherwise).
+        """
+        if flat:
+            return self.samples.flatten_logprob(discard=discard, thin=thin)
+        else:
+            return self.samples.logprob[discard::thin,:]
+
+
+    @property
+    def get_last_sample(self):
+        """
+            Return the last position of the walkers.
+        """
+        return self.chain[-1]
+
+
+    def run_mcmc(self, *args, **kwargs):
+        """
+        Wrapper for run method.
+        """
+        return self.run(*args, **kwargs)

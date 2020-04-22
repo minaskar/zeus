@@ -15,6 +15,8 @@ def test_mean(logp=logp,seed=42):
     start = np.random.rand(nwalkers,ndim)
     sampler.run(start,nsteps)
     assert np.all(np.abs(np.mean(sampler.flatten(),axis=0)-1.0) < 0.1)
+    assert np.all(np.isfinite(sampler.get_log_prob(flat=True)))
+    assert np.all(np.isfinite(sampler.get_log_prob()))
 
 
 def test_std(logp=logp,seed=42):
