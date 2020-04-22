@@ -372,7 +372,7 @@ class sampler:
         Returns:
             Array with the IAT of each parameter.
         """
-        return _autocorr_time(np.swapaxes(self.chain[int(self.nsteps/(self.thin*2.0)):,:,:]), 0, 1)
+        return _autocorr_time(np.swapaxes(self.chain[int(self.nsteps/(self.thin*2.0)):,:,:], 0, 1))
 
 
     @property

@@ -34,7 +34,7 @@ def test_flatten(seed=42):
     burn = np.random.randint(2,100)
     thin = np.random.randint(1,10)
     assert np.shape(s.flatten(burn,thin)) == (np.ceil((nsteps-burn)/thin)*nwalkers,ndim)
-    assert np.shape(s.flatten_logprob(burn,thin)) == (np.ceil((nsteps-burn)/thin)*nwalkers,)
+    assert np.shape(s.flatten_logprob(burn,thin)) == (np.ceil((nsteps-burn)/thin)*nwalkers)
 
 
 def test_multiple():

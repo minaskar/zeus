@@ -1,4 +1,4 @@
-![logo](https://github.com/minaskar/zeus/blob/master/logo.png)
+![logo](logo.png)
 
 **zeus is a pure-Python implementation of the *Ensemble Slice Sampling* method.**
 
