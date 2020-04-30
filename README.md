@@ -23,15 +23,15 @@ For instance, if you wanted to draw samples from a 10-dimensional Gaussian, you 
 import numpy as np
 import zeus
 
-def logp(x, ivar):
+def log_prob(x, ivar):
     return - 0.5 * np.sum(ivar * x**2.0)
 
 nsteps, nwalkers, ndim = 1000, 100, 10
 ivar = 1.0 / np.random.rand(ndim)
 start = np.random.randn(nwalkers,ndim)
 
-sampler = zeus.sampler(logp, nwalkers, ndim, args=[ivar])
-sampler.run(start, nsteps)
+sampler = zeus.sampler(nwalkers, ndim, log_prob, args=[ivar])
+sampler.run_mcmc(start, nsteps)
 ```
 
 ## Documentation
