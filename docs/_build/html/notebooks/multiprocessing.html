@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Parallelizing sampling using multiprocessing &#8212; zeus 1.0.5 documentation</title>
+    <title>Parallelizing sampling using multiprocessing &#8212; zeus 1.0.6 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/_static/default.css" />
@@ -364,7 +364,7 @@ div.rendered_html tbody tr:hover {
 <span class="n">nwalkers</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">ndim</span>
 <span class="n">nsteps</span> <span class="o">=</span> <span class="mi">100</span>
 
-<span class="k">def</span> <span class="nf">logprob</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.003</span><span class="p">)</span>
     <span class="k">return</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mf">2.0</span><span class="p">)</span>
 
@@ -380,8 +380,8 @@ div.rendered_html tbody tr:hover {
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
-<span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="n">logprob</span><span class="p">,</span> <span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
-<span class="n">sampler</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_prob</span><span class="p">)</span>
+<span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Serial took </span><span class="si">{0:.1f}</span><span class="s2"> seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span><span class="p">))</span>
 </pre></div>
@@ -393,7 +393,7 @@ div.rendered_html tbody tr:hover {
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 Initialising ensemble of 10 walkers...
-Sampling progress : 100%|██████████| 100/100 [00:19&lt;00:00,  5.12it/s]
+Sampling progress : 100%|██████████| 100/100 [00:19&lt;00:00,  5.18it/s]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -401,7 +401,7 @@ Sampling progress : 100%|██████████| 100/100 [00:19&lt;00:00
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Serial took 19.6 seconds
+Serial took 19.3 seconds
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -421,8 +421,8 @@ Serial took 19.6 seconds
 <span></span><span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
 <span class="k">with</span> <span class="n">Pool</span><span class="p">()</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-    <span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="n">logprob</span><span class="p">,</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">pool</span><span class="o">=</span><span class="n">pool</span><span class="p">)</span>
-    <span class="n">sampler</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
+    <span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_prob</span><span class="p">,</span> <span class="n">pool</span><span class="o">=</span><span class="n">pool</span><span class="p">)</span>
+    <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Multiprocessing took </span><span class="si">{0:.1f}</span><span class="s2"> seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span><span class="p">))</span>
 </pre></div>
@@ -434,7 +434,7 @@ Serial took 19.6 seconds
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 Initialising ensemble of 10 walkers...
-Sampling progress : 100%|██████████| 100/100 [00:07&lt;00:00, 13.64it/s]
+Sampling progress : 100%|██████████| 100/100 [00:07&lt;00:00, 12.93it/s]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -442,7 +442,7 @@ Sampling progress : 100%|██████████| 100/100 [00:07&lt;00:00
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Multiprocessing took 7.4 seconds
+Multiprocessing took 7.8 seconds
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">

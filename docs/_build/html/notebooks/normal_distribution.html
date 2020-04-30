@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Sampling from a multivariate Normal distribution &#8212; zeus 1.0.5 documentation</title>
+    <title>Sampling from a multivariate Normal distribution &#8212; zeus 1.0.6 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/_static/default.css" />
@@ -355,8 +355,9 @@ div.rendered_html tbody tr:hover {
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_spd_matrix</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">getdist</span> <span class="kn">import</span> <span class="n">plots</span><span class="p">,</span> <span class="n">MCSamples</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
 <span class="kn">import</span> <span class="nn">zeus</span>
 </pre></div>
 </div>
@@ -393,7 +394,7 @@ div.rendered_html tbody tr:hover {
 
 <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">logprob</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">icov</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">icov</span><span class="p">):</span>
     <span class="k">return</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">icov</span><span class="p">),(</span><span class="n">x</span><span class="o">-</span><span class="n">mu</span><span class="p">))</span>
 
 <span class="n">start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
@@ -418,8 +419,8 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="n">logprob</span><span class="p">,</span> <span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">mu</span><span class="p">,</span> <span class="n">icov</span><span class="p">])</span>
-<span class="n">sampler</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
+<span></span><span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_prob</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">mu</span><span class="p">,</span> <span class="n">icov</span><span class="p">])</span>
+<span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -429,7 +430,7 @@ div.rendered_html tbody tr:hover {
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 Initialising ensemble of 20 walkers...
-Sampling progress : 100%|██████████| 5000/5000 [00:06&lt;00:00, 794.29it/s]
+Sampling progress : 100%|██████████| 5000/5000 [00:06&lt;00:00, 821.82it/s]
 </pre></div></div>
 </div>
 <p>Alright, lets plot our chains to see what we’ve got. The chains are stored in the <em>sampler.chain</em> property, their shape is (nwalkers, nsteps, ndim). So we want to iterate over all dimensions and plot the results. We also plot the true values of the parameters so that we can compare the results.</p>
@@ -441,7 +442,7 @@ Sampling progress : 100%|██████████| 5000/5000 [00:06&lt;00:
 <span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mf">1.5</span><span class="o">*</span><span class="n">ndim</span><span class="p">))</span>
 <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndim</span><span class="p">):</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">subplot2grid</span><span class="p">((</span><span class="n">ndim</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nsteps</span><span class="p">),</span><span class="n">sampler</span><span class="o">.</span><span class="n">chain</span><span class="p">[:,:,</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()[:,:,</span><span class="n">n</span><span class="p">],</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">mu</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -462,7 +463,7 @@ Sampling progress : 100%|██████████| 5000/5000 [00:06&lt;00:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">trace</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">burn</span><span class="o">=</span><span class="mi">2500</span><span class="p">)</span>
+<span></span><span class="n">chain</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">(</span><span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">discard</span><span class="o">=</span><span class="mi">2500</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -473,11 +474,11 @@ Sampling progress : 100%|██████████| 5000/5000 [00:06&lt;00:
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Percentiles&#39;</span><span class="p">)</span>
-<span class="nb">print</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">84</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="nb">print</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">84</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Mean&#39;</span><span class="p">)</span>
-<span class="nb">print</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="nb">print</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Standard Deviation&#39;</span><span class="p">)</span>
-<span class="nb">print</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="nb">print</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -487,27 +488,27 @@ Sampling progress : 100%|██████████| 5000/5000 [00:06&lt;00:
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Percentiles
-[[-1.07514182 -1.00667248 -0.17712471  0.30415    -1.5426101  -0.74603194
-  -0.34562918 -0.67316016 -0.83652267 -0.35077991]
- [ 0.01378648  0.27152833  0.9676218   0.983946    0.33792812  0.59981224
-   0.87745243  0.18557217  0.55157682  0.37196898]
- [ 1.08289848  1.5603967   2.11849231  1.69537195  2.24642875  1.96902629
-   2.09289028  1.0575715   1.95919416  1.06579829]]
+[[-0.12681278  0.24252538  0.03986289 -0.79946355 -1.30607358  0.23294235
+  -0.04839477 -1.7753891  -1.34085252 -0.77635688]
+ [ 0.60343633  0.96684471  0.86574082  0.16750441  0.48847444  0.93141307
+   0.97397562  0.12091794  0.23975061  0.09228677]
+ [ 1.35777011  1.69529154  1.7368314   1.12361664  2.32192019  1.61658038
+   2.01755676  2.00884471  1.78874567  0.93536028]]
 Mean
-[0.0099296  0.27531041 0.96849967 0.99235714 0.34672692 0.61010357
- 0.87566165 0.19064315 0.55731011 0.36250751]
+[0.61273032 0.96646563 0.87787681 0.16285155 0.51365506 0.92682985
+ 0.97834805 0.11352612 0.22166147 0.08410731]
 Standard Deviation
-[1.08027787 1.28116862 1.15124578 0.70463967 1.88250156 1.37246776
- 1.23027002 0.86626702 1.40395042 0.71407385]
+[0.74702899 0.73211006 0.84647552 0.96339786 1.82725552 0.69352569
+ 1.04702062 1.89727528 1.56827263 0.85360202]
 </pre></div></div>
 </div>
 <p>Last but not least, we can also plot the marginalised posterior distributions:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">sample</span> <span class="o">=</span> <span class="n">MCSamples</span><span class="p">(</span><span class="n">samples</span><span class="o">=</span><span class="n">trace</span><span class="p">)</span>
+<span></span><span class="n">sample</span> <span class="o">=</span> <span class="n">MCSamples</span><span class="p">(</span><span class="n">samples</span><span class="o">=</span><span class="n">chain</span><span class="p">)</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">plots</span><span class="o">.</span><span class="n">getSubplotPlotter</span><span class="p">(</span><span class="n">width_inch</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">triangle_plot</span><span class="p">([</span><span class="n">sample</span><span class="p">],</span> <span class="n">filled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">shaded</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>

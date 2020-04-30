@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>zeus documentation &#8212; zeus 1.0.5 documentation</title>
+    <title>zeus documentation &#8212; zeus 1.0.6 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/_static/default.css" />
@@ -162,16 +162,15 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">zeus</span>
 
-<span class="k">def</span> <span class="nf">logprob</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ivar</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ivar</span><span class="p">):</span>
     <span class="k">return</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ivar</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mf">2.0</span><span class="p">)</span>
 
 <span class="n">nsteps</span><span class="p">,</span> <span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span>
 <span class="n">ivar</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
 <span class="n">start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
 
-<span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="n">logprob</span><span class="p">,</span> <span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">ivar</span><span class="p">])</span>
-<span class="n">sampler</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">sampler</span><span class="o">.</span><span class="n">chain</span><span class="p">)</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_prob</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">ivar</span><span class="p">])</span>
+<span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
