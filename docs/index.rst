@@ -79,6 +79,13 @@ Copyright 2019-2020 Minas Karamanis and contributors.
 zeus is free software made available under the GPL-3.0 License.
 
 
+Changelog
+=========
+
+**1.0.7 (11/05/20)**
+
+- Improved parallel distribution of tasks
+
 
 .. toctree::
    :maxdepth: 2

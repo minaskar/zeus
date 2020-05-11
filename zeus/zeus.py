@@ -214,18 +214,43 @@ class sampler:
                 # Initialise number of Log prob calls
                 ncall = 0
 
-                # Left stepping-out
+                # Left stepping-out initialisation
                 mask_J = np.full(int(self.nwalkers/2),True)
                 Z_L = np.empty(int(self.nwalkers/2))
                 X_L = np.empty((int(self.nwalkers/2),self.ndim))
 
+                # Right stepping-out initialisation
+                mask_K = np.full(int(self.nwalkers/2),True)
+                Z_R = np.empty(int(self.nwalkers/2))
+                X_R = np.empty((int(self.nwalkers/2),self.ndim))
+
                 cnt = 0
-                while len(mask_J[mask_J])>0:
+                # Stepping-Out procedure
+                while len(mask_J[mask_J])>0 or len(mask_K[mask_K])>0:
+                    if len(mask_J[mask_J])>0:
+                        cnt += 1
+                    if len(mask_K[mask_K])>0:
+                        cnt += 1
+                    if cnt > self.maxiter:
+                        raise RuntimeError('Number of expansions exceeded maximum limit! \n' +
+                                           'Make sure that the pdf is well-defined. \n' +
+                                           'Otherwise increase the maximum limit (maxiter=10^4 by default).')
+
                     for j in indeces[mask_J]:
                         if J[j] < 1:
                             mask_J[j] = False
+
+                    for j in indeces[mask_K]:
+                        if K[j] < 1:
+                            mask_K[j] = False
+
                     X_L[mask_J] = directions[mask_J] * L[mask_J][:,np.newaxis] + X[active][mask_J]
-                    Z_L[mask_J] = np.asarray(list(distribute(self.logprob_fn,X_L[mask_J])))
+                    X_R[mask_K] = directions[mask_K] * R[mask_K][:,np.newaxis] + X[active][mask_K]
+
+                    Z_LR_masked = np.asarray(list(distribute(self.logprob_fn, np.concatenate([X_L[mask_J],X_R[mask_K]]))))
+                    Z_L[mask_J] = Z_LR_masked[:X_L[mask_J].shape[0]]
+                    Z_R[mask_K] = Z_LR_masked[X_L[mask_J].shape[0]:]
+
                     for j in indeces[mask_J]:
                         ncall += 1
                         if Z0[j] < Z_L[j]:
@@ -234,24 +259,7 @@ class sampler:
                             nexp += 1
                         else:
                             mask_J[j] = False
-                    cnt += 1
-                    if cnt > self.maxiter:
-                        raise RuntimeError('Number of expansions exceeded maximum limit! \n' +
-                                           'Make sure that the pdf is well-defined. \n' +
-                                           'Otherwise increase the maximum limit (maxiter=10^4 by default).')
 
-                # Right stepping-out
-                mask_K = np.full(int(self.nwalkers/2),True)
-                Z_R = np.empty(int(self.nwalkers/2))
-                X_R = np.empty((int(self.nwalkers/2),self.ndim))
-
-                cnt = 0
-                while len(mask_K[mask_K])>0:
-                    for j in indeces[mask_K]:
-                        if K[j] < 1:
-                            mask_K[j] = False
-                    X_R[mask_K] = directions[mask_K] * R[mask_K][:,np.newaxis] + X[active][mask_K]
-                    Z_R[mask_K] = np.asarray(list(distribute(self.logprob_fn,X_R[mask_K])))
                     for j in indeces[mask_K]:
                         ncall += 1
                         if Z0[j] < Z_R[j]:
@@ -260,11 +268,7 @@ class sampler:
                             nexp += 1
                         else:
                             mask_K[j] = False
-                    cnt += 1
-                    if cnt > self.maxiter:
-                        raise RuntimeError('Number of expansions exceeded maximum limit! \n' +
-                                           'Make sure that the pdf is well-defined. \n' +
-                                           'Otherwise increase the maximum limit (maxiter=10^4 by default).')
+
 
                 # Shrinking procedure
                 Widths = np.empty(int(self.nwalkers/2))
