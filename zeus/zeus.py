@@ -146,8 +146,8 @@ class sampler:
         self.thin = int(thin)
         self.samples.extend(self.nsteps//self.thin)
 
-        # Devine Number of Log Prob Evaluations vector
-        self.neval = np.zeros(self.nsteps)
+        # Devide Number of Log Prob Evaluations vector
+        self.neval = np.zeros(self.nsteps, dtype=int)
 
         # Define tuning count
         ncount = 0
