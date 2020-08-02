@@ -7,6 +7,7 @@ import logging
 from .samples import samples
 from .fwrapper import _FunctionWrapper
 from .autocorr import _autocorr_time
+from .parallel import ChainManager
 
 
 class sampler:
