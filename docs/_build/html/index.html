@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>zeus documentation &#8212; zeus 1.0.7 documentation</title>
+    <title>zeus documentation &#8212; zeus 1.1.0 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/_static/default.css" />
@@ -75,7 +75,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api.html#zeus-sampler-module">zeus.sampler module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#the-sampler">The Sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#convergence-diagnostics-statistics">Convergence Diagnostics &amp; Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#the-chain-manager">The Chain Manager</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/normal_distribution.html">Sampling from a multivariate Normal distribution</a></li>
@@ -212,6 +214,11 @@ research. The BibTeX entry for the paper is:</p>
 </div>
 <div class="section" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<p><strong>1.1.0 (03/08/20)</strong></p>
+<ul class="simple">
+<li><p>Added ChainManager to deploy into supercomputing clusters, parallelizing both chains and walkers.</p></li>
+<li><p>Added Convergence diagnostic tools (Gelman-Rubin, Geweke).</p></li>
+</ul>
 <p><strong>1.0.7 (11/05/20)</strong></p>
 <ul class="simple">
 <li><p>Improved parallel distribution of tasks</p></li>

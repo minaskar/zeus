@@ -6,7 +6,7 @@ import logging
 
 from .samples import samples
 from .fwrapper import _FunctionWrapper
-from .autocorr import _autocorr_time
+from .autocorr import AutocorrelationTime
 from .parallel import ChainManager
 
 
@@ -105,7 +105,6 @@ class sampler:
             total += self.proposal[key]
         if round(total,4) != 1.0:
             raise ValueError("The total probability of all proposals must be equal to 1.0.")
-
 
 
     def run(self,
@@ -335,6 +334,13 @@ class sampler:
         # Close progress bar
         if progress:
             t.close()
+    
+
+    def run_mcmc(self, *args, **kwargs):
+        """
+        Wrapper for run method.
+        """
+        return self.run(*args, **kwargs)
 
 
     def reset(self):
@@ -342,6 +348,42 @@ class sampler:
         Reset the state of the sampler. Delete any samples stored in memory.
         """
         self.samples = samples(self.ndim, self.nwalkers)
+    
+
+    def get_chain(self, flat=False, thin=1, discard=0):
+        """
+        Get the Markov chain containing the samples.
+
+        Args:
+            flat (bool) : If True then flatten the chain into a 2D array by combining all walkers (default is False).
+            thin (int) : Thinning parameter (the default value is 1).
+            discard (int) : Number of burn-in steps to be removed from each walker (default is 0).
+
+        Returns:
+            Array object containg the Markov chain samples (2D if flat=True, 3D if flat=False).
+        """
+        if flat:
+            return self.samples.flatten(discard=discard, thin=thin)
+        else:
+            return self.chain[discard::thin,:,:]
+
+    
+    def get_log_prob(self, flat=False, thin=1, discard=0):
+        """
+        Get the value of the log probability function evalutated at the samples of the Markov chain.
+
+        Args:
+            flat (bool) : If True then flatten the chain into a 1D array by combining all walkers (default is False).
+            thin (int) : Thinning parameter (the default value is 1).
+            discard (int) : Number of burn-in steps to be removed from each walker (default is 0).
+
+        Returns:
+            Array containing the value of the log probability at the samples of the Markov chain (1D if flat=True, 2D otherwise).
+        """
+        if flat:
+            return self.samples.flatten_logprob(discard=discard, thin=thin)
+        else:
+            return self.samples.logprob[discard::thin,:]
 
 
     @property
@@ -355,29 +397,15 @@ class sampler:
         return self.samples.chain
 
 
-    def flatten(self, discard=0, thin=1):
-        """
-        Flatten the chain.
-
-        Args:
-            discard (int): The number of burn-in steps to remove from each walker (default is 0).
-            thin (int): The ammount to thin the chain (default is 1, no thinning).
-
-        Returns:
-            2D Flattened chain.
-        """
-        return self.samples.flatten(discard, thin)
-
-
     @property
-    def autocorr_time(self):
+    def act(self):
         """
         Integrated Autocorrelation Time (IAT) of the Markov Chain.
 
         Returns:
             Array with the IAT of each parameter.
         """
-        return _autocorr_time(np.swapaxes(self.chain[int(self.nsteps/(self.thin*2.0)):,:,:], 0, 1))
+        return AutocorrelationTime(self.chain[int(self.nsteps/(self.thin*2.0)):,:,:])
 
 
     @property
@@ -388,7 +416,7 @@ class sampler:
         Returns:
             ESS
         """
-        return self.nwalkers * self.samples.length / np.mean(self.autocorr_time)
+        return self.nwalkers * self.samples.length / np.mean(self.act)
 
 
     @property
@@ -423,6 +451,14 @@ class sampler:
         """
         return np.asarray(self.mus)
 
+    
+    @property
+    def get_last_sample(self):
+        """
+            Return the last position of the walkers.
+        """
+        return self.chain[-1]
+
 
     @property
     def summary(self):
@@ -436,60 +472,9 @@ class sampler:
         logging.info('Number of Walkers: ' + str(self.nwalkers))
         logging.info('Number of Tuning Generations: ' + str(len(self.mus)))
         logging.info('Scale Factor: ' + str(round(self.mu,6)))
-        logging.info('Mean Integrated Autocorrelation Time: ' + str(round(np.mean(self.autocorr_time),2)))
+        logging.info('Mean Integrated Autocorrelation Time: ' + str(round(np.mean(self.act),2)))
         logging.info('Effective Sample Size: ' + str(round(self.ess,2)))
         logging.info('Number of Log Probability Evaluations: ' + str(self.ncall))
         logging.info('Effective Samples per Log Probability Evaluation: ' + str(round(self.efficiency,6)))
         if self.thin > 1:
             logging.info('Thinning rate: ' + str(self.thin))
-
-
-    def get_chain(self, flat=False, thin=1, discard=0):
-        """
-        Get the Markov chain containing the samples.
-
-        Args:
-            flat (bool) : If True then flatten the chain into a 2D array by combining all walkers (default is False).
-            thin (int) : Thinning parameter (the default value is 1).
-            discard (int) : Number of burn-in steps to be removed from each walker (default is 0).
-
-        Returns:
-            Array object containg the Markov chain samples (2D if flat=True, 3D if flat=False).
-        """
-        if flat:
-            return self.flatten(discard=discard, thin=thin)
-        else:
-            return self.chain[discard::thin,:,:]
-
-
-    def get_log_prob(self, flat=False, thin=1, discard=0):
-        """
-        Get the value of the log probability function evalutated at the samples of the Markov chain.
-
-        Args:
-            flat (bool) : If True then flatten the chain into a 1D array by combining all walkers (default is False).
-            thin (int) : Thinning parameter (the default value is 1).
-            discard (int) : Number of burn-in steps to be removed from each walker (default is 0).
-
-        Returns:
-            Array containing the value of the log probability at the samples of the Markov chain (1D if flat=True, 2D otherwise).
-        """
-        if flat:
-            return self.samples.flatten_logprob(discard=discard, thin=thin)
-        else:
-            return self.samples.logprob[discard::thin,:]
-
-
-    @property
-    def get_last_sample(self):
-        """
-            Return the last position of the walkers.
-        """
-        return self.chain[-1]
-
-
-    def run_mcmc(self, *args, **kwargs):
-        """
-        Wrapper for run method.
-        """
-        return self.run(*args, **kwargs)

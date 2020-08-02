@@ -61,21 +61,26 @@ def _autocorr_time_1d(y, c=5.0):
     return taus[window]
 
 
-def _autocorr_time(samples, c=5.0):
+def AutocorrelationTime(samples, c=5.0):
     """
     Integrated Autocorrelation Time (IAT) for all the chains.
 
-    Args:
-        samples (array) : 3-dimensional array of shape (nwalkers, nsteps, ndim)
-        c (float) : Truncation parameter of automated windowing procedure of Sokal (1989), default is 5.0
+    Parameters
+    ----------
+        samples : array
+            3-dimensional array of shape (nsteps, nwalkers, ndim)
+        c : float
+            Truncation parameter of automated windowing procedure of Sokal (1989), default is 5.0
 
-    Returns:
+    Returns
+    -------
+    taus : array
         Array with the IAT of all the chains.
     """
     _, _, ndim = np.shape(samples)
 
     taus = np.empty(ndim)
     for i in range(ndim):
-        taus[i] = _autocorr_time_1d(samples[:,:,i], c)
+        taus[i] = _autocorr_time_1d(samples[:,:,i].T, c)
 
     return taus

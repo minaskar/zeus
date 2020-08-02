@@ -20,7 +20,7 @@ def _import_mpi(use_dill=False):
 class MPIPool:
     """A processing pool that distributes tasks using MPI.
     With this pool class, the master process distributes tasks to worker
-    processes using an MPI communicator. 
+    processes using an MPI communicator.
     This implementation is inspired by @juliohm in `this module
     <https://github.com/juliohm/HUM/blob/master/pyhum/utils.py#L24>`_
     and was adapted from schwimmbad.
@@ -32,7 +32,7 @@ class MPIPool:
     """
 
     def __init__(self, comm=None):
-        
+
         self.comm = MPI.COMM_WORLD if comm is None else comm
 
         self.master = 0
@@ -92,7 +92,7 @@ class MPIPool:
         tasks : iterable
             A list or iterable of tasks. Each task can be itself an iterable
             (e.g., tuple) of values or data to pass in to the worker function.
-    
+
         Returns
         -------
         results : list
@@ -129,7 +129,7 @@ class MPIPool:
                                     status=status)
             worker = status.source
             taskid = status.tag
-            
+
             # "Master received from worker %s with tag %s"
 
             workerset.add(worker)
@@ -182,41 +182,42 @@ def split_ranks(N_ranks, N_chunks):
         yield i, seq[start:end]
         start = end
         end += avg
-        
+
 
 
 class ChainManager:
     """
-    Class to serve as context manager to handle to MPI-related issues, 
+    Class to serve as context manager to handle to MPI-related issues,
     specifically, the managing of ``MPIPool`` and splitting of communicators.
     This class can be used to run ``nchains`` in parallel with each chain
-    having its own `MPIPool`` of parallel walkers.
-    Parameters
-        ----------
-        nchains : int
-            the number of independent chains to run concurrently
-        comm : MPI.Communicator
-            the global communicator to split
-    """
+    having its own ``MPIPool`` of parallel walkers.
     
+    Parameters
+    ----------
+    nchains : int
+        the number of independent chains to run concurrently
+    comm : MPI.Communicator
+        the global communicator to split
+    """
+
     def __init__(self, nchains, comm=None):
         global MPI
         MPI = _import_mpi(use_dill=False)
 
         self.comm  = MPI.COMM_WORLD if comm is None else comm
         self.nchains = nchains
-    
+
         # initialize comm for parallel chains
         self.chains_group = None
         self.chains_comm  = None
-        
+
         # intiialize comm for pool of workers for each parallel chain
         self.pool_comm = None
         self.pool      = None
-    
+
     def __enter__(self):
         """
-        Setup the MPIPool, such that only the ``pool`` master returns, 
+        Setup the MPIPool, such that only the ``pool`` master returns,
         while the other processes wait for tasks
         """
         # split ranks if we need to
@@ -230,27 +231,27 @@ class ChainManager:
 
             # split the global comm into pools of workers
             self.pool_comm = self.comm.Split(color, 0)
-            
+
             # make the comm to communicate b/w parallel runs
             if self.nchains >= 1:
                 self.chains_group = self.comm.group.Incl(ranges)
                 self.chains_comm = self.comm.Create(self.chains_group)
-    
+
         # initialize the MPI pool, if the comm has more than 1 process
         if self.pool_comm is not None and self.pool_comm.size > 1:
             self.pool = MPIPool(comm=self.pool_comm)
-                    
+
         # explicitly force non-master ranks in pool to wait
         if self.pool is not None and not self.pool.is_master():
             self.pool.wait()
             sys.exit(0)
-            
+
         self.rank = 0
         if self.chains_comm is not None:
             self.rank = self.chains_comm.rank
-            
+
         return self
-                
+
     def __exit__(self, exc_type, exc_value, exc_traceback):
         """
         Exit gracefully by closing and freeing the MPI-related variables
@@ -258,8 +259,8 @@ class ChainManager:
         # wait for all the processes, if we more than one
         if self.chains_comm is not None and self.chains_comm.size > 1:
             self.chains_comm.Barrier()
-            
-        # close and free the MPI stuff        
+
+        # close and free the MPI stuff
         if self.chains_group is not None:
             self.chains_group.Free()
         if self.chains_comm is not None:

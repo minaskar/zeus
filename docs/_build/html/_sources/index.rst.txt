@@ -82,6 +82,11 @@ zeus is free software made available under the GPL-3.0 License.
 Changelog
 =========
 
+**1.1.0 (03/08/20)**
+
+- Added ChainManager to deploy into supercomputing clusters, parallelizing both chains and walkers.
+- Added Convergence diagnostic tools (Gelman-Rubin, Geweke).
+
 **1.0.7 (11/05/20)**
 
 - Improved parallel distribution of tasks

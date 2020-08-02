@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>API &#8212; zeus 1.0.7 documentation</title>
+    <title>API &#8212; zeus 1.1.0 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/_static/default.css" />
@@ -76,7 +76,9 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#zeus-sampler-module">zeus.sampler module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-sampler">The Sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#convergence-diagnostics-statistics">Convergence Diagnostics &amp; Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-chain-manager">The Chain Manager</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/normal_distribution.html">Sampling from a multivariate Normal distribution</a></li>
@@ -106,7 +108,9 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">API</a><ul>
-<li><a class="reference internal" href="#zeus-sampler-module">zeus.sampler module</a></li>
+<li><a class="reference internal" href="#the-sampler">The Sampler</a></li>
+<li><a class="reference internal" href="#convergence-diagnostics-statistics">Convergence Diagnostics &amp; Statistics</a></li>
+<li><a class="reference internal" href="#the-chain-manager">The Chain Manager</a></li>
 </ul>
 </li>
 </ul>
@@ -142,8 +146,14 @@
       
   <div class="section" id="api">
 <h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="zeus-sampler-module">
-<h2>zeus.sampler module<a class="headerlink" href="#zeus-sampler-module" title="Permalink to this headline">¶</a></h2>
+<p><strong>zeus</strong> consists mainly of three parts:</p>
+<ul class="simple">
+<li><p>The Sampler,</p></li>
+<li><p>A Suite of Convergence Diagnostics Tests (<em>Gelman-Rubin, Geweke, Autocorrelation Time</em>),</p></li>
+<li><p>The <strong>Chain Manager</strong> that allows you to deploy <strong>zeus</strong> into huge supercomputing clusters.</p></li>
+</ul>
+<div class="section" id="the-sampler">
+<h2>The Sampler<a class="headerlink" href="#the-sampler" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="zeus.sampler">
 <em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">sampler</code><span class="sig-paren">(</span><em class="sig-param">nwalkers</em>, <em class="sig-param">ndim</em>, <em class="sig-param">logprob_fn</em>, <em class="sig-param">args=None</em>, <em class="sig-param">kwargs=None</em>, <em class="sig-param">proposal={'differential': 1.0</em>, <em class="sig-param">'gaussian': 0.0</em>, <em class="sig-param">'jump': 0.0</em>, <em class="sig-param">'random': 0.0}</em>, <em class="sig-param">tune=True</em>, <em class="sig-param">tolerance=0.05</em>, <em class="sig-param">patience=5</em>, <em class="sig-param">maxsteps=10000</em>, <em class="sig-param">mu=1.0</em>, <em class="sig-param">maxiter=10000</em>, <em class="sig-param">pool=None</em>, <em class="sig-param">vectorize=False</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler" title="Permalink to this definition">¶</a></dt>
@@ -173,8 +183,8 @@ unnormalised posterior probability at that position.</p></li>
 </dd>
 </dl>
 <dl class="method">
-<dt id="zeus.sampler.autocorr_time">
-<em class="property">property </em><code class="sig-name descname">autocorr_time</code><a class="headerlink" href="#zeus.sampler.autocorr_time" title="Permalink to this definition">¶</a></dt>
+<dt id="zeus.sampler.act">
+<em class="property">property </em><code class="sig-name descname">act</code><a class="headerlink" href="#zeus.sampler.act" title="Permalink to this definition">¶</a></dt>
 <dd><p>Integrated Autocorrelation Time (IAT) of the Markov Chain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -212,23 +222,6 @@ unnormalised posterior probability at that position.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>ESS</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="zeus.sampler.flatten">
-<code class="sig-name descname">flatten</code><span class="sig-paren">(</span><em class="sig-param">discard=0</em>, <em class="sig-param">thin=1</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler.flatten" title="Permalink to this definition">¶</a></dt>
-<dd><p>Flatten the chain.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>discard</strong> (<em>int</em>) – The number of burn-in steps to remove from each walker (default is 0).</p></li>
-<li><p><strong>thin</strong> (<em>int</em>) – The ammount to thin the chain (default is 1, no thinning).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>2D Flattened chain.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -331,6 +324,76 @@ unnormalised posterior probability at that position.</p></li>
 <dd><p>Summary of the MCMC run.</p>
 </dd></dl>
 
+</dd></dl>
+
+</div>
+<div class="section" id="convergence-diagnostics-statistics">
+<h2>Convergence Diagnostics &amp; Statistics<a class="headerlink" href="#convergence-diagnostics-statistics" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="zeus.GelmanRubin">
+<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">GelmanRubin</code><span class="sig-paren">(</span><em class="sig-param">chains</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.GelmanRubin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gelman-Rubin convergence statistic.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="zeus.Geweke">
+<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">Geweke</code><span class="sig-paren">(</span><em class="sig-param">chain</em>, <em class="sig-param">first</em>, <em class="sig-param">last</em>, <em class="sig-param">intervals=20</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.Geweke" title="Permalink to this definition">¶</a></dt>
+<dd><p>Geweke convergence diagnostic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chain</strong> (<em>array</em>) – 1D array with samples corresponding to one parameter</p></li>
+<li><p><strong>first</strong> (<em>float</em>) – Value in (0.0, 1.0)</p></li>
+<li><p><strong>last</strong> (<em>float</em>) – Value in (0.1, 1.0)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>zscores</strong> – Array of z-scores for all intervals.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="zeus.AutocorrelationTime">
+<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">AutocorrelationTime</code><span class="sig-paren">(</span><em class="sig-param">samples</em>, <em class="sig-param">c=5.0</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.AutocorrelationTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integrated Autocorrelation Time (IAT) for all the chains.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samples</strong> (<em>array</em>) – 3-dimensional array of shape (nsteps, nwalkers, ndim)</p></li>
+<li><p><strong>c</strong> (<em>float</em>) – Truncation parameter of automated windowing procedure of Sokal (1989), default is 5.0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>taus</strong> – Array with the IAT of all the chains.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="the-chain-manager">
+<h2>The Chain Manager<a class="headerlink" href="#the-chain-manager" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="zeus.ChainManager">
+<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">ChainManager</code><span class="sig-paren">(</span><em class="sig-param">nchains</em>, <em class="sig-param">comm=None</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to serve as context manager to handle to MPI-related issues,
+specifically, the managing of <code class="docutils literal notranslate"><span class="pre">MPIPool</span></code> and splitting of communicators.
+This class can be used to run <code class="docutils literal notranslate"><span class="pre">nchains</span></code> in parallel with each chain
+having its own <code class="docutils literal notranslate"><span class="pre">MPIPool</span></code> of parallel walkers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nchains</strong> (<em>int</em>) – the number of independent chains to run concurrently</p></li>
+<li><p><strong>comm</strong> (<em>MPI.Communicator</em>) – the global communicator to split</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
