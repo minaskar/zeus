@@ -215,6 +215,7 @@ class ChainManager:
         self.pool_comm = None
         self.pool      = None
 
+
     def __enter__(self):
         """
         Setup the MPIPool, such that only the ``pool`` master returns,
@@ -252,6 +253,7 @@ class ChainManager:
 
         return self
 
+
     def __exit__(self, exc_type, exc_value, exc_traceback):
         """
         Exit gracefully by closing and freeing the MPI-related variables
@@ -269,3 +271,95 @@ class ChainManager:
             self.pool.close()
 
         return True
+
+
+    @property
+    def get_rank(self):
+        '''
+        Get ``rank`` of current ``chain``. The minimum ``rank`` is ``0`` and the maximum is ``nchains-1``.
+        '''
+        return self.rank
+
+
+    @property
+    def get_pool(self):
+        '''
+        Get parallel ``pool`` of workers that correspond to a specific chain. This should be used to
+        parallelize the walkers of each ``chain`` (not the chains themselves). This includes the ``map``
+        method that ``zeus`` requires.
+        '''
+        return self.pool
+
+    
+    def gather(self, x, root):
+        '''
+        Gather method to gather ``x`` in ``rank = root`` chain.
+
+        Parameters
+        ----------
+        x : Python object
+            The python object to be gathered.
+        root : int
+            The rank  of the chain that x is gathered.
+
+        Returns
+        -------
+        x : Python object
+            The input object x gathered in ``rank = root``.
+        '''
+        return self.chains_comm.gather(x, root=root)
+
+    
+    def scatter(self, x, root):
+        '''
+        Scatter method to scatter ``x`` from ``rank = root`` chain to the rest. 
+
+        Parameters
+        ----------
+        x : Python object
+            The python object to be scattered.
+        root : int
+            The rank of the origin chain from which the x is scattered.
+
+        Returns
+        -------
+        x : Pythonn object
+            Part of the input object x that was scattered along the ranks.
+        '''
+        return self.chains_comm.scatter(x, root=root)
+
+
+    def allgather(self, x):
+        '''
+        Allgather method to gather ``x`` in all chains. This is equivalent to first ``scatter`` and then ``bcast``.
+
+        Parameters
+        ----------
+        x : Python object
+            The python object to be gathered.
+
+        Returns
+        -------
+        x : Python object
+            The python object, gathered in all ranks.
+        '''
+        return self.chains_comm.allgather(x)
+
+
+    def bcast(self, x, root):
+        '''
+        Broadcast method to send ``x`` from ``rank = root`` to all chains.
+
+        Parameters
+        ----------
+        x : Python object
+            The python object to be send.
+        root : int
+            The rank of the origin chain from which the object x is sent.
+        
+        Returns
+        -------
+        x : Python object
+            The input object x in all ranks.
+        '''
+        return self.chains_comm.bcast(x, root=root)

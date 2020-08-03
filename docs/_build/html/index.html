@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>zeus documentation &#8212; zeus 1.1.0 documentation</title>
+    <title>zeus documentation &#8212; zeus 1.2.0 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/_static/default.css" />
@@ -152,7 +152,8 @@
 <li><p>Efficient Markov Chain Monte Carlo,</p></li>
 <li><p>No hand-tuning,</p></li>
 <li><p>Excellent performance in terms of autocorrelation time and convergence rate,</p></li>
-<li><p>Scale to multiple CPUs without any extra effort.</p></li>
+<li><p>Scale to multiple CPUs without any extra effort,</p></li>
+<li><p>Included <em>Convergence Diagnostics</em>.</p></li>
 </ul>
 <a class="reference external image-reference" href="https://github.com/minaskar/zeus"><img alt="https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue" src="https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue" /></a>
 <a class="reference external image-reference" href="https://arxiv.org/abs/2002.06212"><img alt="https://img.shields.io/badge/arXiv-2002.06212-red" src="https://img.shields.io/badge/arXiv-2002.06212-red" /></a>
@@ -214,7 +215,11 @@ research. The BibTeX entry for the paper is:</p>
 </div>
 <div class="section" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<p><strong>1.1.0 (03/08/20)</strong></p>
+<p><strong>1.2.0 (03/08/20)</strong></p>
+<ul class="simple">
+<li><p>Extended ChainManager with gather, scatter, and bcast tools.</p></li>
+</ul>
+<p><strong>1.1.0 (02/08/20)</strong></p>
 <ul class="simple">
 <li><p>Added ChainManager to deploy into supercomputing clusters, parallelizing both chains and walkers.</p></li>
 <li><p>Added Convergence diagnostic tools (Gelman-Rubin, Geweke).</p></li>

@@ -8,7 +8,9 @@
 - Efficient Markov Chain Monte Carlo,
 - No hand-tuning,
 - Excellent performance in terms of autocorrelation time and convergence rate,
-- Scale to multiple CPUs without any extra effort.
+- Scale to multiple CPUs without any extra effort,
+- Included *Convergence Diagnostics*.
+
 
 .. image:: https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue
     :target: https://github.com/minaskar/zeus
@@ -82,7 +84,11 @@ zeus is free software made available under the GPL-3.0 License.
 Changelog
 =========
 
-**1.1.0 (03/08/20)**
+**1.2.0 (03/08/20)**
+
+- Extended ChainManager with gather, scatter, and bcast tools.
+
+**1.1.0 (02/08/20)**
 
 - Added ChainManager to deploy into supercomputing clusters, parallelizing both chains and walkers.
 - Added Convergence diagnostic tools (Gelman-Rubin, Geweke).

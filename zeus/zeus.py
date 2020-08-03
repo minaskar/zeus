@@ -6,8 +6,7 @@ import logging
 
 from .samples import samples
 from .fwrapper import _FunctionWrapper
-from .autocorr import AutocorrelationTime
-from .parallel import ChainManager
+from .autocorr import AutoCorrTime
 
 
 class sampler:
@@ -405,7 +404,7 @@ class sampler:
         Returns:
             Array with the IAT of each parameter.
         """
-        return AutocorrelationTime(self.chain[int(self.nsteps/(self.thin*2.0)):,:,:])
+        return AutoCorrTime(self.chain[int(self.nsteps/(self.thin*2.0)):,:,:])
 
 
     @property

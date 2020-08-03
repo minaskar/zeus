@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>API &#8212; zeus 1.1.0 documentation</title>
+    <title>API &#8212; zeus 1.2.0 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/_static/default.css" />
@@ -330,14 +330,14 @@ unnormalised posterior probability at that position.</p></li>
 <div class="section" id="convergence-diagnostics-statistics">
 <h2>Convergence Diagnostics &amp; Statistics<a class="headerlink" href="#convergence-diagnostics-statistics" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="zeus.GelmanRubin">
-<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">GelmanRubin</code><span class="sig-paren">(</span><em class="sig-param">chains</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.GelmanRubin" title="Permalink to this definition">¶</a></dt>
+<dt id="zeus.diagnostics.GelmanRubin">
+<code class="sig-prename descclassname">zeus.diagnostics.</code><code class="sig-name descname">GelmanRubin</code><span class="sig-paren">(</span><em class="sig-param">chains</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.diagnostics.GelmanRubin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gelman-Rubin convergence statistic.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="zeus.Geweke">
-<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">Geweke</code><span class="sig-paren">(</span><em class="sig-param">chain</em>, <em class="sig-param">first</em>, <em class="sig-param">last</em>, <em class="sig-param">intervals=20</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.Geweke" title="Permalink to this definition">¶</a></dt>
+<dt id="zeus.diagnostics.Geweke">
+<code class="sig-prename descclassname">zeus.diagnostics.</code><code class="sig-name descname">Geweke</code><span class="sig-paren">(</span><em class="sig-param">chain</em>, <em class="sig-param">first</em>, <em class="sig-param">last</em>, <em class="sig-param">intervals=20</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.diagnostics.Geweke" title="Permalink to this definition">¶</a></dt>
 <dd><p>Geweke convergence diagnostic.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -357,8 +357,8 @@ unnormalised posterior probability at that position.</p></li>
 </dd></dl>
 
 <dl class="function">
-<dt id="zeus.AutocorrelationTime">
-<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">AutocorrelationTime</code><span class="sig-paren">(</span><em class="sig-param">samples</em>, <em class="sig-param">c=5.0</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.AutocorrelationTime" title="Permalink to this definition">¶</a></dt>
+<dt id="zeus.autocorr.AutoCorrTime">
+<code class="sig-prename descclassname">zeus.autocorr.</code><code class="sig-name descname">AutoCorrTime</code><span class="sig-paren">(</span><em class="sig-param">samples</em>, <em class="sig-param">c=5.0</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.autocorr.AutoCorrTime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Integrated Autocorrelation Time (IAT) for all the chains.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -380,8 +380,8 @@ unnormalised posterior probability at that position.</p></li>
 <div class="section" id="the-chain-manager">
 <h2>The Chain Manager<a class="headerlink" href="#the-chain-manager" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="zeus.ChainManager">
-<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">ChainManager</code><span class="sig-paren">(</span><em class="sig-param">nchains</em>, <em class="sig-param">comm=None</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager" title="Permalink to this definition">¶</a></dt>
+<dt id="zeus.parallel.ChainManager">
+<em class="property">class </em><code class="sig-prename descclassname">zeus.parallel.</code><code class="sig-name descname">ChainManager</code><span class="sig-paren">(</span><em class="sig-param">nchains</em>, <em class="sig-param">comm=None</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.parallel.ChainManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to serve as context manager to handle to MPI-related issues,
 specifically, the managing of <code class="docutils literal notranslate"><span class="pre">MPIPool</span></code> and splitting of communicators.
 This class can be used to run <code class="docutils literal notranslate"><span class="pre">nchains</span></code> in parallel with each chain
@@ -394,6 +394,97 @@ having its own <code class="docutils literal notranslate"><span class="pre">MPIP
 </ul>
 </dd>
 </dl>
+<dl class="method">
+<dt id="zeus.parallel.ChainManager.allgather">
+<code class="sig-name descname">allgather</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.parallel.ChainManager.allgather" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allgather method to gather <code class="docutils literal notranslate"><span class="pre">x</span></code> in all chains. This is equivalent to first <code class="docutils literal notranslate"><span class="pre">scatter</span></code> and then <code class="docutils literal notranslate"><span class="pre">bcast</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>Python object</em>) – The python object to be gathered.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>x</strong> – The python object, gathered in all ranks.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Python object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="zeus.parallel.ChainManager.bcast">
+<code class="sig-name descname">bcast</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">root</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.parallel.ChainManager.bcast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Broadcast method to send <code class="docutils literal notranslate"><span class="pre">x</span></code> from <code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">=</span> <span class="pre">root</span></code> to all chains.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Python object</em>) – The python object to be send.</p></li>
+<li><p><strong>root</strong> (<em>int</em>) – The rank of the origin chain from which the object x is sent.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>x</strong> – The input object x in all ranks.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Python object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="zeus.parallel.ChainManager.gather">
+<code class="sig-name descname">gather</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">root</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.parallel.ChainManager.gather" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gather method to gather <code class="docutils literal notranslate"><span class="pre">x</span></code> in <code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">=</span> <span class="pre">root</span></code> chain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Python object</em>) – The python object to be gathered.</p></li>
+<li><p><strong>root</strong> (<em>int</em>) – The rank  of the chain that x is gathered.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>x</strong> – The input object x gathered in <code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">=</span> <span class="pre">root</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Python object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="zeus.parallel.ChainManager.get_pool">
+<em class="property">property </em><code class="sig-name descname">get_pool</code><a class="headerlink" href="#zeus.parallel.ChainManager.get_pool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get parallel <code class="docutils literal notranslate"><span class="pre">pool</span></code> of workers that correspond to a specific chain. This should be used to
+parallelize the walkers of each <code class="docutils literal notranslate"><span class="pre">chain</span></code> (not the chains themselves). This includes the <code class="docutils literal notranslate"><span class="pre">map</span></code>
+method that <code class="docutils literal notranslate"><span class="pre">zeus</span></code> requires.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="zeus.parallel.ChainManager.get_rank">
+<em class="property">property </em><code class="sig-name descname">get_rank</code><a class="headerlink" href="#zeus.parallel.ChainManager.get_rank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get <code class="docutils literal notranslate"><span class="pre">rank</span></code> of current <code class="docutils literal notranslate"><span class="pre">chain</span></code>. The minimum <code class="docutils literal notranslate"><span class="pre">rank</span></code> is <code class="docutils literal notranslate"><span class="pre">0</span></code> and the maximum is <code class="docutils literal notranslate"><span class="pre">nchains-1</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="zeus.parallel.ChainManager.scatter">
+<code class="sig-name descname">scatter</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">root</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.parallel.ChainManager.scatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scatter method to scatter <code class="docutils literal notranslate"><span class="pre">x</span></code> from <code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">=</span> <span class="pre">root</span></code> chain to the rest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Python object</em>) – The python object to be scattered.</p></li>
+<li><p><strong>root</strong> (<em>int</em>) – The rank of the origin chain from which the x is scattered.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>x</strong> – Part of the input object x that was scattered along the ranks.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Pythonn object</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>

@@ -61,7 +61,7 @@ def _autocorr_time_1d(y, c=5.0):
     return taus[window]
 
 
-def AutocorrelationTime(samples, c=5.0):
+def AutoCorrTime(samples, c=5.0):
     """
     Integrated Autocorrelation Time (IAT) for all the chains.
 
