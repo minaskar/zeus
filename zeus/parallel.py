@@ -1,6 +1,7 @@
 import sys
 import atexit
 
+
 MPI = None
 
 def _import_mpi(use_dill=False):

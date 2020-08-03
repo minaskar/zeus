@@ -20,16 +20,16 @@ The Sampler
 Convergence Diagnostics & Statistics
 ------------------------------------
 
-.. autofunction:: zeus.diagnostics.GelmanRubin
+.. autofunction:: zeus.GelmanRubin
 
-.. autofunction:: zeus.diagnostics.Geweke
+.. autofunction:: zeus.Geweke
 
-.. autofunction:: zeus.autocorr.AutoCorrTime
+.. autofunction:: zeus.AutoCorrTime
 
 
 The Chain Manager
 -----------------
 
-.. autoclass:: zeus.parallel.ChainManager
+.. autoclass:: zeus.ChainManager
    :members:
    :undoc-members:

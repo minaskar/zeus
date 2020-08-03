@@ -1,5 +1,6 @@
 import numpy as np 
 
+
 def GelmanRubin(chains):
     '''
     Gelman-Rubin convergence statistic.
