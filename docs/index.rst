@@ -84,6 +84,10 @@ zeus is free software made available under the GPL-3.0 License.
 Changelog
 =========
 
+**1.2.1 (04/08/20**
+
+-- Changed to Flat-not-nested philosophy for diagnostics and ChainManager.
+
 **1.2.0 (03/08/20)**
 
 - Extended ChainManager with gather, scatter, and bcast tools.
