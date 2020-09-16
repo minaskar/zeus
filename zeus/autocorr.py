@@ -59,7 +59,7 @@ def _autocorr_time_1d(y, c=5.0, method='mk'):
         f /= y.shape[1]
     else:
         # Goodman-Weary method
-        f = _autocorr_func_1d(np.mean(y, axis=0))
+        f = _autocorr_func_1d(np.mean(y, axis=1))
     
     taus = 2.0 * np.cumsum(f) - 1.0
 
