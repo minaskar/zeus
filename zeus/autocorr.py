@@ -33,21 +33,34 @@ def _autocorr_func_1d(x, norm=True):
     return acf
 
 
-def _autocorr_time_1d(y, c=5.0):
+def _autocorr_time_1d(y, c=5.0, method='mk'):
     """
     Integrated Autocorrelation Time (IAT) for 1-dimensional chain.
 
     Args:
-        y (array) : (nwalkers,nsteps) array for one parameter.
+        y (array) : (nsteps, nwalkers) array for one parameter.
         c (float) : Truncation parameter of automated windowing procedure of Sokal (1989), default is 5.0
 
     Returns:
         The IAT of the chain y.
     """
-    f = np.zeros(y.shape[1])
-    for yy in y:
-        f += _autocorr_func_1d(yy)
-    f /= len(y)
+
+    if method not in ['mk', 'dfm', 'gw']:
+        raise ValueError('Please select one of the supported methods i.e. mk (Recommended), dfm, gw.')
+
+    if method == 'mk':
+        # Minas Karamanis method
+        f = _autocorr_func_1d(y.reshape((-1), order='C'))
+    elif method == 'dfm':
+        # Daniel Forman-Mackey method
+        f = np.zeros(y.shape[0])
+        for yy in y:
+            f += _autocorr_func_1d(yy)
+        f /= len(y)
+    else:
+        # Goodman-Weary method
+        f = _autocorr_func_1d(np.mean(y, axis=0))
+    
     taus = 2.0 * np.cumsum(f) - 1.0
 
     # Automated windowing procedure following Sokal (1989)
@@ -61,7 +74,7 @@ def _autocorr_time_1d(y, c=5.0):
     return taus[window]
 
 
-def AutoCorrTime(samples, c=5.0):
+def AutoCorrTime(samples, c=5.0, method='mk'):
     """
     Integrated Autocorrelation Time (IAT) for all the chains.
 
@@ -77,10 +90,14 @@ def AutoCorrTime(samples, c=5.0):
     taus : array
         Array with the IAT of all the chains.
     """
+
+    if method not in ['mk', 'dfm', 'gw']:
+        raise ValueError('Please select one of the supported methods i.e. mk (Recommended), dfm, gw.')
+
     _, _, ndim = np.shape(samples)
 
     taus = np.empty(ndim)
     for i in range(ndim):
-        taus[i] = _autocorr_time_1d(samples[:,:,i].T, c)
+        taus[i] = _autocorr_time_1d(samples[:,:,i], c, method)
 
     return taus
