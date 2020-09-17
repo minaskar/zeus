@@ -1,4 +1,5 @@
 import numpy as np
+import scipy as sp
 
 
 def _autocorr_func_1d(x, norm=True):
@@ -22,8 +23,10 @@ def _autocorr_func_1d(x, norm=True):
         n = n << 1
 
     # Compute the auto-correlation function using FFT
-    f = np.fft.fft(x - np.mean(x), n=2 * n)
-    acf = np.fft.ifft(f * np.conjugate(f))[: len(x)].real
+    #f = np.fft.fft(x - np.mean(x), n=2 * n)
+    #acf = np.fft.ifft(f * np.conjugate(f))[: len(x)].real
+    f = sp.fft.fft(x - np.mean(x), n=2 * n)
+    acf = sp.fft.ifft(f * np.conjugate(f))[: len(x)].real
     acf /= 4 * n
 
     # Normalize
@@ -53,13 +56,13 @@ def _autocorr_time_1d(y, c=5.0, method='mk'):
         f = _autocorr_func_1d(y.reshape((-1), order='C'))
     elif method == 'dfm':
         # Daniel Forman-Mackey method
-        f = np.zeros(y.shape[0])
-        for i in range(y.shape[1]):
-            f += _autocorr_func_1d(y[:,i])
-        f /= y.shape[1]
+        f = np.zeros(y.shape[1])
+        for yy in y:
+            f += _autocorr_func_1d(yy)
+        f /= len(y)
     else:
         # Goodman-Weary method
-        f = _autocorr_func_1d(np.mean(y, axis=1))
+        f = _autocorr_func_1d(np.mean(y, axis=0))
     
     taus = 2.0 * np.cumsum(f) - 1.0
 
@@ -98,6 +101,6 @@ def AutoCorrTime(samples, c=5.0, method='mk'):
 
     taus = np.empty(ndim)
     for i in range(ndim):
-        taus[i] = _autocorr_time_1d(samples[:,:,i], c, method)
+        taus[i] = _autocorr_time_1d(samples[:,:,i].T, c, method)
 
     return taus

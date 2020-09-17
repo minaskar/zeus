@@ -9,10 +9,9 @@ from .fwrapper import _FunctionWrapper
 from .autocorr import AutoCorrTime
 
 
-class sampler:
+class EnsembleSampler:
     """
-    An Ensemble Slice MCMC sampler.
-    arXiv:2002.06212
+    An Ensemble Slice Sampler.
 
     Args:
         nwalkers (int): The number of walkers in the ensemble.
@@ -477,3 +476,9 @@ class sampler:
         logging.info('Effective Samples per Log Probability Evaluation: ' + str(round(self.efficiency,6)))
         if self.thin > 1:
             logging.info('Thinning rate: ' + str(self.thin))
+
+
+class sampler(EnsembleSampler):
+    def __init__(self, *args, **kwargs):
+        logging.warning('The sampler class has been deprecated. Please use the new EnsembleSampler class.')
+        super().__init__(*args, **kwargs)
