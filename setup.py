@@ -3,9 +3,12 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+with open("requirements.txt", 'r') as dependencies:
+    requirements = [pkg.strip() for pkg in dependencies]
+
 setuptools.setup(
     name="zeus-mcmc",
-    version="1.2.1",
+    version="1.2.2",
     author="Minas Karamanis",
     author_email="minaskar@gmail.com",
     description="zeus: Lightning Fast MCMC",
@@ -21,6 +24,6 @@ setuptools.setup(
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Mathematics',
     ],
-    install_requires=['numpy', 'tqdm'],
+    install_requires=requirements,
     python_requires='>=3.6',
 )
