@@ -1,20 +1,20 @@
-
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>Index &#8212; zeus 1.2.1 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index &#8212; zeus 1.2.2 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/_static/default.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
@@ -76,7 +76,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api.html#the-sampler">The Sampler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#convergence-diagnostics-statistics">Convergence Diagnostics &amp; Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#autocorrelation-time">Autocorrelation Time</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#the-chain-manager">The Chain Manager</a></li>
 </ul>
 </li>
@@ -152,7 +152,7 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#zeus.sampler.act">act() (zeus.sampler property)</a>
+      <li><a href="api.html#zeus.EnsembleSampler.act">act() (zeus.EnsembleSampler property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -174,7 +174,7 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#zeus.sampler.chain">chain() (zeus.sampler property)</a>
+      <li><a href="api.html#zeus.EnsembleSampler.chain">chain() (zeus.EnsembleSampler property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -186,11 +186,13 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#zeus.sampler.efficiency">efficiency() (zeus.sampler property)</a>
+      <li><a href="api.html#zeus.EnsembleSampler.efficiency">efficiency() (zeus.EnsembleSampler property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#zeus.sampler.ess">ess() (zeus.sampler property)</a>
+      <li><a href="api.html#zeus.EnsembleSampler">EnsembleSampler (class in zeus)</a>
+</li>
+      <li><a href="api.html#zeus.EnsembleSampler.ess">ess() (zeus.EnsembleSampler property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -200,21 +202,17 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#zeus.ChainManager.gather">gather() (zeus.ChainManager method)</a>
 </li>
-      <li><a href="api.html#zeus.GelmanRubin">GelmanRubin() (in module zeus)</a>
+      <li><a href="api.html#zeus.EnsembleSampler.get_chain">get_chain() (zeus.EnsembleSampler method)</a>
 </li>
-      <li><a href="api.html#zeus.sampler.get_chain">get_chain() (zeus.sampler method)</a>
-</li>
-      <li><a href="api.html#zeus.sampler.get_last_sample">get_last_sample() (zeus.sampler property)</a>
+      <li><a href="api.html#zeus.EnsembleSampler.get_last_sample">get_last_sample() (zeus.EnsembleSampler property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#zeus.sampler.get_log_prob">get_log_prob() (zeus.sampler method)</a>
+      <li><a href="api.html#zeus.EnsembleSampler.get_log_prob">get_log_prob() (zeus.EnsembleSampler method)</a>
 </li>
       <li><a href="api.html#zeus.ChainManager.get_pool">get_pool() (zeus.ChainManager property)</a>
 </li>
       <li><a href="api.html#zeus.ChainManager.get_rank">get_rank() (zeus.ChainManager property)</a>
-</li>
-      <li><a href="api.html#zeus.Geweke">Geweke() (in module zeus)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -222,7 +220,7 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#zeus.sampler.ncall">ncall() (zeus.sampler property)</a>
+      <li><a href="api.html#zeus.EnsembleSampler.ncall">ncall() (zeus.EnsembleSampler property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -230,13 +228,13 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#zeus.sampler.reset">reset() (zeus.sampler method)</a>
+      <li><a href="api.html#zeus.EnsembleSampler.reset">reset() (zeus.EnsembleSampler method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#zeus.sampler.run">run() (zeus.sampler method)</a>
+      <li><a href="api.html#zeus.EnsembleSampler.run">run() (zeus.EnsembleSampler method)</a>
 </li>
-      <li><a href="api.html#zeus.sampler.run_mcmc">run_mcmc() (zeus.sampler method)</a>
+      <li><a href="api.html#zeus.EnsembleSampler.run_mcmc">run_mcmc() (zeus.EnsembleSampler method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -244,15 +242,13 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#zeus.sampler">sampler (class in zeus)</a>
-</li>
-      <li><a href="api.html#zeus.sampler.scale_factor">scale_factor() (zeus.sampler property)</a>
+      <li><a href="api.html#zeus.EnsembleSampler.scale_factor">scale_factor() (zeus.EnsembleSampler property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#zeus.ChainManager.scatter">scatter() (zeus.ChainManager method)</a>
 </li>
-      <li><a href="api.html#zeus.sampler.summary">summary() (zeus.sampler property)</a>
+      <li><a href="api.html#zeus.EnsembleSampler.summary">summary() (zeus.EnsembleSampler property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -271,7 +267,7 @@
     </p>
     <p>
         &copy; Copyright 2019-2020, Minas Karamanis.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>
 </footer>

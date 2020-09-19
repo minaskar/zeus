@@ -84,9 +84,14 @@ zeus is free software made available under the GPL-3.0 License.
 Changelog
 =========
 
+**1.2.2 (04/08/20**
+
+- Sampler class is deprecated. New EnsembleSampler class in now available.
+- New estimator for the Integrated Autocorrelation Time. It's accurate even with short chains. 
+
 **1.2.1 (04/08/20**
 
--- Changed to Flat-not-nested philosophy for diagnostics and ChainManager.
+- Changed to Flat-not-nested philosophy for diagnostics and ChainManager.
 
 **1.2.0 (03/08/20)**
 

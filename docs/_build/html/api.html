@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>API &#8212; zeus 1.2.1 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API &#8212; zeus 1.2.2 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/_static/default.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -77,7 +78,7 @@
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#the-sampler">The Sampler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#convergence-diagnostics-statistics">Convergence Diagnostics &amp; Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#autocorrelation-time">Autocorrelation Time</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#the-chain-manager">The Chain Manager</a></li>
 </ul>
 </li>
@@ -109,7 +110,7 @@
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">API</a><ul>
 <li><a class="reference internal" href="#the-sampler">The Sampler</a></li>
-<li><a class="reference internal" href="#convergence-diagnostics-statistics">Convergence Diagnostics &amp; Statistics</a></li>
+<li><a class="reference internal" href="#autocorrelation-time">Autocorrelation Time</a></li>
 <li><a class="reference internal" href="#the-chain-manager">The Chain Manager</a></li>
 </ul>
 </li>
@@ -149,16 +150,15 @@
 <p><strong>zeus</strong> consists mainly of three parts:</p>
 <ul class="simple">
 <li><p>The Sampler,</p></li>
-<li><p>A Suite of Convergence Diagnostics Tests (<em>Gelman-Rubin, Geweke, Autocorrelation Time</em>),</p></li>
+<li><p>An Integrated Autocorrelation Time estimator.</p></li>
 <li><p>The <strong>Chain Manager</strong> that allows you to deploy <strong>zeus</strong> into huge supercomputing clusters.</p></li>
 </ul>
 <div class="section" id="the-sampler">
 <h2>The Sampler<a class="headerlink" href="#the-sampler" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="zeus.sampler">
-<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">sampler</code><span class="sig-paren">(</span><em class="sig-param">nwalkers</em>, <em class="sig-param">ndim</em>, <em class="sig-param">logprob_fn</em>, <em class="sig-param">args=None</em>, <em class="sig-param">kwargs=None</em>, <em class="sig-param">proposal={'differential': 1.0</em>, <em class="sig-param">'gaussian': 0.0</em>, <em class="sig-param">'jump': 0.0</em>, <em class="sig-param">'random': 0.0}</em>, <em class="sig-param">tune=True</em>, <em class="sig-param">tolerance=0.05</em>, <em class="sig-param">patience=5</em>, <em class="sig-param">maxsteps=10000</em>, <em class="sig-param">mu=1.0</em>, <em class="sig-param">maxiter=10000</em>, <em class="sig-param">pool=None</em>, <em class="sig-param">vectorize=False</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler" title="Permalink to this definition">¶</a></dt>
-<dd><p>An Ensemble Slice MCMC sampler.
-arXiv:2002.06212</p>
+<dl class="py class">
+<dt id="zeus.EnsembleSampler">
+<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">EnsembleSampler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nwalkers</span></em>, <em class="sig-param"><span class="n">ndim</span></em>, <em class="sig-param"><span class="n">logprob_fn</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">proposal</span><span class="o">=</span><span class="default_value">{'differential': 1.0, 'gaussian': 0.0, 'jump': 0.0, 'random': 0.0}</span></em>, <em class="sig-param"><span class="n">tune</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">tolerance</span><span class="o">=</span><span class="default_value">0.05</span></em>, <em class="sig-param"><span class="n">patience</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">maxsteps</span><span class="o">=</span><span class="default_value">10000</span></em>, <em class="sig-param"><span class="n">mu</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">10000</span></em>, <em class="sig-param"><span class="n">pool</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vectorize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>An Ensemble Slice Sampler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -182,9 +182,9 @@ unnormalised posterior probability at that position.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="method">
-<dt id="zeus.sampler.act">
-<em class="property">property </em><code class="sig-name descname">act</code><a class="headerlink" href="#zeus.sampler.act" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt id="zeus.EnsembleSampler.act">
+<em class="property">property </em><code class="sig-name descname">act</code><a class="headerlink" href="#zeus.EnsembleSampler.act" title="Permalink to this definition">¶</a></dt>
 <dd><p>Integrated Autocorrelation Time (IAT) of the Markov Chain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -193,9 +193,9 @@ unnormalised posterior probability at that position.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="zeus.sampler.chain">
-<em class="property">property </em><code class="sig-name descname">chain</code><a class="headerlink" href="#zeus.sampler.chain" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt id="zeus.EnsembleSampler.chain">
+<em class="property">property </em><code class="sig-name descname">chain</code><a class="headerlink" href="#zeus.EnsembleSampler.chain" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the chains.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -204,9 +204,9 @@ unnormalised posterior probability at that position.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="zeus.sampler.efficiency">
-<em class="property">property </em><code class="sig-name descname">efficiency</code><a class="headerlink" href="#zeus.sampler.efficiency" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt id="zeus.EnsembleSampler.efficiency">
+<em class="property">property </em><code class="sig-name descname">efficiency</code><a class="headerlink" href="#zeus.EnsembleSampler.efficiency" title="Permalink to this definition">¶</a></dt>
 <dd><p>Effective Samples per Log Probability Evaluation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -215,9 +215,9 @@ unnormalised posterior probability at that position.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="zeus.sampler.ess">
-<em class="property">property </em><code class="sig-name descname">ess</code><a class="headerlink" href="#zeus.sampler.ess" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt id="zeus.EnsembleSampler.ess">
+<em class="property">property </em><code class="sig-name descname">ess</code><a class="headerlink" href="#zeus.EnsembleSampler.ess" title="Permalink to this definition">¶</a></dt>
 <dd><p>Effective Sampling Size (ESS) of the Markov Chain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -226,9 +226,9 @@ unnormalised posterior probability at that position.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="zeus.sampler.get_chain">
-<code class="sig-name descname">get_chain</code><span class="sig-paren">(</span><em class="sig-param">flat=False</em>, <em class="sig-param">thin=1</em>, <em class="sig-param">discard=0</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler.get_chain" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt id="zeus.EnsembleSampler.get_chain">
+<code class="sig-name descname">get_chain</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">flat</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">thin</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">discard</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.get_chain" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the Markov chain containing the samples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -244,15 +244,15 @@ unnormalised posterior probability at that position.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="zeus.sampler.get_last_sample">
-<em class="property">property </em><code class="sig-name descname">get_last_sample</code><a class="headerlink" href="#zeus.sampler.get_last_sample" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt id="zeus.EnsembleSampler.get_last_sample">
+<em class="property">property </em><code class="sig-name descname">get_last_sample</code><a class="headerlink" href="#zeus.EnsembleSampler.get_last_sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the last position of the walkers.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="zeus.sampler.get_log_prob">
-<code class="sig-name descname">get_log_prob</code><span class="sig-paren">(</span><em class="sig-param">flat=False</em>, <em class="sig-param">thin=1</em>, <em class="sig-param">discard=0</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler.get_log_prob" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt id="zeus.EnsembleSampler.get_log_prob">
+<code class="sig-name descname">get_log_prob</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">flat</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">thin</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">discard</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.get_log_prob" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the value of the log probability function evalutated at the samples of the Markov chain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -268,9 +268,9 @@ unnormalised posterior probability at that position.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="zeus.sampler.ncall">
-<em class="property">property </em><code class="sig-name descname">ncall</code><a class="headerlink" href="#zeus.sampler.ncall" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt id="zeus.EnsembleSampler.ncall">
+<em class="property">property </em><code class="sig-name descname">ncall</code><a class="headerlink" href="#zeus.EnsembleSampler.ncall" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of Log Prob calls.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -279,15 +279,15 @@ unnormalised posterior probability at that position.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="zeus.sampler.reset">
-<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler.reset" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt id="zeus.EnsembleSampler.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reset the state of the sampler. Delete any samples stored in memory.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="zeus.sampler.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">start</em>, <em class="sig-param">nsteps=1000</em>, <em class="sig-param">thin=1</em>, <em class="sig-param">progress=True</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler.run" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt id="zeus.EnsembleSampler.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">nsteps</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">thin</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">progress</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calling this method runs the mcmc sampler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -301,15 +301,15 @@ unnormalised posterior probability at that position.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="zeus.sampler.run_mcmc">
-<code class="sig-name descname">run_mcmc</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.sampler.run_mcmc" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt id="zeus.EnsembleSampler.run_mcmc">
+<code class="sig-name descname">run_mcmc</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.run_mcmc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper for run method.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="zeus.sampler.scale_factor">
-<em class="property">property </em><code class="sig-name descname">scale_factor</code><a class="headerlink" href="#zeus.sampler.scale_factor" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt id="zeus.EnsembleSampler.scale_factor">
+<em class="property">property </em><code class="sig-name descname">scale_factor</code><a class="headerlink" href="#zeus.EnsembleSampler.scale_factor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Scale factor values during tuning.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -318,47 +318,20 @@ unnormalised posterior probability at that position.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="zeus.sampler.summary">
-<em class="property">property </em><code class="sig-name descname">summary</code><a class="headerlink" href="#zeus.sampler.summary" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt id="zeus.EnsembleSampler.summary">
+<em class="property">property </em><code class="sig-name descname">summary</code><a class="headerlink" href="#zeus.EnsembleSampler.summary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Summary of the MCMC run.</p>
 </dd></dl>
 
 </dd></dl>
 
 </div>
-<div class="section" id="convergence-diagnostics-statistics">
-<h2>Convergence Diagnostics &amp; Statistics<a class="headerlink" href="#convergence-diagnostics-statistics" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="zeus.GelmanRubin">
-<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">GelmanRubin</code><span class="sig-paren">(</span><em class="sig-param">chains</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.GelmanRubin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gelman-Rubin convergence statistic.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="zeus.Geweke">
-<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">Geweke</code><span class="sig-paren">(</span><em class="sig-param">chain</em>, <em class="sig-param">first</em>, <em class="sig-param">last</em>, <em class="sig-param">intervals=20</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.Geweke" title="Permalink to this definition">¶</a></dt>
-<dd><p>Geweke convergence diagnostic.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>chain</strong> (<em>array</em>) – 1D array with samples corresponding to one parameter</p></li>
-<li><p><strong>first</strong> (<em>float</em>) – Value in (0.0, 1.0)</p></li>
-<li><p><strong>last</strong> (<em>float</em>) – Value in (0.1, 1.0)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>zscores</strong> – Array of z-scores for all intervals.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
+<div class="section" id="autocorrelation-time">
+<h2>Autocorrelation Time<a class="headerlink" href="#autocorrelation-time" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
 <dt id="zeus.AutoCorrTime">
-<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">AutoCorrTime</code><span class="sig-paren">(</span><em class="sig-param">samples</em>, <em class="sig-param">c=5.0</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.AutoCorrTime" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">AutoCorrTime</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">samples</span></em>, <em class="sig-param"><span class="n">c</span><span class="o">=</span><span class="default_value">5.0</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'mk'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.AutoCorrTime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Integrated Autocorrelation Time (IAT) for all the chains.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -379,9 +352,9 @@ unnormalised posterior probability at that position.</p></li>
 </div>
 <div class="section" id="the-chain-manager">
 <h2>The Chain Manager<a class="headerlink" href="#the-chain-manager" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="zeus.ChainManager">
-<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">ChainManager</code><span class="sig-paren">(</span><em class="sig-param">nchains</em>, <em class="sig-param">comm=None</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">ChainManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nchains</span></em>, <em class="sig-param"><span class="n">comm</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to serve as context manager to handle to MPI-related issues,
 specifically, the managing of <code class="docutils literal notranslate"><span class="pre">MPIPool</span></code> and splitting of communicators.
 This class can be used to run <code class="docutils literal notranslate"><span class="pre">nchains</span></code> in parallel with each chain
@@ -394,9 +367,9 @@ having its own <code class="docutils literal notranslate"><span class="pre">MPIP
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="zeus.ChainManager.allgather">
-<code class="sig-name descname">allgather</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager.allgather" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">allgather</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager.allgather" title="Permalink to this definition">¶</a></dt>
 <dd><p>Allgather method to gather <code class="docutils literal notranslate"><span class="pre">x</span></code> in all chains. This is equivalent to first <code class="docutils literal notranslate"><span class="pre">scatter</span></code> and then <code class="docutils literal notranslate"><span class="pre">bcast</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -411,9 +384,9 @@ having its own <code class="docutils literal notranslate"><span class="pre">MPIP
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="zeus.ChainManager.bcast">
-<code class="sig-name descname">bcast</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">root</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager.bcast" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">bcast</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">root</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager.bcast" title="Permalink to this definition">¶</a></dt>
 <dd><p>Broadcast method to send <code class="docutils literal notranslate"><span class="pre">x</span></code> from <code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">=</span> <span class="pre">root</span></code> to all chains.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -431,9 +404,9 @@ having its own <code class="docutils literal notranslate"><span class="pre">MPIP
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="zeus.ChainManager.gather">
-<code class="sig-name descname">gather</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">root</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager.gather" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">gather</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">root</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager.gather" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gather method to gather <code class="docutils literal notranslate"><span class="pre">x</span></code> in <code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">=</span> <span class="pre">root</span></code> chain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -451,7 +424,7 @@ having its own <code class="docutils literal notranslate"><span class="pre">MPIP
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="zeus.ChainManager.get_pool">
 <em class="property">property </em><code class="sig-name descname">get_pool</code><a class="headerlink" href="#zeus.ChainManager.get_pool" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get parallel <code class="docutils literal notranslate"><span class="pre">pool</span></code> of workers that correspond to a specific chain. This should be used to
@@ -459,15 +432,15 @@ parallelize the walkers of each <code class="docutils literal notranslate"><span
 method that <code class="docutils literal notranslate"><span class="pre">zeus</span></code> requires.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="zeus.ChainManager.get_rank">
 <em class="property">property </em><code class="sig-name descname">get_rank</code><a class="headerlink" href="#zeus.ChainManager.get_rank" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get <code class="docutils literal notranslate"><span class="pre">rank</span></code> of current <code class="docutils literal notranslate"><span class="pre">chain</span></code>. The minimum <code class="docutils literal notranslate"><span class="pre">rank</span></code> is <code class="docutils literal notranslate"><span class="pre">0</span></code> and the maximum is <code class="docutils literal notranslate"><span class="pre">nchains-1</span></code>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="zeus.ChainManager.scatter">
-<code class="sig-name descname">scatter</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">root</em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager.scatter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">scatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">root</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager.scatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Scatter method to scatter <code class="docutils literal notranslate"><span class="pre">x</span></code> from <code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">=</span> <span class="pre">root</span></code> chain to the rest.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -503,7 +476,7 @@ method that <code class="docutils literal notranslate"><span class="pre">zeus</s
     </p>
     <p>
         &copy; Copyright 2019-2020, Minas Karamanis.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>
 </footer>

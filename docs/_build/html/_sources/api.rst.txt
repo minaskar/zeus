@@ -5,24 +5,20 @@ API
 **zeus** consists mainly of three parts:
 
 - The Sampler,
-- A Suite of Convergence Diagnostics Tests (*Gelman-Rubin, Geweke, Autocorrelation Time*),
+- An Integrated Autocorrelation Time estimator.
 - The **Chain Manager** that allows you to deploy **zeus** into huge supercomputing clusters.
 
 
 The Sampler
 -----------
 
-.. autoclass:: zeus.sampler
+.. autoclass:: zeus.EnsembleSampler
    :members:
    :undoc-members:
 
 
-Convergence Diagnostics & Statistics
-------------------------------------
-
-.. autofunction:: zeus.GelmanRubin
-
-.. autofunction:: zeus.Geweke
+Autocorrelation Time
+--------------------
 
 .. autofunction:: zeus.AutoCorrTime
 
