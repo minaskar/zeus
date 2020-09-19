@@ -69,10 +69,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#what-is-the-acceptance-rate-of-zeus">What is the acceptance rate of zeus?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#what-is-the-acceptance-rate-of-zeus">What is the acceptance rate of <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="faq.html#why-should-i-use-zeus-instead-of-other-mcmc-samplers">Why should I use zeus instead of other MCMC samplers?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="faq.html#what-are-the-walkers">What are the walkers?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="faq.html#how-many-walkers-should-i-use">How many walkers should I use?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#how-should-i-initialize-the-positions-of-the-walkers">How should I initialize the positions of the walkers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#how-long-should-i-run-zeus">How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
@@ -154,7 +156,6 @@
 <li><p>No hand-tuning,</p></li>
 <li><p>Excellent performance in terms of autocorrelation time and convergence rate,</p></li>
 <li><p>Scale to multiple CPUs without any extra effort,</p></li>
-<li><p>Included <em>Convergence Diagnostics</em>.</p></li>
 </ul>
 <a class="reference external image-reference" href="https://github.com/minaskar/zeus"><img alt="https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue" src="https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue" /></a>
 <a class="reference external image-reference" href="https://arxiv.org/abs/2002.06212"><img alt="https://img.shields.io/badge/arXiv-2002.06212-red" src="https://img.shields.io/badge/arXiv-2002.06212-red" /></a>
@@ -174,7 +175,7 @@
 <span class="n">ivar</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
 <span class="n">start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
 
-<span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_prob</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">ivar</span><span class="p">])</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_prob</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">ivar</span><span class="p">])</span>
 <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
 </pre></div>
 </div>

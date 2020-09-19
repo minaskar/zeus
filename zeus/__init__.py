@@ -7,6 +7,5 @@ __description__ = "Lightning Fast MCMC"
 
 
 from .ensemble import *
-from .diagnostics import GelmanRubin, Geweke
 from .parallel import ChainManager
 from .autocorr import AutoCorrTime

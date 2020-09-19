@@ -9,7 +9,6 @@
 - No hand-tuning,
 - Excellent performance in terms of autocorrelation time and convergence rate,
 - Scale to multiple CPUs without any extra effort,
-- Included *Convergence Diagnostics*.
 
 
 .. image:: https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue
@@ -38,7 +37,7 @@ For instance, if you wanted to draw samples from a 10-dimensional Gaussian, you 
     ivar = 1.0 / np.random.rand(ndim)
     start = np.random.randn(nwalkers, ndim)
 
-    sampler = zeus.sampler(nwalkers, ndim, log_prob, args=[ivar])
+    sampler = zeus.EnsembleSampler(nwalkers, ndim, log_prob, args=[ivar])
     sampler.run_mcmc(start, nsteps)
 
 

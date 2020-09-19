@@ -70,10 +70,12 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Frequently Asked Questions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#what-is-the-acceptance-rate-of-zeus">What is the acceptance rate of zeus?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-the-acceptance-rate-of-zeus">What is the acceptance rate of <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#why-should-i-use-zeus-instead-of-other-mcmc-samplers">Why should I use zeus instead of other MCMC samplers?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#what-are-the-walkers">What are the walkers?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#how-many-walkers-should-i-use">How many walkers should I use?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-should-i-initialize-the-positions-of-the-walkers">How should I initialize the positions of the walkers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-long-should-i-run-zeus">How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
@@ -109,10 +111,12 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">Frequently Asked Questions</a><ul>
-<li><a class="reference internal" href="#what-is-the-acceptance-rate-of-zeus">What is the acceptance rate of zeus?</a></li>
+<li><a class="reference internal" href="#what-is-the-acceptance-rate-of-zeus">What is the acceptance rate of <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
 <li><a class="reference internal" href="#why-should-i-use-zeus-instead-of-other-mcmc-samplers">Why should I use zeus instead of other MCMC samplers?</a></li>
 <li><a class="reference internal" href="#what-are-the-walkers">What are the walkers?</a></li>
 <li><a class="reference internal" href="#how-many-walkers-should-i-use">How many walkers should I use?</a></li>
+<li><a class="reference internal" href="#how-should-i-initialize-the-positions-of-the-walkers">How should I initialize the positions of the walkers?</a></li>
+<li><a class="reference internal" href="#how-long-should-i-run-zeus">How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
 </ul>
 </li>
 </ul>
@@ -149,19 +153,17 @@
   <div class="section" id="frequently-asked-questions">
 <h1>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="what-is-the-acceptance-rate-of-zeus">
-<h2>What is the acceptance rate of zeus?<a class="headerlink" href="#what-is-the-acceptance-rate-of-zeus" title="Permalink to this headline">¶</a></h2>
-<p>Unlike most MCMC methods, <strong>zeus</strong>’ acceptance rate isn’t varying during a run. As a matter of fact,
+<h2>What is the acceptance rate of <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?<a class="headerlink" href="#what-is-the-acceptance-rate-of-zeus" title="Permalink to this headline">¶</a></h2>
+<p>Unlike most MCMC methods, <code class="docutils literal notranslate"><span class="pre">zeus</span></code> acceptance rate isn’t varying during a run. As a matter of fact,
 its acceptance rate is identically 1 always. This is because of the Slice Sampler at its core.</p>
 </div>
 <div class="section" id="why-should-i-use-zeus-instead-of-other-mcmc-samplers">
 <h2>Why should I use zeus instead of other MCMC samplers?<a class="headerlink" href="#why-should-i-use-zeus-instead-of-other-mcmc-samplers" title="Permalink to this headline">¶</a></h2>
-<p>The first reason you should think of using <strong>zeus</strong> is due to the fact that it doesn’t require
+<p>The first reason you should think of using <code class="docutils literal notranslate"><span class="pre">zeus</span></code> is due to the fact that it doesn’t require
 any hand tuning at all. There is no need to adjust any hyperparameters or provide a proposal
 distribution.</p>
-<dl class="simple">
-<dt>Moreover, unlike other black-box MCMC methods <strong>zeus</strong> is more robust to the curse of</dt><dd><p>dimensionality and handle challenging distributions better.</p>
-</dd>
-</dl>
+<p>Moreover, unlike other black-box MCMC methods <code class="docutils literal notranslate"><span class="pre">zeus</span></code> is more robust to the curse of
+dimensionality and handle challenging distributions better.</p>
 </div>
 <div class="section" id="what-are-the-walkers">
 <h2>What are the walkers?<a class="headerlink" href="#what-are-the-walkers" title="Permalink to this headline">¶</a></h2>
@@ -170,7 +172,20 @@ the converge to the target distribution.</p>
 </div>
 <div class="section" id="how-many-walkers-should-i-use">
 <h2>How many walkers should I use?<a class="headerlink" href="#how-many-walkers-should-i-use" title="Permalink to this headline">¶</a></h2>
-<p>As many as possible! But at least twice the number of parameters of your problem.</p>
+<p>At least twice the number of parameters of your problem. A good rule of thump is to use approximately
+2.5 times the number of parameters. If your distribution has multiple modes you may want to increase
+the number of walkers.</p>
+</div>
+<div class="section" id="how-should-i-initialize-the-positions-of-the-walkers">
+<h2>How should I initialize the positions of the walkers?<a class="headerlink" href="#how-should-i-initialize-the-positions-of-the-walkers" title="Permalink to this headline">¶</a></h2>
+<p>A good practice seems to be to initialize the walkers from a small ball close to the <em>Maximum a Posteriori</em>
+estimate. After a few autocorrelation times the walkers would have explored the rest of the usefull regions
+of the parameter space (a.k.a. the typical set), producing a great number of independent samples.</p>
+</div>
+<div class="section" id="how-long-should-i-run-zeus">
+<h2>How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?<a class="headerlink" href="#how-long-should-i-run-zeus" title="Permalink to this headline">¶</a></h2>
+<p>You don’t have to run <code class="docutils literal notranslate"><span class="pre">zeus</span></code> for very long. If your goal is to produce 2D/1D contours and/or 1-sigma/2-sigma
+constraints for your parameters, running <code class="docutils literal notranslate"><span class="pre">zeus</span></code> for a few autocorrelation times (e.g. 10) is more than enough.</p>
 </div>
 </div>
 
