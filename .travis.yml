@@ -6,7 +6,6 @@ python:
 env:
   - NUMPY_VERSION=1.17
   - NUMPY_VERSION=1.16
-  - NUMPY_VERSION=1.15
 
 install:
   - travis_retry pip install --upgrade pip
