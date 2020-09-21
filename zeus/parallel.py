@@ -201,7 +201,7 @@ class ChainManager:
         the global communicator to split
     """
 
-    def __init__(self, nchains, comm=None):
+    def __init__(self, nchains=1, comm=None):
         global MPI
         MPI = _import_mpi(use_dill=False)
 

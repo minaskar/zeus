@@ -16,6 +16,7 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Sampling from a multivariate Normal distribution" href="notebooks/normal_distribution.html" />
@@ -58,7 +59,7 @@
      id="dLabelGlobalToc"
      data-toggle="dropdown"
      data-target="#"
-     href="index.html">Site <b class="caret"></b></a>
+     href="index.html">Contents <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
@@ -70,16 +71,19 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#what-is-the-acceptance-rate-of-zeus">What is the acceptance rate of zeus?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#what-is-the-acceptance-rate-of-zeus">What is the acceptance rate of <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="faq.html#why-should-i-use-zeus-instead-of-other-mcmc-samplers">Why should I use zeus instead of other MCMC samplers?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="faq.html#what-are-the-walkers">What are the walkers?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="faq.html#how-many-walkers-should-i-use">How many walkers should I use?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#how-should-i-initialize-the-positions-of-the-walkers">How should I initialize the positions of the walkers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#how-long-should-i-run-zeus">How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#the-sampler">The Sampler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#autocorrelation-time">Autocorrelation Time</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#the-chain-manager">The Chain Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-ensemble-slice-sampler">The Ensemble Slice Sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-autocorrelation-time-estimator">The Autocorrelation Time Estimator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-chain-manager-mpi-utilities">The Chain Manager - MPI Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-plotting-module-cornerplot">The Plotting Module - Cornerplot</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/normal_distribution.html">Sampling from a multivariate Normal distribution</a></li>
@@ -109,9 +113,10 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">API</a><ul>
-<li><a class="reference internal" href="#the-sampler">The Sampler</a></li>
-<li><a class="reference internal" href="#autocorrelation-time">Autocorrelation Time</a></li>
-<li><a class="reference internal" href="#the-chain-manager">The Chain Manager</a></li>
+<li><a class="reference internal" href="#the-ensemble-slice-sampler">The Ensemble Slice Sampler</a></li>
+<li><a class="reference internal" href="#the-autocorrelation-time-estimator">The Autocorrelation Time Estimator</a></li>
+<li><a class="reference internal" href="#the-chain-manager-mpi-utilities">The Chain Manager - MPI Utilities</a></li>
+<li><a class="reference internal" href="#the-plotting-module-cornerplot">The Plotting Module - Cornerplot</a></li>
 </ul>
 </li>
 </ul>
@@ -147,14 +152,17 @@
       
   <div class="section" id="api">
 <h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
-<p><strong>zeus</strong> consists mainly of three parts:</p>
+<p><strong>zeus</strong> consists mainly of four parts:</p>
+<div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p>The Sampler,</p></li>
-<li><p>An Integrated Autocorrelation Time estimator.</p></li>
-<li><p>The <strong>Chain Manager</strong> that allows you to deploy <strong>zeus</strong> into huge supercomputing clusters.</p></li>
+<li><p><a class="reference internal" href="#the-ensemble-slice-sampler" id="id1">The Ensemble Slice Sampler</a></p></li>
+<li><p><a class="reference internal" href="#the-autocorrelation-time-estimator" id="id2">The Autocorrelation Time Estimator</a></p></li>
+<li><p><a class="reference internal" href="#the-chain-manager-mpi-utilities" id="id3">The Chain Manager - MPI Utilities</a></p></li>
+<li><p><a class="reference internal" href="#the-plotting-module-cornerplot" id="id4">The Plotting Module - Cornerplot</a></p></li>
 </ul>
-<div class="section" id="the-sampler">
-<h2>The Sampler<a class="headerlink" href="#the-sampler" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="the-ensemble-slice-sampler">
+<h2>The Ensemble Slice Sampler<a class="headerlink" href="#the-ensemble-slice-sampler" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="zeus.EnsembleSampler">
 <em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">EnsembleSampler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nwalkers</span></em>, <em class="sig-param"><span class="n">ndim</span></em>, <em class="sig-param"><span class="n">logprob_fn</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">proposal</span><span class="o">=</span><span class="default_value">{'differential': 1.0, 'gaussian': 0.0, 'jump': 0.0, 'random': 0.0}</span></em>, <em class="sig-param"><span class="n">tune</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">tolerance</span><span class="o">=</span><span class="default_value">0.05</span></em>, <em class="sig-param"><span class="n">patience</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">maxsteps</span><span class="o">=</span><span class="default_value">10000</span></em>, <em class="sig-param"><span class="n">mu</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">10000</span></em>, <em class="sig-param"><span class="n">pool</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vectorize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler" title="Permalink to this definition">¶</a></dt>
@@ -327,8 +335,8 @@ unnormalised posterior probability at that position.</p></li>
 </dd></dl>
 
 </div>
-<div class="section" id="autocorrelation-time">
-<h2>Autocorrelation Time<a class="headerlink" href="#autocorrelation-time" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="the-autocorrelation-time-estimator">
+<h2>The Autocorrelation Time Estimator<a class="headerlink" href="#the-autocorrelation-time-estimator" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="zeus.AutoCorrTime">
 <code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">AutoCorrTime</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">samples</span></em>, <em class="sig-param"><span class="n">c</span><span class="o">=</span><span class="default_value">5.0</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'mk'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.AutoCorrTime" title="Permalink to this definition">¶</a></dt>
@@ -338,6 +346,7 @@ unnormalised posterior probability at that position.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>samples</strong> (<em>array</em>) – 3-dimensional array of shape (nsteps, nwalkers, ndim)</p></li>
 <li><p><strong>c</strong> (<em>float</em>) – Truncation parameter of automated windowing procedure of Sokal (1989), default is 5.0</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – Method to use to compute the IAT. Available options are <code class="docutils literal notranslate"><span class="pre">mk</span></code> (Default), <code class="docutils literal notranslate"><span class="pre">dfm</span></code>, and <code class="docutils literal notranslate"><span class="pre">gw</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -350,11 +359,11 @@ unnormalised posterior probability at that position.</p></li>
 </dd></dl>
 
 </div>
-<div class="section" id="the-chain-manager">
-<h2>The Chain Manager<a class="headerlink" href="#the-chain-manager" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="the-chain-manager-mpi-utilities">
+<h2>The Chain Manager - MPI Utilities<a class="headerlink" href="#the-chain-manager-mpi-utilities" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="zeus.ChainManager">
-<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">ChainManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nchains</span></em>, <em class="sig-param"><span class="n">comm</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">ChainManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nchains</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">comm</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to serve as context manager to handle to MPI-related issues,
 specifically, the managing of <code class="docutils literal notranslate"><span class="pre">MPIPool</span></code> and splitting of communicators.
 This class can be used to run <code class="docutils literal notranslate"><span class="pre">nchains</span></code> in parallel with each chain
@@ -458,6 +467,45 @@ method that <code class="docutils literal notranslate"><span class="pre">zeus</s
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+</div>
+<div class="section" id="the-plotting-module-cornerplot">
+<h2>The Plotting Module - Cornerplot<a class="headerlink" href="#the-plotting-module-cornerplot" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="zeus.cornerplot">
+<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">cornerplot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">samples</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">weights</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">levels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">span</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">quantiles</span><span class="o">=</span><span class="default_value">[0.025, 0.5, 0.975]</span></em>, <em class="sig-param"><span class="n">truth</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">color</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alpha</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">linewidth</span><span class="o">=</span><span class="default_value">1.5</span></em>, <em class="sig-param"><span class="n">fill</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">show_titles</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">title_fmt</span><span class="o">=</span><span class="default_value">'.2f'</span></em>, <em class="sig-param"><span class="n">title_fontsize</span><span class="o">=</span><span class="default_value">12</span></em>, <em class="sig-param"><span class="n">cut</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">fig</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">10, 10</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.cornerplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot corner-plot of samples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samples</strong> (<em>array</em>) – Array of shape (nsamples, ndim) containing the samples.</p></li>
+<li><p><strong>labels</strong> (<em>list</em>) – List of names of for the parameters.</p></li>
+<li><p><strong>weights</strong> (<em>array</em>) – Array with weights (useful if different samples have different weights e.g. as in Nested Sampling).</p></li>
+<li><p><strong>levels</strong> (<em>list</em>) – The quantiles used for plotting the smoothed 2-D distributions. If not provided, these default to 0.5, 1, 1.5, and 2-sigma contours.</p></li>
+<li><p><strong>quantiles</strong> (<em>list</em>) – A list of fractional quantiles to overplot on the 1-D marginalized posteriors as titles. Default is <code class="docutils literal notranslate"><span class="pre">[0.025,</span> <span class="pre">0.5,</span> <span class="pre">0.975]</span></code> (spanning the 95%/2-sigma credible interval).</p></li>
+<li><p><strong>truth</strong> (<em>array</em>) – Array specifying a point to be highlighted in the plot. It can be the true values of the parameters, the mean, median etc. By default this is None.</p></li>
+<li><p><strong>color</strong> (<em>str</em>) – Matplotlib color to be used in the plot.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – Transparency value of figure (Default is 0.5).</p></li>
+<li><p><strong>linewidth</strong> (<em>float</em>) – Linewidth of plot (Default is 1.5).</p></li>
+<li><p><strong>fill</strong> (<em>bool</em>) – If True (Default) the fill the 1D and 2D contours with color.</p></li>
+<li><p><strong>fontsize</strong> (<em>float</em>) – Fontsize of axes labels. Default is 10.</p></li>
+<li><p><strong>show_titles</strong> (<em>bool</em>) – Whether to display a title above each 1-D marginalized posterior showing the quantiles. Default is True.</p></li>
+<li><p><strong>title_fmt</strong> (<em>str</em>) – Format of the titles. Default is <code class="docutils literal notranslate"><span class="pre">.2f</span></code>.</p></li>
+<li><p><strong>title_fontsize</strong> (<em>float</em>) – Fontsize of titles. Default is 12.</p></li>
+<li><p><strong>cut</strong> (<em>float</em>) – Factor, multiplied by the smoothing bandwidth, that determines how far the evaluation grid extends past the extreme datapoints.
+When set to 0, truncate the curve at the data limits. Default is <code class="docutils literal notranslate"><span class="pre">cut=3</span></code>.</p></li>
+<li><p><strong>fig</strong> (<em>(</em><em>figure</em><em>, </em><em>axes</em><em>)</em>) – Pre-existing Figure and Axes for the plot. Otherwise create new internally. Default is None.</p></li>
+<li><p><strong>size</strong> (<em>(</em><em>int</em><em>, </em><em>int</em><em>)</em>) – Size of the plot. Default is (10, 10).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The matplotlib figure and axes.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Figure, Axes</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

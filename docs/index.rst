@@ -2,13 +2,13 @@
 
 .. figure:: ./../logo.png
 
-**zeus is a pure-Python implementation of the Ensemble Slice Sampling method.**
+**zeus is a Python implementation of the Ensemble Slice Sampling method.**
 
 - Fast & Robust *Bayesian Inference*,
-- Efficient Markov Chain Monte Carlo,
-- No hand-tuning,
+- Efficient *Markov Chain Monte Carlo (MCMC)*,
+- Black-box inference, no hand-tuning,
 - Excellent performance in terms of autocorrelation time and convergence rate,
-- Scale to multiple CPUs without any extra effort,
+- Scale to multiple CPUs without any extra effort.
 
 
 .. image:: https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue
@@ -22,10 +22,12 @@
 .. image:: https://readthedocs.org/projects/zeus-mcmc/badge/?version=latest&token=4455dbf495c5a4eaba52de26ac56628aad85eb3eadc90badfd1703d0a819a0f9
     :target: https://zeus-mcmc.readthedocs.io/en/latest/?badge=latest
 
-Basic usage
-===========
+Basic use
+=========
 
-For instance, if you wanted to draw samples from a 10-dimensional Gaussian, you would do something like::
+For instance, if you wanted to draw samples from a *10-dimensional Normal distribution*, you would do something like:
+
+.. code:: Python
 
     import numpy as np
     import zeus
@@ -44,20 +46,22 @@ For instance, if you wanted to draw samples from a 10-dimensional Gaussian, you 
 Installation
 ============
 
-To install **zeus** using pip run::
+To install ``zeus`` using ``pip`` run:
+
+.. code:: bash
 
     pip install zeus-mcmc
 
 
 Getting Started
 ===============
-- See the :doc:`cookbook` page to learn how to perform Bayesian Inference using **zeus**.
-- See the :doc:`faq` page for frequently asked questions about zeus' operation.
+- See the :doc:`cookbook` page to learn how to perform Bayesian Inference using ``zeus``.
+- See the :doc:`faq` page for frequently asked questions about ``zeus``' operation.
 - See the :doc:`api` page for detailed API documentation.
 
 
-Attribution
-===========
+Citation
+========
 
 Please cite `Karamanis & Beutler (2020)
 <https://arxiv.org/abs/2002.06212>`_ if you find this code useful in your
@@ -77,28 +81,29 @@ Licence
 
 Copyright 2019-2020 Minas Karamanis and contributors.
 
-zeus is free software made available under the GPL-3.0 License.
+``zeus`` is free software made available under the ``GPL-3.0 License``.
 
 
 Changelog
 =========
 
-**1.2.2 (04/08/20**
+**1.2.2 (19/09/20)**
 
-- Sampler class is deprecated. New EnsembleSampler class in now available.
-- New estimator for the Integrated Autocorrelation Time. It's accurate even with short chains. 
+- ``Sampler`` class is deprecated. New ``EnsembleSampler`` class in now available.
+- New estimator for the Integrated Autocorrelation Time. It's accurate even with short chains.
+- Updated ``ChainManager`` to handle thousands of CPUs.
 
-**1.2.1 (04/08/20**
+**1.2.1 (04/08/20)**
 
-- Changed to Flat-not-nested philosophy for diagnostics and ChainManager.
+- Changed to Flat-not-nested philosophy for diagnostics and ``ChainManager``.
 
 **1.2.0 (03/08/20)**
 
-- Extended ChainManager with gather, scatter, and bcast tools.
+- Extended ``ChainManager`` with ``gather``, ``scatter``, and ``bcast`` tools.
 
 **1.1.0 (02/08/20)**
 
-- Added ChainManager to deploy into supercomputing clusters, parallelizing both chains and walkers.
+- Added ``ChainManager`` to deploy into supercomputing clusters, parallelizing both chains and walkers.
 - Added Convergence diagnostic tools (Gelman-Rubin, Geweke).
 
 **1.0.7 (11/05/20)**

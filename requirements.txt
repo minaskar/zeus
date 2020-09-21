@@ -3,3 +3,5 @@ scipy
 tqdm
 setuptools
 pytest
+matplotlib
+seaborn

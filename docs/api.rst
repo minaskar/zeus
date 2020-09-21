@@ -2,30 +2,37 @@
 API
 ===
 
-**zeus** consists mainly of three parts:
+**zeus** consists mainly of four parts:
 
-- The Sampler,
-- An Integrated Autocorrelation Time estimator.
-- The **Chain Manager** that allows you to deploy **zeus** into huge supercomputing clusters.
+.. contents::
+   :depth: 2
+   :local:
+   :backlinks: none
 
 
-The Sampler
------------
+The Ensemble Slice Sampler
+==========================
 
 .. autoclass:: zeus.EnsembleSampler
    :members:
    :undoc-members:
 
 
-Autocorrelation Time
---------------------
+The Autocorrelation Time Estimator
+==================================
 
 .. autofunction:: zeus.AutoCorrTime
 
 
-The Chain Manager
------------------
+The Chain Manager - MPI Utilities
+=================================
 
 .. autoclass:: zeus.ChainManager
    :members:
    :undoc-members:
+
+
+The Plotting Module - Cornerplot
+================================
+
+.. autofunction:: zeus.cornerplot

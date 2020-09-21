@@ -9,3 +9,4 @@ __description__ = "Lightning Fast MCMC"
 from .ensemble import *
 from .parallel import ChainManager
 from .autocorr import AutoCorrTime
+from .plotting import cornerplot

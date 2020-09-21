@@ -12,13 +12,9 @@
 #
 import os
 import sys
-#sys.path.insert(0, os.path.abspath('.'))
-#sys.path.insert(0, os.path.abspath('../..'))
-#sys.path.insert(0, os.path.abspath('./../../'))
-sys.path.insert(0, os.path.abspath('../../zeus/'))
-#sys.path.insert(0, os.path.abspath('./../'))
 
-#extensions = ['sphinx_bootstrap_theme']
+sys.path.insert(0, os.path.abspath('../../zeus/'))
+
 import sphinx_bootstrap_theme
 
 
@@ -84,6 +80,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**.ipynb_checkpoints']
 #
 #html_theme = 'alabaster'
 html_theme = 'bootstrap'
+html_favicon = "_static/favicon.png"
 
 
 # (Optional) Logo. Should be small enough to fit the navbar (ideally 24x24).
@@ -94,7 +91,7 @@ html_theme = 'bootstrap'
 # theme further.
 html_theme_options = {
     'navbar_title': "zeus",
-    'navbar_site_name': "Site",
+    'navbar_site_name': "Contents",
 
     'navbar_links': [
 

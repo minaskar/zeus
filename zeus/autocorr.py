@@ -42,7 +42,8 @@ def _autocorr_time_1d(y, c=5.0, method='mk'):
 
     Args:
         y (array) : (nsteps, nwalkers) array for one parameter.
-        c (float) : Truncation parameter of automated windowing procedure of Sokal (1989), default is 5.0
+        c (float) : Truncation parameter of automated windowing procedure of Sokal (1989), default is 5.0.
+        method (str) : Method to use to compute the IAT. Available options are ``mk`` (Default), ``dfm``, and ``gw``.
 
     Returns:
         The IAT of the chain y.
@@ -87,6 +88,8 @@ def AutoCorrTime(samples, c=5.0, method='mk'):
             3-dimensional array of shape (nsteps, nwalkers, ndim)
         c : float
             Truncation parameter of automated windowing procedure of Sokal (1989), default is 5.0
+        method : str
+            Method to use to compute the IAT. Available options are ``mk`` (Default), ``dfm``, and ``gw``.
 
     Returns
     -------

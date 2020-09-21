@@ -16,6 +16,7 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Cookbook" href="cookbook.html" />
@@ -57,7 +58,7 @@
      id="dLabelGlobalToc"
      data-toggle="dropdown"
      data-target="#"
-     href="#">Site <b class="caret"></b></a>
+     href="#">Contents <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
@@ -78,9 +79,10 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api.html#the-sampler">The Sampler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#autocorrelation-time">Autocorrelation Time</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#the-chain-manager">The Chain Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#the-ensemble-slice-sampler">The Ensemble Slice Sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#the-autocorrelation-time-estimator">The Autocorrelation Time Estimator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#the-chain-manager-mpi-utilities">The Chain Manager - MPI Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#the-plotting-module-cornerplot">The Plotting Module - Cornerplot</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/normal_distribution.html">Sampling from a multivariate Normal distribution</a></li>
@@ -109,10 +111,10 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Basic usage</a></li>
+<li><a class="reference internal" href="#">Basic use</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#getting-started">Getting Started</a></li>
-<li><a class="reference internal" href="#attribution">Attribution</a></li>
+<li><a class="reference internal" href="#citation">Citation</a></li>
 <li><a class="reference internal" href="#licence">Licence</a></li>
 <li><a class="reference internal" href="#changelog">Changelog</a></li>
 </ul>
@@ -149,23 +151,23 @@
   <div class="figure align-default">
 <img alt="_images/logo.png" src="_images/logo.png" />
 </div>
-<p><strong>zeus is a pure-Python implementation of the Ensemble Slice Sampling method.</strong></p>
+<p><strong>zeus is a Python implementation of the Ensemble Slice Sampling method.</strong></p>
 <ul class="simple">
 <li><p>Fast &amp; Robust <em>Bayesian Inference</em>,</p></li>
-<li><p>Efficient Markov Chain Monte Carlo,</p></li>
-<li><p>No hand-tuning,</p></li>
+<li><p>Efficient <em>Markov Chain Monte Carlo (MCMC)</em>,</p></li>
+<li><p>Black-box inference, no hand-tuning,</p></li>
 <li><p>Excellent performance in terms of autocorrelation time and convergence rate,</p></li>
-<li><p>Scale to multiple CPUs without any extra effort,</p></li>
+<li><p>Scale to multiple CPUs without any extra effort.</p></li>
 </ul>
 <a class="reference external image-reference" href="https://github.com/minaskar/zeus"><img alt="https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue" src="https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue" /></a>
 <a class="reference external image-reference" href="https://arxiv.org/abs/2002.06212"><img alt="https://img.shields.io/badge/arXiv-2002.06212-red" src="https://img.shields.io/badge/arXiv-2002.06212-red" /></a>
 <a class="reference external image-reference" href="https://travis-ci.com/minaskar/zeus"><img alt="https://travis-ci.com/minaskar/zeus.svg?token=xnVWRZ3TFg1zxQYQyLs4&amp;branch=master" src="https://travis-ci.com/minaskar/zeus.svg?token=xnVWRZ3TFg1zxQYQyLs4&amp;branch=master" /></a>
 <a class="reference external image-reference" href="https://github.com/minaskar/zeus/blob/master/LICENSE"><img alt="https://img.shields.io/badge/License-GPLv3-blue.svg" src="https://img.shields.io/badge/License-GPLv3-blue.svg" /></a>
 <a class="reference external image-reference" href="https://zeus-mcmc.readthedocs.io/en/latest/?badge=latest"><img alt="https://readthedocs.org/projects/zeus-mcmc/badge/?version=latest&amp;token=4455dbf495c5a4eaba52de26ac56628aad85eb3eadc90badfd1703d0a819a0f9" src="https://readthedocs.org/projects/zeus-mcmc/badge/?version=latest&amp;token=4455dbf495c5a4eaba52de26ac56628aad85eb3eadc90badfd1703d0a819a0f9" /></a>
-<div class="section" id="basic-usage">
-<h1>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h1>
-<p>For instance, if you wanted to draw samples from a 10-dimensional Gaussian, you would do something like:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="section" id="basic-use">
+<h1>Basic use<a class="headerlink" href="#basic-use" title="Permalink to this headline">¶</a></h1>
+<p>For instance, if you wanted to draw samples from a <em>10-dimensional Normal distribution</em>, you would do something like:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">zeus</span>
 
 <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ivar</span><span class="p">):</span>
@@ -182,21 +184,21 @@
 </div>
 <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>To install <strong>zeus</strong> using pip run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">zeus</span><span class="o">-</span><span class="n">mcmc</span>
+<p>To install <code class="docutils literal notranslate"><span class="pre">zeus</span></code> using <code class="docutils literal notranslate"><span class="pre">pip</span></code> run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install zeus-mcmc
 </pre></div>
 </div>
 </div>
 <div class="section" id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><p>See the <a class="reference internal" href="cookbook.html"><span class="doc">Cookbook</span></a> page to learn how to perform Bayesian Inference using <strong>zeus</strong>.</p></li>
-<li><p>See the <a class="reference internal" href="faq.html"><span class="doc">Frequently Asked Questions</span></a> page for frequently asked questions about zeus’ operation.</p></li>
+<li><p>See the <a class="reference internal" href="cookbook.html"><span class="doc">Cookbook</span></a> page to learn how to perform Bayesian Inference using <code class="docutils literal notranslate"><span class="pre">zeus</span></code>.</p></li>
+<li><p>See the <a class="reference internal" href="faq.html"><span class="doc">Frequently Asked Questions</span></a> page for frequently asked questions about <code class="docutils literal notranslate"><span class="pre">zeus</span></code>’ operation.</p></li>
 <li><p>See the <a class="reference internal" href="api.html"><span class="doc">API</span></a> page for detailed API documentation.</p></li>
 </ul>
 </div>
-<div class="section" id="attribution">
-<h1>Attribution<a class="headerlink" href="#attribution" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="citation">
+<h1>Citation<a class="headerlink" href="#citation" title="Permalink to this headline">¶</a></h1>
 <p>Please cite <a class="reference external" href="https://arxiv.org/abs/2002.06212">Karamanis &amp; Beutler (2020)</a> if you find this code useful in your
 research. The BibTeX entry for the paper is:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@article</span><span class="p">{</span><span class="n">zeus</span><span class="p">,</span>
@@ -213,26 +215,27 @@ research. The BibTeX entry for the paper is:</p>
 <div class="section" id="licence">
 <h1>Licence<a class="headerlink" href="#licence" title="Permalink to this headline">¶</a></h1>
 <p>Copyright 2019-2020 Minas Karamanis and contributors.</p>
-<p>zeus is free software made available under the GPL-3.0 License.</p>
+<p><code class="docutils literal notranslate"><span class="pre">zeus</span></code> is free software made available under the <code class="docutils literal notranslate"><span class="pre">GPL-3.0</span> <span class="pre">License</span></code>.</p>
 </div>
 <div class="section" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<p><strong>1.2.2 (04/08/20</strong></p>
+<p><strong>1.2.2 (19/09/20)</strong></p>
 <ul class="simple">
-<li><p>Sampler class is deprecated. New EnsembleSampler class in now available.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Sampler</span></code> class is deprecated. New <code class="docutils literal notranslate"><span class="pre">EnsembleSampler</span></code> class in now available.</p></li>
 <li><p>New estimator for the Integrated Autocorrelation Time. It’s accurate even with short chains.</p></li>
+<li><p>Updated <code class="docutils literal notranslate"><span class="pre">ChainManager</span></code> to handle thousands of CPUs.</p></li>
 </ul>
-<p><strong>1.2.1 (04/08/20</strong></p>
+<p><strong>1.2.1 (04/08/20)</strong></p>
 <ul class="simple">
-<li><p>Changed to Flat-not-nested philosophy for diagnostics and ChainManager.</p></li>
+<li><p>Changed to Flat-not-nested philosophy for diagnostics and <code class="docutils literal notranslate"><span class="pre">ChainManager</span></code>.</p></li>
 </ul>
 <p><strong>1.2.0 (03/08/20)</strong></p>
 <ul class="simple">
-<li><p>Extended ChainManager with gather, scatter, and bcast tools.</p></li>
+<li><p>Extended <code class="docutils literal notranslate"><span class="pre">ChainManager</span></code> with <code class="docutils literal notranslate"><span class="pre">gather</span></code>, <code class="docutils literal notranslate"><span class="pre">scatter</span></code>, and <code class="docutils literal notranslate"><span class="pre">bcast</span></code> tools.</p></li>
 </ul>
 <p><strong>1.1.0 (02/08/20)</strong></p>
 <ul class="simple">
-<li><p>Added ChainManager to deploy into supercomputing clusters, parallelizing both chains and walkers.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">ChainManager</span></code> to deploy into supercomputing clusters, parallelizing both chains and walkers.</p></li>
 <li><p>Added Convergence diagnostic tools (Gelman-Rubin, Geweke).</p></li>
 </ul>
 <p><strong>1.0.7 (11/05/20)</strong></p>
