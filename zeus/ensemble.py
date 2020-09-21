@@ -36,6 +36,7 @@ class EnsembleSampler:
                  nwalkers,
                  ndim,
                  logprob_fn,
+                 logprior_fn=None,
                  args=None,
                  kwargs=None,
                  proposal={'differential' : 1.0, 'gaussian' : 0.0, 'jump' : 0.0, 'random' : 0.0},
@@ -45,6 +46,7 @@ class EnsembleSampler:
                  maxsteps=10000,
                  mu=1.0,
                  maxiter=10000,
+                 beta=1.0,
                  pool=None,
                  vectorize=False,
                  verbose=True):
@@ -82,6 +84,8 @@ class EnsembleSampler:
 
         # Set up maximum number of Expansions/Contractions
         self.maxiter = maxiter
+
+        # Set up inverse te
 
         # Set up pool of workers
         self.pool = pool
