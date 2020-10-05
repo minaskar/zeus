@@ -59,7 +59,7 @@ Please cite the following papers if you found this code useful in your research:
         note={in prep}
     }
 
-@article{zeus,
+@article{ess,
       title={Ensemble Slice Sampling},
       author={Minas Karamanis and Florian Beutler},
       year={2020},
