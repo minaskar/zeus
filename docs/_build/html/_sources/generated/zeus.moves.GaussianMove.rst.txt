@@ -1,0 +1,23 @@
+﻿zeus.moves.GaussianMove
+=======================
+
+.. currentmodule:: zeus.moves
+
+.. autoclass:: GaussianMove
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~GaussianMove.__init__
+      ~GaussianMove.get_direction
+   
+   
+
+   
+   
+   

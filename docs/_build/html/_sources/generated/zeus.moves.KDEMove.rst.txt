@@ -1,0 +1,23 @@
+﻿zeus.moves.KDEMove
+==================
+
+.. currentmodule:: zeus.moves
+
+.. autoclass:: KDEMove
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~KDEMove.__init__
+      ~KDEMove.get_direction
+   
+   
+
+   
+   
+   

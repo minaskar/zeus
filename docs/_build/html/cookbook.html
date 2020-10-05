@@ -4,10 +4,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cookbook &#8212; zeus 1.2.2 documentation</title>
+    <title>Cookbook &#8212; zeus 2.0.0 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/_static/default.css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -19,7 +18,7 @@
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Frequently Asked Questions" href="faq.html" />
+    <link rel="next" title="Sampling from a multivariate Normal distribution" href="notebooks/normal_distribution.html" />
     <link rel="prev" title="Basic use" href="index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -62,36 +61,16 @@
      href="index.html">Contents <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Cookbook</a><ul>
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Cookbook Recipes</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#mcmc-sampling-recipes">MCMC Sampling recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#parallelisation-recipes">Parallelisation recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#saving-progress-recipes">Saving Progress recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#autocorrelation-analysis-recipes">Autocorrelation Analysis recipes</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#what-is-the-acceptance-rate-of-zeus">What is the acceptance rate of <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#why-should-i-use-zeus-instead-of-other-mcmc-samplers">Why should I use zeus instead of other MCMC samplers?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#what-are-the-walkers">What are the walkers?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#how-many-walkers-should-i-use">How many walkers should I use?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#how-should-i-initialize-the-positions-of-the-walkers">How should I initialize the positions of the walkers?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#how-long-should-i-run-zeus">How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api.html#the-ensemble-slice-sampler">The Ensemble Slice Sampler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#the-autocorrelation-time-estimator">The Autocorrelation Time Estimator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#the-chain-manager-mpi-utilities">The Chain Manager - MPI Utilities</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#the-plotting-module-cornerplot">The Plotting Module - Cornerplot</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/normal_distribution.html">Sampling from a multivariate Normal distribution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/multiprocessing.html">Parallelizing sampling using multiprocessing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/MPI.html">Parallelizing sampling using MPI</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/MPI.html#Save-this-as-‘test_mpi.py’">Save this as ‘test_mpi.py’</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/datafit.html">Fitting a model to data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/datafit.html#The-generative-probabilistic-model">The generative probabilistic model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/datafit.html#The-likelihood,-prior,-and-posterior-distributions">The likelihood, prior, and posterior distributions</a></li>
@@ -99,24 +78,30 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/datafit.html#Results">Results</a></li>
 </ul>
 </li>
-</ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/multiprocessing.html">Parallelizing sampling using multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MPI.html">Parallelizing sampling using MPI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MPI.html#Save-this-as-‘test_mpi.py’">Save this as ‘test_mpi.py’</a></li>
 </ul>
 </li>
-              
-                <li class="dropdown">
-  <a role="button"
-     id="dLabelLocalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="#">Page <b class="caret"></b></a>
-  <ul class="dropdown-menu localtoc"
-      role="menu"
-      aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Cookbook</a><ul>
-<li><a class="reference internal" href="#mcmc-sampling-recipes">MCMC Sampling recipes</a></li>
-<li><a class="reference internal" href="#parallelisation-recipes">Parallelisation recipes</a></li>
-<li><a class="reference internal" href="#saving-progress-recipes">Saving Progress recipes</a></li>
-<li><a class="reference internal" href="#autocorrelation-analysis-recipes">Autocorrelation Analysis recipes</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help &amp; Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#what-is-the-acceptance-rate-of-zeus">What is the acceptance rate of <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#why-should-i-use-zeus-instead-of-other-mcmc-samplers">Why should I use zeus instead of other MCMC samplers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#what-are-the-walkers">What are the walkers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#how-many-walkers-should-i-use">How many walkers should I use?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#how-should-i-initialize-the-positions-of-the-walkers">How should I initialize the positions of the walkers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#how-long-should-i-run-zeus">How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#what-are-the-moves-and-which-one-should-i-use">What are the <code class="docutils literal notranslate"><span class="pre">Moves</span></code> and which one should I use?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/sampler.html">The Ensemble Slice Sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/moves.html">The Ensemble Moves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/autocorr.html">Autocorrelation Time Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/parallel.html">The Chain Manager &amp; MPI Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/plotting.html">Plotting Results</a></li>
 </ul>
 </li>
 </ul>
@@ -167,6 +152,12 @@ realistic scenarios.</p>
 </dd>
 </dl>
 </li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="notebooks/multimodal.html"><span class="doc">Sampling from multimodal distributions</span></a></dt><dd><p>In this recipe we will demonstrate how one can use <code class="docutils literal notranslate"><span class="pre">zeus</span></code> with the <code class="docutils literal notranslate"><span class="pre">Moves</span></code> interface to sample
+efficiently from challenging high-dimensional multimodal distributions.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </div>
 <div class="section" id="parallelisation-recipes">
@@ -178,7 +169,7 @@ realistic scenarios.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><a class="reference internal" href="notebooks/MPI.html"><span class="doc">MPI</span></a></dt><dd><p>Distribute calculation to huge computer clusters.</p>
+<dt><a class="reference internal" href="notebooks/MPI.html"><span class="doc">MPI and ChainManager</span></a></dt><dd><p>Distribute calculation to huge computer clusters.</p>
 </dd>
 </dl>
 </li>
@@ -205,6 +196,8 @@ size of the chain.</p>
 </dl>
 </li>
 </ul>
+<div class="toctree-wrapper compound">
+</div>
 </div>
 </div>
 

@@ -1,0 +1,23 @@
+﻿zeus.moves.DifferentialMove
+===========================
+
+.. currentmodule:: zeus.moves
+
+.. autoclass:: DifferentialMove
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~DifferentialMove.__init__
+      ~DifferentialMove.get_direction
+   
+   
+
+   
+   
+   

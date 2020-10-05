@@ -48,3 +48,18 @@ How long should I run ``zeus``?
 
 You don't have to run ``zeus`` for very long. If your goal is to produce 2D/1D contours and/or 1-sigma/2-sigma
 constraints for your parameters, running ``zeus`` for a few autocorrelation times (e.g. 10) is more than enough.
+
+
+What are the ``Moves`` and which one should I use?
+==================================================
+
+``zeus`` was originally built on the ``Differential`` and ``Gaussian`` moves. Starting from version
+2.0.0, ``zeus`` supports a mixture of different moves/proposals. Moves are recipes that the walkers
+follow to cross the parameter space. The ``Differential Move`` remains the default choice but we also
+provide a suite of additional moves, such as the ``Global Move`` that can be used when sampling from
+challenging target distributions (e.g. highly dimensional multimodal distributions).
+
+The move(s) you should use depends on the particular target distribution. The ``Differential Move`` 
+seems to be a good choice for most distributions and 50-50 mixture of the ``Global Move`` and
+``Local Move`` seem to perform very well in highly dimensional multimodal distributions when used
+after the burnin period is over.

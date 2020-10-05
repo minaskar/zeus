@@ -4,10 +4,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sampling from a multivariate Normal distribution &#8212; zeus 1.2.2 documentation</title>
+    <title>Sampling from a multivariate Normal distribution &#8212; zeus 2.0.0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/_static/default.css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -19,8 +18,8 @@
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Parallelizing sampling using multiprocessing" href="multiprocessing.html" />
-    <link rel="prev" title="API" href="../api.html" />
+    <link rel="next" title="Fitting a model to data" href="datafit.html" />
+    <link rel="prev" title="Cookbook" href="../cookbook.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -62,36 +61,16 @@
      href="../index.html">Contents <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a><ul>
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Cookbook Recipes</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">Overview</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../cookbook.html#mcmc-sampling-recipes">MCMC Sampling recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cookbook.html#parallelisation-recipes">Parallelisation recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cookbook.html#saving-progress-recipes">Saving Progress recipes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cookbook.html#autocorrelation-analysis-recipes">Autocorrelation Analysis recipes</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../faq.html#what-is-the-acceptance-rate-of-zeus">What is the acceptance rate of <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../faq.html#why-should-i-use-zeus-instead-of-other-mcmc-samplers">Why should I use zeus instead of other MCMC samplers?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../faq.html#what-are-the-walkers">What are the walkers?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../faq.html#how-many-walkers-should-i-use">How many walkers should I use?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../faq.html#how-should-i-initialize-the-positions-of-the-walkers">How should I initialize the positions of the walkers?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../faq.html#how-long-should-i-run-zeus">How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#the-ensemble-slice-sampler">The Ensemble Slice Sampler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#the-autocorrelation-time-estimator">The Autocorrelation Time Estimator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#the-chain-manager-mpi-utilities">The Chain Manager - MPI Utilities</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#the-plotting-module-cornerplot">The Plotting Module - Cornerplot</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../cookbook.html#autocorrelation-analysis-recipes">Autocorrelation Analysis recipes</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Sampling from a multivariate Normal distribution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multiprocessing.html">Parallelizing sampling using multiprocessing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="MPI.html">Parallelizing sampling using MPI</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="MPI.html#Save-this-as-‘test_mpi.py’">Save this as ‘test_mpi.py’</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="datafit.html">Fitting a model to data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="datafit.html#The-generative-probabilistic-model">The generative probabilistic model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datafit.html#The-likelihood,-prior,-and-posterior-distributions">The likelihood, prior, and posterior distributions</a></li>
@@ -99,20 +78,32 @@
 <li class="toctree-l2"><a class="reference internal" href="datafit.html#Results">Results</a></li>
 </ul>
 </li>
-</ul>
+<li class="toctree-l1"><a class="reference internal" href="multiprocessing.html">Parallelizing sampling using multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MPI.html">Parallelizing sampling using MPI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="MPI.html#Save-this-as-‘test_mpi.py’">Save this as ‘test_mpi.py’</a></li>
 </ul>
 </li>
-              
-                <li class="dropdown">
-  <a role="button"
-     id="dLabelLocalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="#">Page <b class="caret"></b></a>
-  <ul class="dropdown-menu localtoc"
-      role="menu"
-      aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Sampling from a multivariate Normal distribution</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help &amp; Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#what-is-the-acceptance-rate-of-zeus">What is the acceptance rate of <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#why-should-i-use-zeus-instead-of-other-mcmc-samplers">Why should I use zeus instead of other MCMC samplers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#what-are-the-walkers">What are the walkers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#how-many-walkers-should-i-use">How many walkers should I use?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#how-should-i-initialize-the-positions-of-the-walkers">How should I initialize the positions of the walkers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#how-long-should-i-run-zeus">How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#what-are-the-moves-and-which-one-should-i-use">What are the <code class="docutils literal notranslate"><span class="pre">Moves</span></code> and which one should I use?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/sampler.html">The Ensemble Slice Sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/moves.html">The Ensemble Moves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/autocorr.html">Autocorrelation Time Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parallel.html">The Chain Manager &amp; MPI Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/plotting.html">Plotting Results</a></li>
+</ul>
+</li>
 </ul>
 </ul>
 </li>
@@ -385,7 +376,6 @@ div.rendered_html tbody tr:hover {
 <li><p><em>numpy</em> because there’s nothing we can do without it,</p></li>
 <li><p><em>sklearn</em> to produce a mock covariance matrix for the normal distribution,</p></li>
 <li><p><em>matplotlib</em> to plot the covariance matrix and visually inspect our results,</p></li>
-<li><p><em>getdist</em> to plot the marginalised posterior distributions,</p></li>
 </ul>
 <p>and of course <strong>zeus</strong> to perform MCMC Bayesian Inference.</p>
 <div class="nbinput nblast docutils container">
@@ -395,7 +385,6 @@ div.rendered_html tbody tr:hover {
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_spd_matrix</span>
-<span class="kn">from</span> <span class="nn">getdist</span> <span class="kn">import</span> <span class="n">plots</span><span class="p">,</span> <span class="n">MCSamples</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="o">%</span><span class="k">matplotlib</span> inline
 <span class="kn">import</span> <span class="nn">zeus</span>
@@ -422,7 +411,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">ndim</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">nwalkers</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">ndim</span>
+<span class="n">nwalkers</span> <span class="o">=</span> <span class="mi">30</span>
 <span class="n">nsteps</span><span class="o">=</span> <span class="mi">5000</span>
 
 <span class="n">C</span> <span class="o">=</span> <span class="n">make_spd_matrix</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
@@ -445,13 +434,12 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_normal_distribution_4_0.png" src="../_images/notebooks_normal_distribution_4_0.png" />
-</div>
+<img alt="../_images/notebooks_normal_distribution_4_0.svg" src="../_images/notebooks_normal_distribution_4_0.svg" /></div>
 </div>
 <p>Now we are ready to do some inference.</p>
 <ul class="simple">
-<li><p>First we initialise the sampler by calling the <em>zeus.sampler</em> class,</p></li>
-<li><p>and then we run the MCMC by calling the <em>run</em> method.</p></li>
+<li><p>First we initialise the sampler by calling the <em>zeus.EnsembleSampler</em> class,</p></li>
+<li><p>and then we run the MCMC by calling the <em>run_mcmc</em> method.</p></li>
 </ul>
 <p>This is going to be very fast.</p>
 <div class="nbinput docutils container">
@@ -459,7 +447,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_prob</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">mu</span><span class="p">,</span> <span class="n">icov</span><span class="p">])</span>
+<span></span><span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_prob</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">mu</span><span class="p">,</span> <span class="n">icov</span><span class="p">])</span>
 <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -469,11 +457,11 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Initialising ensemble of 20 walkers...
-Sampling progress : 100%|██████████| 5000/5000 [00:06&lt;00:00, 821.82it/s]
+Initialising ensemble of 30 walkers...
+Sampling progress : 100%|██████████| 5000/5000 [00:22&lt;00:00, 220.01it/s, nexp=0.9, ncon=0.8]
 </pre></div></div>
 </div>
-<p>Alright, lets plot our chains to see what we’ve got. The chains are stored in the <em>sampler.chain</em> property, their shape is (nwalkers, nsteps, ndim). So we want to iterate over all dimensions and plot the results. We also plot the true values of the parameters so that we can compare the results.</p>
+<p>Alright, lets plot our chains to see what we’ve got. We can get the chains using the <em>sampler.get_chain()</em> method, their shape is (nsteps, nwalkers, ndim). So we want to iterate over all dimensions and plot the results. We also plot the true values of the parameters so that we can compare the results.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -493,11 +481,10 @@ Sampling progress : 100%|██████████| 5000/5000 [00:06&lt;00:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_normal_distribution_8_0.png" src="../_images/notebooks_normal_distribution_8_0.png" />
-</div>
+<img alt="../_images/notebooks_normal_distribution_8_0.svg" src="../_images/notebooks_normal_distribution_8_0.svg" /></div>
 </div>
 <p>Great! This looks very good.</p>
-<p>Now lets cut this burn-in phase off. We can either do this manually using <em>numpy</em> or even better use <em>zeus</em>’s flatten method. We are going to discard (or burn) the first half of the chain.</p>
+<p>Now lets cut this burn-in phase off. We can either do this manually using <em>numpy</em> or even better use <em>zeus</em>’s <em>get_chain()</em> method. We are going to discard (or burn) the first half of the chain.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
@@ -528,18 +515,18 @@ Sampling progress : 100%|██████████| 5000/5000 [00:06&lt;00:
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Percentiles
-[[-0.12681278  0.24252538  0.03986289 -0.79946355 -1.30607358  0.23294235
-  -0.04839477 -1.7753891  -1.34085252 -0.77635688]
- [ 0.60343633  0.96684471  0.86574082  0.16750441  0.48847444  0.93141307
-   0.97397562  0.12091794  0.23975061  0.09228677]
- [ 1.35777011  1.69529154  1.7368314   1.12361664  2.32192019  1.61658038
-   2.01755676  2.00884471  1.78874567  0.93536028]]
+[[-1.72926164 -0.37047414 -0.97883278 -0.27960606  0.19628294 -0.3995533
+  -1.67860663  0.15444588 -0.0238074  -0.95754369]
+ [ 0.49836064  0.27642868  0.36344295  0.59783351  1.00279701  0.23917056
+   0.04884439  0.83016748  0.61841912  0.17759142]
+ [ 2.65831953  0.9327647   1.71730444  1.45862505  1.76876848  0.89110814
+   1.8100036   1.51475414  1.24719381  1.32263236]]
 Mean
-[0.61273032 0.96646563 0.87787681 0.16285155 0.51365506 0.92682985
- 0.97834805 0.11352612 0.22166147 0.08410731]
+[0.47602812 0.28040841 0.37257773 0.59298147 0.98609419 0.24318362
+ 0.0637578  0.83432842 0.61438382 0.18063718]
 Standard Deviation
-[0.74702899 0.73211006 0.84647552 0.96339786 1.82725552 0.69352569
- 1.04702062 1.89727528 1.56827263 0.85360202]
+[2.19336201 0.65521987 1.34839027 0.87488145 0.79438601 0.64576472
+ 1.7512727  0.6813218  0.63916386 1.14306749]
 </pre></div></div>
 </div>
 <p>Last but not least, we can also plot the marginalised posterior distributions:</p>
@@ -548,35 +535,15 @@ Standard Deviation
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">sample</span> <span class="o">=</span> <span class="n">MCSamples</span><span class="p">(</span><span class="n">samples</span><span class="o">=</span><span class="n">chain</span><span class="p">)</span>
-<span class="n">g</span> <span class="o">=</span> <span class="n">plots</span><span class="o">.</span><span class="n">getSubplotPlotter</span><span class="p">(</span><span class="n">width_inch</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
-<span class="n">g</span><span class="o">.</span><span class="n">triangle_plot</span><span class="p">([</span><span class="n">sample</span><span class="p">],</span> <span class="n">filled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">shaded</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">cornerplot</span><span class="p">(</span><span class="n">chain</span><span class="p">[::</span><span class="mi">100</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mi">16</span><span class="p">))</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Removed no burn in
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_normal_distribution_14_1.png" src="../_images/notebooks_normal_distribution_14_1.png" />
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>
-</pre></div>
-</div>
+<img alt="../_images/notebooks_normal_distribution_14_0.svg" src="../_images/notebooks_normal_distribution_14_0.svg" /></div>
 </div>
 </div>
 

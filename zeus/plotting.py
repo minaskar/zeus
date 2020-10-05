@@ -133,7 +133,7 @@ def cornerplot(samples,
                 ax.axhline(truth[i], color='k', lw=1.0)
 
             if j == 0:
-                ax.set_ylabel(labels[i])
+                ax.set_ylabel(labels[i], fontsize=fontsize)
                 [l.set_rotation(45) for l in ax.get_yticklabels()]
             else:
                 ax.yaxis.set_ticklabels([])

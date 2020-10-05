@@ -1,12 +1,17 @@
 import numpy as np
-from itertools import permutations
-import random
 from tqdm import tqdm
 import logging
+
+try:
+    from collections.abc import Iterable
+except ImportError:
+    # for py2.7, will be an Exception in 3.8
+    from collections import Iterable
 
 from .samples import samples
 from .fwrapper import _FunctionWrapper
 from .autocorr import AutoCorrTime
+from .moves import DifferentialMove
 
 
 class EnsembleSampler:
@@ -21,7 +26,8 @@ class EnsembleSampler:
             unnormalised posterior probability at that position.
         args (list): Extra arguments to be passed into the logp.
         kwargs (list): Extra arguments to be passed into the logp.
-        proposal (dict): Dictionary containing the probability of each proposal (Default is {'differential' : 1.0, 'gaussian' : 0.0, 'jump' : 0.0, 'random' : 0.0}).
+        moves (list): This can be a single move object, a list of moves, or a “weighted” list of the form ``[(zeus.moves.DifferentialMove(), 0.1), ...]``.
+            When running, the sampler will randomly select a move from this list (optionally with weights) for each proposal. (default: DifferentialMove)
         tune (bool): Tune the scale factor to optimize performance (Default is True.)
         tolerance (float): Tuning optimization tolerance (Default is 0.05).
         patience (int): Number of tuning steps to wait to make sure that tuning is done (Default is 5).
@@ -38,7 +44,7 @@ class EnsembleSampler:
                  logprob_fn,
                  args=None,
                  kwargs=None,
-                 proposal={'differential' : 1.0, 'gaussian' : 0.0, 'jump' : 0.0, 'random' : 0.0},
+                 moves=None,
                  tune=True,
                  tolerance=0.05,
                  patience=5,
@@ -60,8 +66,25 @@ class EnsembleSampler:
         else:
             self.logger.setLevel(logging.WARNING)
 
+        # Parse the move schedule
+        if moves is None:
+            self._moves = [DifferentialMove()]
+            self._weights = [1.0]
+        elif isinstance(moves, Iterable):
+            try:
+                self._moves, self._weights = zip(*moves)
+            except TypeError:
+                self._moves = moves
+                self._weights = np.ones(len(moves))
+        else:
+            self._moves = [moves]
+            self._weights = [1.0]
+        self._weights = np.atleast_1d(self._weights).astype(float)
+        self._weights /= np.sum(self._weights)
+
         # Set up Log Probability
         self.logprob_fn = _FunctionWrapper(logprob_fn, args, kwargs)
+
 
         # Set up walkers
         self.nwalkers = int(nwalkers)
@@ -79,6 +102,8 @@ class EnsembleSampler:
         self.maxsteps = maxsteps
         self.patience = patience
         self.tolerance = tolerance
+        self.nexps = []
+        self.ncons =  []
 
         # Set up maximum number of Expansions/Contractions
         self.maxiter = maxiter
@@ -89,20 +114,6 @@ class EnsembleSampler:
 
         # Initialise Saving space for samples
         self.samples = samples(self.ndim, self.nwalkers)
-
-        # Set up Proposals
-        self.proposal = proposal
-        if ('differential' not in self.proposal) and ('gaussian' not in self.proposal) and ('jump' not in self.proposal) and ('random' not in self.proposal):
-            raise ValueError("Please provide at least one of the following proposals: differential, gaussian, jump, and random.")
-        total = 0.0
-        for key in self.proposal:
-            if (self.proposal[key] < 0.0) or (self.proposal[key] > 1.0):
-                raise ValueError("Please provide a dictionary with the probability of each proposal in the range [0,1].")
-            if key not in ['differential', 'gaussian', 'jump', 'random']:
-                raise ValueError("Proposal not recognised! Please provide a valid proposal (i.e. differential, gaussian, jump, or random).")
-            total += self.proposal[key]
-        if round(total,4) != 1.0:
-            raise ValueError("The total probability of all proposals must be equal to 1.0.")
 
 
     def run(self,
@@ -161,12 +172,7 @@ class EnsembleSampler:
             nexp = 0
             ncon = 0
 
-            # Choose proposal
-            if self.tune:
-                # During tuning use the most probable proposal
-                move = max(self.proposal, key=self.proposal.get)
-            else:
-                move = np.random.choice(list(self.proposal.keys()),p=list(self.proposal.values()))
+            move = np.random.choice(self._moves, p=self._weights)
 
             # Shuffle ensemble
             np.random.shuffle(batch)
@@ -181,22 +187,7 @@ class EnsembleSampler:
                 active, inactive = ensembles
 
                 # Compute directions
-                if move == 'differential':
-                    perms = list(permutations(inactive,2))
-                    pairs = np.asarray(random.sample(perms,int(self.nwalkers/2))).T
-                    directions = self.mu * (X[pairs[0]]-X[pairs[1]])
-                elif move == 'gaussian':
-                    mean = np.mean(X[inactive], axis=0)
-                    cov = np.cov(X[inactive], rowvar=False)
-                    directions = self.mu * np.random.multivariate_normal(mean,cov,size=int(self.nwalkers/2))
-                elif move == 'jump':
-                    perms = list(permutations(inactive,2))
-                    pairs = np.asarray(random.sample(perms,int(self.nwalkers/2))).T
-                    directions = 2.0 * (X[pairs[0]]-X[pairs[1]])
-                elif move == 'random':
-                    directions = np.random.normal(0.0,1.0,size=(int(self.nwalkers/2),self.ndim))
-                    directions /= np.linalg.norm(directions, axis=0)
-                    directions *= self.mu
+                directions = move.get_direction(X[inactive], self.mu)
 
                 # Get Z0 = LogP(x0)
                 Z0 = Z[active] - np.random.exponential(size=int(self.nwalkers/2))
@@ -230,6 +221,7 @@ class EnsembleSampler:
                     if len(mask_K[mask_K])>0:
                         cnt += 1
                     if cnt > self.maxiter:
+                        print(move.name)
                         raise RuntimeError('Number of expansions exceeded maximum limit! \n' +
                                            'Make sure that the pdf is well-defined. \n' +
                                            'Otherwise increase the maximum limit (maxiter=10^4 by default).')
@@ -313,6 +305,8 @@ class EnsembleSampler:
 
             # Tune scale factor using Robbins-Monro optimization
             if self.tune:
+                self.nexps.append(nexp)
+                self.ncons.append(ncon)
                 nexp = max(1, nexp) # This prevents the optimizer from getting stuck
                 self.mu *= 2.0 * nexp / (nexp + ncon)
                 self.mus.append(self.mu)
@@ -328,6 +322,7 @@ class EnsembleSampler:
             # Update progress bar
             if progress:
                 t.update()
+                #t.set_postfix({'expansions/walkers': round(nexp/self.nwalkers,1), 'contractions/walkers': round(ncon/self.nwalkers,1)})
 
         # Close progress bar
         if progress:
@@ -355,11 +350,16 @@ class EnsembleSampler:
         Args:
             flat (bool) : If True then flatten the chain into a 2D array by combining all walkers (default is False).
             thin (int) : Thinning parameter (the default value is 1).
-            discard (int) : Number of burn-in steps to be removed from each walker (default is 0).
+            discard (int) : Number of burn-in steps to be removed from each walker (default is 0). A float number between
+            0.0 and 1.0 can be used to indicate what percentage of the chain to be discarded as burnin.
 
         Returns:
             Array object containg the Markov chain samples (2D if flat=True, 3D if flat=False).
         """
+
+        if discard < 1.0:
+            discard  = int(discard * np.shape(self.chain)[0])
+
         if flat:
             return self.samples.flatten(discard=discard, thin=thin)
         else:
@@ -373,11 +373,15 @@ class EnsembleSampler:
         Args:
             flat (bool) : If True then flatten the chain into a 1D array by combining all walkers (default is False).
             thin (int) : Thinning parameter (the default value is 1).
-            discard (int) : Number of burn-in steps to be removed from each walker (default is 0).
+            discard (int) : Number of burn-in steps to be removed from each walker (default is 0). A float number between
+            0.0 and 1.0 can be used to indicate what percentage of the chain to be discarded as burnin.
 
         Returns:
             Array containing the value of the log probability at the samples of the Markov chain (1D if flat=True, 2D otherwise).
         """
+        if discard < 1.0:
+            discard  = int(discard * np.shape(self.chain)[0])
+
         if flat:
             return self.samples.flatten_logprob(discard=discard, thin=thin)
         else:
@@ -390,7 +394,7 @@ class EnsembleSampler:
         Returns the chains.
 
         Returns:
-            Returns the chains of shape (nwalkers, nsteps, ndim).
+            Returns the chains of shape (nsteps, nwalkers, ndim).
         """
         return self.samples.chain
 

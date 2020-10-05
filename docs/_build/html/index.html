@@ -4,10 +4,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>zeus documentation &#8212; zeus 1.2.2 documentation</title>
+    <title>zeus documentation &#8212; zeus 2.0.0 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/_static/default.css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -61,36 +60,16 @@
      href="#">Contents <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a><ul>
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Cookbook Recipes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="cookbook.html#mcmc-sampling-recipes">MCMC Sampling recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cookbook.html#parallelisation-recipes">Parallelisation recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cookbook.html#saving-progress-recipes">Saving Progress recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cookbook.html#autocorrelation-analysis-recipes">Autocorrelation Analysis recipes</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#what-is-the-acceptance-rate-of-zeus">What is the acceptance rate of <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#why-should-i-use-zeus-instead-of-other-mcmc-samplers">Why should I use zeus instead of other MCMC samplers?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#what-are-the-walkers">What are the walkers?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#how-many-walkers-should-i-use">How many walkers should I use?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#how-should-i-initialize-the-positions-of-the-walkers">How should I initialize the positions of the walkers?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#how-long-should-i-run-zeus">How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api.html#the-ensemble-slice-sampler">The Ensemble Slice Sampler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#the-autocorrelation-time-estimator">The Autocorrelation Time Estimator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#the-chain-manager-mpi-utilities">The Chain Manager - MPI Utilities</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#the-plotting-module-cornerplot">The Plotting Module - Cornerplot</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/normal_distribution.html">Sampling from a multivariate Normal distribution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/multiprocessing.html">Parallelizing sampling using multiprocessing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/MPI.html">Parallelizing sampling using MPI</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/MPI.html#Save-this-as-‘test_mpi.py’">Save this as ‘test_mpi.py’</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/datafit.html">Fitting a model to data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/datafit.html#The-generative-probabilistic-model">The generative probabilistic model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/datafit.html#The-likelihood,-prior,-and-posterior-distributions">The likelihood, prior, and posterior distributions</a></li>
@@ -98,25 +77,32 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/datafit.html#Results">Results</a></li>
 </ul>
 </li>
-</ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/multiprocessing.html">Parallelizing sampling using multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MPI.html">Parallelizing sampling using MPI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MPI.html#Save-this-as-‘test_mpi.py’">Save this as ‘test_mpi.py’</a></li>
 </ul>
 </li>
-              
-                <li class="dropdown">
-  <a role="button"
-     id="dLabelLocalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="#">Page <b class="caret"></b></a>
-  <ul class="dropdown-menu localtoc"
-      role="menu"
-      aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Basic use</a></li>
-<li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#getting-started">Getting Started</a></li>
-<li><a class="reference internal" href="#citation">Citation</a></li>
-<li><a class="reference internal" href="#licence">Licence</a></li>
-<li><a class="reference internal" href="#changelog">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help &amp; Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#what-is-the-acceptance-rate-of-zeus">What is the acceptance rate of <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#why-should-i-use-zeus-instead-of-other-mcmc-samplers">Why should I use zeus instead of other MCMC samplers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#what-are-the-walkers">What are the walkers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#how-many-walkers-should-i-use">How many walkers should I use?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#how-should-i-initialize-the-positions-of-the-walkers">How should I initialize the positions of the walkers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#how-long-should-i-run-zeus">How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#what-are-the-moves-and-which-one-should-i-use">What are the <code class="docutils literal notranslate"><span class="pre">Moves</span></code> and which one should I use?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/sampler.html">The Ensemble Slice Sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/moves.html">The Ensemble Moves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/autocorr.html">Autocorrelation Time Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/parallel.html">The Chain Manager &amp; MPI Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/plotting.html">Plotting Results</a></li>
+</ul>
+</li>
 </ul>
 </ul>
 </li>
@@ -148,8 +134,8 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="figure align-default">
-<img alt="_images/logo.png" src="_images/logo.png" />
+  <div class="figure align-center">
+<a class="reference internal image-reference" href="_images/logo.png"><img alt="_images/logo.png" src="_images/logo.png" style="width: 702.0px; height: 253.79999999999998px;" /></a>
 </div>
 <p><strong>zeus is a Python implementation of the Ensemble Slice Sampling method.</strong></p>
 <ul class="simple">
@@ -167,8 +153,8 @@
 <div class="section" id="basic-use">
 <h1>Basic use<a class="headerlink" href="#basic-use" title="Permalink to this headline">¶</a></h1>
 <p>For instance, if you wanted to draw samples from a <em>10-dimensional Normal distribution</em>, you would do something like:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">zeus</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">zeus</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ivar</span><span class="p">):</span>
     <span class="k">return</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ivar</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mf">2.0</span><span class="p">)</span>
@@ -194,7 +180,7 @@
 <ul class="simple">
 <li><p>See the <a class="reference internal" href="cookbook.html"><span class="doc">Cookbook</span></a> page to learn how to perform Bayesian Inference using <code class="docutils literal notranslate"><span class="pre">zeus</span></code>.</p></li>
 <li><p>See the <a class="reference internal" href="faq.html"><span class="doc">Frequently Asked Questions</span></a> page for frequently asked questions about <code class="docutils literal notranslate"><span class="pre">zeus</span></code>’ operation.</p></li>
-<li><p>See the <a class="reference internal" href="api.html"><span class="doc">API</span></a> page for detailed API documentation.</p></li>
+<li><p>See the <a class="reference internal" href="api.html"><span class="doc">API Reference</span></a> page for detailed API documentation.</p></li>
 </ul>
 </div>
 <div class="section" id="citation">
@@ -202,12 +188,19 @@
 <p>Please cite <a class="reference external" href="https://arxiv.org/abs/2002.06212">Karamanis &amp; Beutler (2020)</a> if you find this code useful in your
 research. The BibTeX entry for the paper is:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@article</span><span class="p">{</span><span class="n">zeus</span><span class="p">,</span>
-      <span class="n">title</span><span class="o">=</span><span class="p">{</span><span class="n">Ensemble</span> <span class="n">Slice</span> <span class="n">Sampling</span><span class="p">},</span>
-      <span class="n">author</span><span class="o">=</span><span class="p">{</span><span class="n">Minas</span> <span class="n">Karamanis</span> <span class="ow">and</span> <span class="n">Florian</span> <span class="n">Beutler</span><span class="p">},</span>
-      <span class="n">year</span><span class="o">=</span><span class="p">{</span><span class="mi">2020</span><span class="p">},</span>
-      <span class="n">eprint</span><span class="o">=</span><span class="p">{</span><span class="mf">2002.06212</span><span class="p">},</span>
-      <span class="n">archivePrefix</span><span class="o">=</span><span class="p">{</span><span class="n">arXiv</span><span class="p">},</span>
-      <span class="n">primaryClass</span><span class="o">=</span><span class="p">{</span><span class="n">stat</span><span class="o">.</span><span class="n">ML</span><span class="p">}</span>
+    <span class="n">title</span><span class="o">=</span><span class="p">{</span><span class="n">zeus</span><span class="p">:</span> <span class="n">A</span> <span class="n">Python</span> <span class="n">Implementation</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Ensemble</span> <span class="n">Slice</span> <span class="n">Sampling</span> <span class="n">method</span><span class="p">},</span>
+    <span class="n">author</span><span class="o">=</span><span class="p">{</span><span class="n">Minas</span> <span class="n">Karamanis</span> <span class="ow">and</span> <span class="n">Florian</span> <span class="n">Beutler</span><span class="p">},</span>
+    <span class="n">year</span><span class="o">=</span><span class="p">{</span><span class="mi">2020</span><span class="p">},</span>
+    <span class="n">note</span><span class="o">=</span><span class="p">{</span><span class="ow">in</span> <span class="n">prep</span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nd">@article</span><span class="p">{</span><span class="n">ess</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="p">{</span><span class="n">Ensemble</span> <span class="n">Slice</span> <span class="n">Sampling</span><span class="p">},</span>
+    <span class="n">author</span><span class="o">=</span><span class="p">{</span><span class="n">Minas</span> <span class="n">Karamanis</span> <span class="ow">and</span> <span class="n">Florian</span> <span class="n">Beutler</span><span class="p">},</span>
+    <span class="n">year</span><span class="o">=</span><span class="p">{</span><span class="mi">2020</span><span class="p">},</span>
+    <span class="n">eprint</span><span class="o">=</span><span class="p">{</span><span class="mf">2002.06212</span><span class="p">},</span>
+    <span class="n">archivePrefix</span><span class="o">=</span><span class="p">{</span><span class="n">arXiv</span><span class="p">},</span>
+    <span class="n">primaryClass</span><span class="o">=</span><span class="p">{</span><span class="n">stat</span><span class="o">.</span><span class="n">ML</span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -219,6 +212,13 @@ research. The BibTeX entry for the paper is:</p>
 </div>
 <div class="section" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<p><strong>2.0.0 (05/10/20)</strong></p>
+<ul class="simple">
+<li><p>Added new <code class="docutils literal notranslate"><span class="pre">Moves</span></code> interface (e.g. <code class="docutils literal notranslate"><span class="pre">DifferentialMove</span></code>, <code class="docutils literal notranslate"><span class="pre">GlobalMove</span></code>, etc).</p></li>
+<li><p>Plotting capabilities (i.e. <code class="docutils literal notranslate"><span class="pre">cornerplot</span></code>).</p></li>
+<li><p>Updated docs.</p></li>
+<li><p>Fixed minor bugs.</p></li>
+</ul>
 <p><strong>1.2.2 (19/09/20)</strong></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Sampler</span></code> class is deprecated. New <code class="docutils literal notranslate"><span class="pre">EnsembleSampler</span></code> class in now available.</p></li>
@@ -242,6 +242,8 @@ research. The BibTeX entry for the paper is:</p>
 <ul class="simple">
 <li><p>Improved parallel distribution of tasks</p></li>
 </ul>
+<div class="toctree-wrapper compound">
+</div>
 <div class="toctree-wrapper compound">
 </div>
 </div>

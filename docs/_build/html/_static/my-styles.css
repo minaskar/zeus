@@ -1,0 +1,48 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+  }
+  
+  .dropdown-menu.globaltoc {
+    overflow: scroll;
+  }
+  
+  .caption {
+    margin-left: 5px;
+    font-weight: bold
+  }
+  
+  .navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+  color: black;  /*Sets the text hover color on navbar*/
+  }
+  
+  .note {
+    color: #0a3055;
+  }
+  
+  .important {
+    color: #0a3055;
+  }
+  
+  .warning {
+    color: #0a3055;
+  }
+  
+  .warning a:link,
+  .warning a:visited {
+    color: #E0FFFF;
+  }
+  
+  .note a:link,
+  .note a:visited {
+    color: #E0FFFF;
+  }
+  
+  .important a:link,
+  .important a:visited {
+    color: #E0FFFF;
+  }
+
+.wy-nav-content {
+    min-width: 1700px !important;
+    max-width: 1800px !important;
+    }

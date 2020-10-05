@@ -1,0 +1,23 @@
+﻿zeus.moves.LocalMixtureMove
+===========================
+
+.. currentmodule:: zeus.moves
+
+.. autoclass:: LocalMixtureMove
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~LocalMixtureMove.__init__
+      ~LocalMixtureMove.get_direction
+   
+   
+
+   
+   
+   

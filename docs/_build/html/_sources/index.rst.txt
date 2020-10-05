@@ -1,6 +1,8 @@
 .. title:: zeus documentation
 
 .. figure:: ./../logo.png
+    :scale: 30 %
+    :align: center
 
 **zeus is a Python implementation of the Ensemble Slice Sampling method.**
 
@@ -29,8 +31,8 @@ For instance, if you wanted to draw samples from a *10-dimensional Normal distri
 
 .. code:: Python
 
-    import numpy as np
     import zeus
+    import numpy as np
 
     def log_prob(x, ivar):
         return - 0.5 * np.sum(ivar * x**2.0)
@@ -67,14 +69,21 @@ Please cite `Karamanis & Beutler (2020)
 <https://arxiv.org/abs/2002.06212>`_ if you find this code useful in your
 research. The BibTeX entry for the paper is::
 
-  @article{zeus,
+    @article{zeus,
+        title={zeus: A Python Implementation of the Ensemble Slice Sampling method},
+        author={Minas Karamanis and Florian Beutler},
+        year={2020},
+        note={in prep}
+    }
+
+    @article{ess,
         title={Ensemble Slice Sampling},
         author={Minas Karamanis and Florian Beutler},
         year={2020},
         eprint={2002.06212},
         archivePrefix={arXiv},
         primaryClass={stat.ML}
-  }
+    }
 
 Licence
 =======
@@ -86,6 +95,13 @@ Copyright 2019-2020 Minas Karamanis and contributors.
 
 Changelog
 =========
+
+**2.0.0 (05/10/20)**
+
+- Added new ``Moves`` interface (e.g. ``DifferentialMove``, ``GlobalMove``, etc).
+- Plotting capabilities (i.e. ``cornerplot``).
+- Updated docs.
+- Fixed minor bugs.
 
 **1.2.2 (19/09/20)**
 
@@ -112,13 +128,20 @@ Changelog
 
 
 .. toctree::
-   :maxdepth: 2
-   :hidden:
+    :maxdepth: 1
+    :caption: Cookbook Recipes
+    :hidden:
 
-   cookbook
-   faq
-   api
-   notebooks/normal_distribution.ipynb
-   notebooks/multiprocessing.ipynb
-   notebooks/MPI.ipynb
-   notebooks/datafit.ipynb
+    Overview <cookbook>
+    notebooks/normal_distribution.ipynb
+    notebooks/datafit.ipynb
+    notebooks/multiprocessing.ipynb
+    notebooks/MPI.ipynb
+
+.. toctree::
+    :maxdepth: 3
+    :caption: Help & Reference
+    :hidden:
+
+    faq
+    api
