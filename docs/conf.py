@@ -25,7 +25,7 @@ copyright = '2019-2020, Minas Karamanis'
 author = 'Minas Karamanis'
 
 # The full version, including alpha/beta/rc tags
-release = '1.2.2'
+release = '2.0.0'
 
 # -- General configuration ---------------------------------------------------
 
@@ -78,7 +78,6 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**.ipynb_checkpoints']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-#html_theme = 'alabaster'
 html_theme = 'bootstrap'
 html_favicon = "_static/favicon.png"
 
@@ -103,7 +102,7 @@ html_theme_options = {
 
     'navbar_sidebarrel': False, # Render the next and previous page links in navbar. (Default: true)
 
-    'navbar_pagenav': True, # Render the current pages TOC in the navbar. (Default: true)
+    'navbar_pagenav': False, # Render the current pages TOC in the navbar. (Default: true)
 
     'navbar_pagenav_name': "Page", # Tab name for the current pages TOC. (Default: "Page")
 
@@ -133,8 +132,13 @@ html_theme_options = {
     #'bootswatch_theme': "cosmo",
     'bootswatch_theme': "readable",
     #'bootswatch_theme': "flatly",
+    #'bootswatch_theme': "Yeti",
 
     'bootstrap_version': "3",
+
+    'body_max_width' : '100%',
+    #'body_min_width' : '70%',
+
 }
 
 html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
@@ -153,6 +157,13 @@ html_show_sourcelink = False
 #    app.add_javascript('copybutton.js')
 #    app.add_stylesheet('default.css')
 
-html_css_files = [
-    '_static/default.css',
-]
+#html_css_files = ['_static',]
+
+#html_context = {'css_files': ['_static/default.css',  # override wide tables in RTD theme
+#],}
+
+#autodoc_default_options = {
+#    'exclude-members': '__init__'
+#}
+
+#autoclass_content = ["class"]

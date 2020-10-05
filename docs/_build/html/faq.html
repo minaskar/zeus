@@ -4,10 +4,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Frequently Asked Questions &#8212; zeus 1.2.2 documentation</title>
+    <title>Frequently Asked Questions &#8212; zeus 2.0.0 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/_static/default.css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -19,8 +18,8 @@
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API" href="api.html" />
-    <link rel="prev" title="Cookbook" href="cookbook.html" />
+    <link rel="next" title="API Reference" href="api.html" />
+    <link rel="prev" title="Parallelizing sampling using MPI" href="notebooks/MPI.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -62,36 +61,16 @@
      href="index.html">Contents <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a><ul>
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Cookbook Recipes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="cookbook.html#mcmc-sampling-recipes">MCMC Sampling recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cookbook.html#parallelisation-recipes">Parallelisation recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cookbook.html#saving-progress-recipes">Saving Progress recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cookbook.html#autocorrelation-analysis-recipes">Autocorrelation Analysis recipes</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Frequently Asked Questions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#what-is-the-acceptance-rate-of-zeus">What is the acceptance rate of <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#why-should-i-use-zeus-instead-of-other-mcmc-samplers">Why should I use zeus instead of other MCMC samplers?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#what-are-the-walkers">What are the walkers?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#how-many-walkers-should-i-use">How many walkers should I use?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#how-should-i-initialize-the-positions-of-the-walkers">How should I initialize the positions of the walkers?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#how-long-should-i-run-zeus">How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api.html#the-ensemble-slice-sampler">The Ensemble Slice Sampler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#the-autocorrelation-time-estimator">The Autocorrelation Time Estimator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#the-chain-manager-mpi-utilities">The Chain Manager - MPI Utilities</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#the-plotting-module-cornerplot">The Plotting Module - Cornerplot</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/normal_distribution.html">Sampling from a multivariate Normal distribution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/multiprocessing.html">Parallelizing sampling using multiprocessing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/MPI.html">Parallelizing sampling using MPI</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/MPI.html#Save-this-as-‘test_mpi.py’">Save this as ‘test_mpi.py’</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/datafit.html">Fitting a model to data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/datafit.html#The-generative-probabilistic-model">The generative probabilistic model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/datafit.html#The-likelihood,-prior,-and-posterior-distributions">The likelihood, prior, and posterior distributions</a></li>
@@ -99,26 +78,30 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/datafit.html#Results">Results</a></li>
 </ul>
 </li>
-</ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/multiprocessing.html">Parallelizing sampling using multiprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MPI.html">Parallelizing sampling using MPI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MPI.html#Save-this-as-‘test_mpi.py’">Save this as ‘test_mpi.py’</a></li>
 </ul>
 </li>
-              
-                <li class="dropdown">
-  <a role="button"
-     id="dLabelLocalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="#">Page <b class="caret"></b></a>
-  <ul class="dropdown-menu localtoc"
-      role="menu"
-      aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Frequently Asked Questions</a><ul>
-<li><a class="reference internal" href="#what-is-the-acceptance-rate-of-zeus">What is the acceptance rate of <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
-<li><a class="reference internal" href="#why-should-i-use-zeus-instead-of-other-mcmc-samplers">Why should I use zeus instead of other MCMC samplers?</a></li>
-<li><a class="reference internal" href="#what-are-the-walkers">What are the walkers?</a></li>
-<li><a class="reference internal" href="#how-many-walkers-should-i-use">How many walkers should I use?</a></li>
-<li><a class="reference internal" href="#how-should-i-initialize-the-positions-of-the-walkers">How should I initialize the positions of the walkers?</a></li>
-<li><a class="reference internal" href="#how-long-should-i-run-zeus">How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help &amp; Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-the-acceptance-rate-of-zeus">What is the acceptance rate of <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#why-should-i-use-zeus-instead-of-other-mcmc-samplers">Why should I use zeus instead of other MCMC samplers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-are-the-walkers">What are the walkers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-many-walkers-should-i-use">How many walkers should I use?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-should-i-initialize-the-positions-of-the-walkers">How should I initialize the positions of the walkers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-long-should-i-run-zeus">How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-are-the-moves-and-which-one-should-i-use">What are the <code class="docutils literal notranslate"><span class="pre">Moves</span></code> and which one should I use?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/sampler.html">The Ensemble Slice Sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/moves.html">The Ensemble Moves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/autocorr.html">Autocorrelation Time Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/parallel.html">The Chain Manager &amp; MPI Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/plotting.html">Plotting Results</a></li>
 </ul>
 </li>
 </ul>
@@ -188,6 +171,18 @@ of the parameter space (a.k.a. the typical set), producing a great number of ind
 <h2>How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?<a class="headerlink" href="#how-long-should-i-run-zeus" title="Permalink to this headline">¶</a></h2>
 <p>You don’t have to run <code class="docutils literal notranslate"><span class="pre">zeus</span></code> for very long. If your goal is to produce 2D/1D contours and/or 1-sigma/2-sigma
 constraints for your parameters, running <code class="docutils literal notranslate"><span class="pre">zeus</span></code> for a few autocorrelation times (e.g. 10) is more than enough.</p>
+</div>
+<div class="section" id="what-are-the-moves-and-which-one-should-i-use">
+<h2>What are the <code class="docutils literal notranslate"><span class="pre">Moves</span></code> and which one should I use?<a class="headerlink" href="#what-are-the-moves-and-which-one-should-i-use" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">zeus</span></code> was originally built on the <code class="docutils literal notranslate"><span class="pre">Differential</span></code> and <code class="docutils literal notranslate"><span class="pre">Gaussian</span></code> moves. Starting from version
+2.0.0, <code class="docutils literal notranslate"><span class="pre">zeus</span></code> supports a mixture of different moves/proposals. Moves are recipes that the walkers
+follow to cross the parameter space. The <code class="docutils literal notranslate"><span class="pre">Differential</span> <span class="pre">Move</span></code> remains the default choice but we also
+provide a suite of additional moves, such as the <code class="docutils literal notranslate"><span class="pre">Global</span> <span class="pre">Move</span></code> that can be used when sampling from
+challenging target distributions (e.g. highly dimensional multimodal distributions).</p>
+<p>The move(s) you should use depends on the particular target distribution. The <code class="docutils literal notranslate"><span class="pre">Differential</span> <span class="pre">Move</span></code>
+seems to be a good choice for most distributions and 50-50 mixture of the <code class="docutils literal notranslate"><span class="pre">Global</span> <span class="pre">Move</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Local</span> <span class="pre">Move</span></code> seem to perform very well in highly dimensional multimodal distributions when used
+after the burnin period is over.</p>
 </div>
 </div>
 

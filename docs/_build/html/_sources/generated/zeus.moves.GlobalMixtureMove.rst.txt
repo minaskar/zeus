@@ -1,0 +1,23 @@
+﻿zeus.moves.GlobalMixtureMove
+============================
+
+.. currentmodule:: zeus.moves
+
+.. autoclass:: GlobalMixtureMove
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~GlobalMixtureMove.__init__
+      ~GlobalMixtureMove.get_direction
+   
+   
+
+   
+   
+   

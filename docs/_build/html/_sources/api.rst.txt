@@ -1,38 +1,14 @@
-===
-API
-===
+=============
+API Reference
+=============
 
-**zeus** consists mainly of four parts:
+**zeus** consists mainly of five parts:
 
-.. contents::
-   :depth: 2
-   :local:
-   :backlinks: none
+.. toctree::
+   :maxdepth: 2
 
-
-The Ensemble Slice Sampler
-==========================
-
-.. autoclass:: zeus.EnsembleSampler
-   :members:
-   :undoc-members:
-
-
-The Autocorrelation Time Estimator
-==================================
-
-.. autofunction:: zeus.AutoCorrTime
-
-
-The Chain Manager - MPI Utilities
-=================================
-
-.. autoclass:: zeus.ChainManager
-   :members:
-   :undoc-members:
-
-
-The Plotting Module - Cornerplot
-================================
-
-.. autofunction:: zeus.cornerplot
+   api/sampler
+   api/moves
+   api/autocorr
+   api/parallel
+   api/plotting

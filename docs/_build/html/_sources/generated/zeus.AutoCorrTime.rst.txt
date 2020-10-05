@@ -1,0 +1,6 @@
+﻿zeus.AutoCorrTime
+=================
+
+.. currentmodule:: zeus
+
+.. autofunction:: AutoCorrTime

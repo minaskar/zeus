@@ -1,0 +1,65 @@
+===
+API
+===
+
+**zeus** consists mainly of five parts:
+
+.. contents::
+   :depth: 2
+   :local:
+   :backlinks: none
+
+
+The Ensemble Slice Sampler
+==========================
+
+.. autoclass:: zeus.EnsembleSampler
+   :members:
+   :undoc-members:
+
+The Ensemble Moves
+==================
+
+.. autosummary::
+    :toctree: generated
+
+    zeus.moves.DifferentialMove
+    zeus.moves.GaussianMove
+
+.. autoclass:: zeus.moves.DifferentialMove
+   :members:
+
+.. autoclass:: zeus.moves.GaussianMove
+   :members:
+
+.. autoclass:: zeus.moves.GlobalMixtureMove
+   :members:
+
+.. autoclass:: zeus.moves.LocalMixtureMove
+   :members:
+
+.. autoclass:: zeus.moves.KDEMove
+   :members:
+
+.. autoclass:: zeus.moves.RandomMove
+   :members:
+
+
+The Autocorrelation Time Estimator
+==================================
+
+.. autofunction:: zeus.AutoCorrTime
+
+
+The Chain Manager - MPI Utilities
+=================================
+
+.. autoclass:: zeus.ChainManager
+   :members:
+   :undoc-members:
+
+
+The Plotting Module - Cornerplot
+================================
+
+.. autofunction:: zeus.cornerplot

@@ -1,0 +1,23 @@
+﻿zeus.moves.RandomMove
+=====================
+
+.. currentmodule:: zeus.moves
+
+.. autoclass:: RandomMove
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~RandomMove.__init__
+      ~RandomMove.get_direction
+   
+   
+
+   
+   
+   
