@@ -96,10 +96,10 @@ Copyright 2019-2020 Minas Karamanis and contributors.
 Changelog
 =========
 
-**2.0.0 (04/10/20)**
+**2.0.0 (05/10/20)**
 
-- Added new ``Moves`` interface.
-- Plotting capabilities.
+- Added new ``Moves`` interface (e.g. ``DifferentialMove``, ``GlobalMove``, etc).
+- Plotting capabilities (i.e. ``cornerplot``).
 - Updated docs.
 - Fixed minor bugs.
 
