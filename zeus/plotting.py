@@ -1,6 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt 
-import seaborn as sns
 
 def cornerplot(samples,
                labels=None,
@@ -66,6 +64,8 @@ def cornerplot(samples,
     Figure, Axes
         The matplotlib figure and axes.
     """
+    import matplotlib.pyplot as plt
+    import seaborn as sns
 
     ndim = samples.shape[1]
 
