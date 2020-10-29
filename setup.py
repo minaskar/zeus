@@ -8,7 +8,7 @@ with open("requirements.txt", 'r') as dependencies:
 
 setuptools.setup(
     name="zeus-mcmc",
-    version="2.1.0",
+    version="2.1.1",
     author="Minas Karamanis",
     author_email="minaskar@gmail.com",
     description="zeus: Lightning Fast MCMC",
