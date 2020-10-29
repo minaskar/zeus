@@ -96,7 +96,7 @@ Copyright 2019-2020 Minas Karamanis and contributors.
 Changelog
 =========
 
-**2.1.0 (29/10/20)**
+**2.1.1 (29/10/20)**
 
 - Added ``blobs`` interface to track arbitrary metadata.
 - Updated ``GlobalMove`` and multimodal example.

@@ -240,9 +240,15 @@ class EnsembleSampler:
                     X_L[mask_J] = directions[mask_J] * L[mask_J][:,np.newaxis] + X[active][mask_J]
                     X_R[mask_K] = directions[mask_K] * R[mask_K][:,np.newaxis] + X[active][mask_K]
 
-                    Z_LR_masked, _ = self.compute_log_prob(np.concatenate([X_L[mask_J],X_R[mask_K]]))
-                    Z_L[mask_J] = Z_LR_masked[:X_L[mask_J].shape[0]]
-                    Z_R[mask_K] = Z_LR_masked[X_L[mask_J].shape[0]:]
+                    if len(X_L[mask_J]) + len(X_R[mask_K]) < 1:
+                        Z_L[mask_J] = np.array([])
+                        Z_R[mask_K] = np.array([])
+                        cnt -= 1
+                    else:
+                        Z_LR_masked, _ = self.compute_log_prob(np.concatenate([X_L[mask_J],X_R[mask_K]]))
+                        #Z_LR_masked = np.array(list(self.distribute(self.logprob_fn, np.concatenate([X_L[mask_J],X_R[mask_K]]))))
+                        Z_L[mask_J] = Z_LR_masked[:X_L[mask_J].shape[0]]
+                        Z_R[mask_K] = Z_LR_masked[X_L[mask_J].shape[0]:]
 
                     for j in indeces[mask_J]:
                         ncall += 1
@@ -278,10 +284,12 @@ class EnsembleSampler:
 
                     # Compute New Positions
                     X_prime[mask] = directions[mask] * Widths[mask][:,np.newaxis] + X[active][mask]
+                    
 
                     # Calculate LogP of New Positions
                     if blobs is None:
                         Z_prime[mask], _ = self.compute_log_prob(X_prime[mask])
+                        #Z_prime[mask] = np.array(list(self.distribute(self.logprob_fn, X_prime[mask])))
                     else:
                         Z_prime[mask], blobs_prime[mask] = self.compute_log_prob(X_prime[mask])
 
@@ -532,6 +540,7 @@ class EnsembleSampler:
 
         # Run the log-probability calculations (optionally in parallel).
         results = list(self.distribute(self.logprob_fn, (p[i] for i in range(len(p)))))
+        #results = list(self.distribute(self.logprob_fn, p))
 
         try:
             log_prob = np.array([float(l[0]) for l in results])
