@@ -30,7 +30,7 @@ class DifferentialMove:
 
     """
 
-    def __init__(self, tune=True, mu0=2.0):
+    def __init__(self, tune=True, mu0=1.0):
         self.tune = tune
         self.mu0 = mu0
 
@@ -60,7 +60,7 @@ class DifferentialMove:
         if not self.tune:
             mu = self.mu0
         
-        return mu * (X[pairs[0]]-X[pairs[1]])
+        return 2.0 * mu * (X[pairs[0]]-X[pairs[1]]), self.tune
 
 
 class GaussianMove:
@@ -108,7 +108,7 @@ class GaussianMove:
         if not self.tune:
             mu = self.mu0
 
-        return 2.0 * mu * np.random.multivariate_normal(np.zeros_like(mean),cov,size=nsamples)
+        return 2.0 * mu * np.random.multivariate_normal(np.zeros_like(mean),cov,size=nsamples), self.tune
 
 
 class GlobalMove:
@@ -133,7 +133,7 @@ class GlobalMove:
             decide not to use all of them.
     """
 
-    def __init__(self, tune=False, mu0=2.0, rescale_cov=0.001, n_components=5):
+    def __init__(self, tune=True, mu0=1.0, rescale_cov=0.001, n_components=5):
         
         if BayesianGaussianMixture is None:
             raise ImportError("you need sklearn.mixture.BayesianGaussianMixture to use the GlobalMove")
@@ -161,6 +161,9 @@ class GlobalMove:
                 Array of direction vectors of shape ``(nwalkers//2, ndim)``.
         """
         
+        if not self.tune:
+            mu = self.mu0
+
         n = X.shape[0]
 
         mixture = BayesianGaussianMixture(n_components=self.n_components)
@@ -168,77 +171,18 @@ class GlobalMove:
         means = mixture.means_
         covariances = mixture.covariances_
 
-        i, j = np.random.choice(len(means), 2, replace=False)
-        directions = np.random.multivariate_normal(means[i], covariances[i]*self.rescale_cov, size=n) - np.random.multivariate_normal(means[j], covariances[j]*self.rescale_cov, size=n)
+        i, j = np.random.choice(labels, 2, replace=False)
+        if i != j:
+            directions = np.random.multivariate_normal(means[i], covariances[i]*self.rescale_cov, size=n) - np.random.multivariate_normal(means[j], covariances[j]*self.rescale_cov, size=n)
+            tune_once = False
+        else:
+            directions = mu * np.random.multivariate_normal(np.zeros_like(means[i]), covariances[i], size=n)
+            if self.tune:
+                tune_once = True
+            else:
+                tune_once = False
 
-        if not self.tune:
-            mu = self.mu0
-
-        return mu * directions
-
-
-class LocalMove:
-    r"""
-    The `Karamanis & Beutler (2020) <https://arxiv.org/abs/2002.06212>`_ "Local Move" with parallelization.
-    Just like with the ``GlobalMove`` when this Move is used a Bayesian Gaussian Mixture (BGM) is fitted to
-    the walkers of complementary ensemble. However, this time the walkers move along directions that facilitate
-    local mixing in different modes of the target distribution. In cases of multimodal distributions, a 50-50
-    balance between this move and the ``GlobalMove`` results in rapidly mixing chains. This move should
-    be used after any burnin period.
-
-    Parameters
-    ----------
-        tune : bool
-            If True then tune this move. Default is True.
-        mu0 : float
-            Default value of ``mu`` if ``tune=False``.
-        n_components : int
-            The number of mixture components. Depending on the distribution of the walkers the model can
-            decide not to use all of them.
-    """
-
-    def __init__(self, tune=False, mu0=1.0, n_components=5):
-        
-        if BayesianGaussianMixture is None:
-            raise ImportError("you need sklearn.mixture.BayesianGaussianMixture to use the LocalMove")
-    
-        self.tune = tune
-        self.mu0 = mu0
-        self.n_components = n_components
-
-
-    def get_direction(self, X, mu):
-        r"""
-        Generate direction vectors.
-
-        Parameters
-        ----------
-            X : array
-                Array of shape ``(nwalkers//2, ndim)`` with the walker positions of the complementary ensemble.
-            mu : float
-                The value of the scale factor ``mu``.
-        
-        Returns
-        -------
-            directions : array
-                Array of direction vectors of shape ``(nwalkers//2, ndim)``.
-        """
-
-        nsamples = X.shape[0]
-
-        mixture = BayesianGaussianMixture(n_components=self.n_components)
-        labels = mixture.fit_predict(X)
-        means = mixture.means_
-        covariances = mixture.covariances_
-
-        i = np.random.choice(len(means))
-
-        directions = np.random.multivariate_normal(np.zeros_like(means[i]), covariances[i], size=nsamples)
-
-        if not self.tune:
-            mu = self.mu0
-
-        return 2.0 * mu * directions
+        return 2.0*directions, tune_once
 
 
 class KDEMove:
@@ -259,7 +203,7 @@ class KDEMove:
 
     """
 
-    def __init__(self, tune=False, mu0=2.0, bw_method=None):
+    def __init__(self, tune=False, mu0=1.0, bw_method=None):
 
         if gaussian_kde is None:
             raise ImportError("you need scipy.stats.gaussian_kde to use the KDEMove")
@@ -296,7 +240,7 @@ class KDEMove:
         if not self.tune:
             mu = self.mu0
 
-        return mu * directions
+        return 2.0 * mu * directions, self.tune
 
 
 class RandomMove:
@@ -315,7 +259,7 @@ class RandomMove:
 
     """
 
-    def __init__(self, tune=True, mu0=2.0):
+    def __init__(self, tune=True, mu0=1.0):
         self.tune = tune
         self.mu0 = mu0
 
@@ -343,4 +287,4 @@ class RandomMove:
         if not self.tune:
             mu = self.mu0
 
-        return mu * directions
+        return 2.0 * mu * directions, self.tune

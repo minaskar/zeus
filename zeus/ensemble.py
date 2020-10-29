@@ -36,6 +36,7 @@ class EnsembleSampler:
         maxiter (int): Number of maximum Expansions/Contractions (Default is 10^4).
         pool (bool): External pool of workers to distribute workload to multiple CPUs (default is None).
         vectorize (bool): If true (default is False), logprob_fn receives not just one point but an array of points, and returns an array of likelihoods.
+        blobs_dtype (list): List containing names and dtypes of blobs metadata e.g. ``[("log_prior", float), ("mean", float)]``. It's useful when you want to save multiple species of metadata. Default is None.
         verbose (bool): If True (default) print log statements.
     """
     def __init__(self,
@@ -53,6 +54,7 @@ class EnsembleSampler:
                  maxiter=10000,
                  pool=None,
                  vectorize=False,
+                 blobs_dtype=None,
                  verbose=True):
 
         # Set up logger
@@ -112,6 +114,8 @@ class EnsembleSampler:
         self.pool = pool
         self.vectorize = vectorize
 
+        self.blobs_dtype = blobs_dtype
+
         # Initialise Saving space for samples
         self.samples = samples(self.ndim, self.nwalkers)
 
@@ -132,11 +136,11 @@ class EnsembleSampler:
         '''
         # Define task distributer
         if self.pool is None:
-            distribute = map
+            self.distribute = map
         else:
-            distribute = self.pool.map
+            self.distribute = self.pool.map
         if self.vectorize:
-            distribute = lambda func, x : func(x)
+            self.distribute = lambda func, x : func(x)
 
         # Initialise ensemble of walkers
         logging.info('Initialising ensemble of %d walkers...', self.nwalkers)
@@ -144,7 +148,7 @@ class EnsembleSampler:
             raise ValueError('Incompatible input dimensions! \n' +
                              'Please provide array of shape (nwalkers, ndim) as the starting position.')
         X = np.copy(start)
-        Z = np.asarray(list(distribute(self.logprob_fn,X)))
+        Z, blobs = self.compute_log_prob(X)
         if not np.all(np.isfinite(Z)):
             raise ValueError('Invalid walker initial positions! \n' +
                              'Initialise walkers from positions of finite log probability.')
@@ -153,7 +157,7 @@ class EnsembleSampler:
         # Extend saving space
         self.nsteps = int(nsteps)
         self.thin = int(thin)
-        self.samples.extend(self.nsteps//self.thin)
+        self.samples.extend(self.nsteps//self.thin, blobs)
 
         # Devide Number of Log Prob Evaluations vector
         self.neval = np.zeros(self.nsteps, dtype=int)
@@ -187,7 +191,7 @@ class EnsembleSampler:
                 active, inactive = ensembles
 
                 # Compute directions
-                directions = move.get_direction(X[inactive], self.mu)
+                directions, tune_once = move.get_direction(X[inactive], self.mu)
 
                 # Get Z0 = LogP(x0)
                 Z0 = Z[active] - np.random.exponential(size=int(self.nwalkers/2))
@@ -221,7 +225,6 @@ class EnsembleSampler:
                     if len(mask_K[mask_K])>0:
                         cnt += 1
                     if cnt > self.maxiter:
-                        print(move.name)
                         raise RuntimeError('Number of expansions exceeded maximum limit! \n' +
                                            'Make sure that the pdf is well-defined. \n' +
                                            'Otherwise increase the maximum limit (maxiter=10^4 by default).')
@@ -237,7 +240,7 @@ class EnsembleSampler:
                     X_L[mask_J] = directions[mask_J] * L[mask_J][:,np.newaxis] + X[active][mask_J]
                     X_R[mask_K] = directions[mask_K] * R[mask_K][:,np.newaxis] + X[active][mask_K]
 
-                    Z_LR_masked = np.asarray(list(distribute(self.logprob_fn, np.concatenate([X_L[mask_J],X_R[mask_K]]))))
+                    Z_LR_masked, _ = self.compute_log_prob(np.concatenate([X_L[mask_J],X_R[mask_K]]))
                     Z_L[mask_J] = Z_LR_masked[:X_L[mask_J].shape[0]]
                     Z_R[mask_K] = Z_LR_masked[X_L[mask_J].shape[0]:]
 
@@ -264,6 +267,8 @@ class EnsembleSampler:
                 Widths = np.empty(int(self.nwalkers/2))
                 Z_prime = np.empty(int(self.nwalkers/2))
                 X_prime = np.empty((int(self.nwalkers/2),self.ndim))
+                if blobs is not None:
+                    blobs_prime = np.empty(int(self.nwalkers/2), dtype=np.dtype((blobs[0].dtype, blobs[0].shape)))
                 mask = np.full(int(self.nwalkers/2),True)
 
                 cnt = 0
@@ -275,7 +280,10 @@ class EnsembleSampler:
                     X_prime[mask] = directions[mask] * Widths[mask][:,np.newaxis] + X[active][mask]
 
                     # Calculate LogP of New Positions
-                    Z_prime[mask] = np.asarray(list(distribute(self.logprob_fn,X_prime[mask])))
+                    if blobs is None:
+                        Z_prime[mask], _ = self.compute_log_prob(X_prime[mask])
+                    else:
+                        Z_prime[mask], blobs_prime[mask] = self.compute_log_prob(X_prime[mask])
 
                     # Count LogProb calls
                     ncall += len(mask[mask])
@@ -301,10 +309,12 @@ class EnsembleSampler:
                 # Update Positions
                 X[active] = X_prime
                 Z[active] = Z_prime
+                if blobs is not None:
+                    blobs[active] = blobs_prime
                 self.neval[i] += ncall
 
             # Tune scale factor using Robbins-Monro optimization
-            if self.tune:
+            if self.tune and tune_once:
                 self.nexps.append(nexp)
                 self.ncons.append(ncon)
                 nexp = max(1, nexp) # This prevents the optimizer from getting stuck
@@ -317,12 +327,11 @@ class EnsembleSampler:
 
             # Save samples
             if (i+1) % self.thin == 0:
-                self.samples.save(X, Z)
+                self.samples.save(X, Z, blobs)
 
             # Update progress bar
             if progress:
                 t.update()
-                #t.set_postfix({'expansions/walkers': round(nexp/self.nwalkers,1), 'contractions/walkers': round(ncon/self.nwalkers,1)})
 
         # Close progress bar
         if progress:
@@ -386,6 +395,27 @@ class EnsembleSampler:
             return self.samples.flatten_logprob(discard=discard, thin=thin)
         else:
             return self.samples.logprob[discard::thin,:]
+
+
+    def get_blobs(self, flat=False, thin=1, discard=0):
+        """
+        Get the values of the blobs at each step of the chain.
+
+        Args:
+            flat (bool) : If True then flatten the chain into a 1D array by combining all walkers (default is False).
+            thin (int) : Thinning parameter (the default value is 1).
+            discard (int) : Number of burn-in steps to be removed from each walker (default is 0). A float number between 0.0 and 1.0 can be used to indicate what percentage of the chain to be discarded as burnin.
+
+        Returns:
+            (structured) numpy array containing the values of the blobs at each step of the chain.
+        """
+        if discard < 1.0:
+            discard  = int(discard * np.shape(self.chain)[0])
+
+        if flat:
+            return self.samples.flatten_blobs(discard=discard, thin=thin)
+        else:
+            return self.samples.blobs[discard::thin,:]
 
 
     @property
@@ -457,7 +487,7 @@ class EnsembleSampler:
     @property
     def get_last_sample(self):
         """
-            Return the last position of the walkers.
+        Return the last position of the walkers.
         """
         return self.chain[-1]
 
@@ -480,6 +510,58 @@ class EnsembleSampler:
         logging.info('Effective Samples per Log Probability Evaluation: ' + str(round(self.efficiency,6)))
         if self.thin > 1:
             logging.info('Thinning rate: ' + str(self.thin))
+    
+
+    def compute_log_prob(self, coords):
+        """
+        Calculate the vector of log-probability for the walkers
+
+        Args:
+            coords: (ndarray[..., ndim]) The position vector in parameter space where the probability should be calculated.
+        Returns:
+            log_prob: A vector of log-probabilities with one entry for each walker in this sub-ensemble.
+            blob: The list of meta data returned by the ``log_post_fn`` at this position or ``None`` if nothing was returned.
+        """
+        p = coords
+
+        # Check that the parameters are in physical ranges.
+        if np.any(np.isinf(p)):
+            raise ValueError("At least one parameter value was infinite")
+        if np.any(np.isnan(p)):
+            raise ValueError("At least one parameter value was NaN")
+
+        # Run the log-probability calculations (optionally in parallel).
+        results = list(self.distribute(self.logprob_fn, (p[i] for i in range(len(p)))))
+
+        try:
+            log_prob = np.array([float(l[0]) for l in results])
+            blob = [l[1:] for l in results]
+        except (IndexError, TypeError):
+            log_prob = np.array([float(l) for l in results])
+            blob = None
+        else:
+            # Get the blobs dtype
+            if self.blobs_dtype is not None:
+                dt = self.blobs_dtype
+            else:
+                try:
+                    dt = np.atleast_1d(blob[0]).dtype
+                except ValueError:
+                    dt = np.dtype("object")
+            blob = np.array(blob, dtype=dt)
+
+            # Deal with single blobs properly
+            shape = blob.shape[1:]
+            if len(shape):
+                axes = np.arange(len(shape))[np.array(shape) == 1] + 1
+                if len(axes):
+                    blob = np.squeeze(blob, tuple(axes))
+
+        # Check for log_prob returning NaN.
+        if np.any(np.isnan(log_prob)):
+            raise ValueError("Probability function returned NaN")
+
+        return log_prob, blob
 
 
 class sampler(EnsembleSampler):

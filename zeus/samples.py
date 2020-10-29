@@ -16,7 +16,7 @@ class samples:
         self.nwalkers = nwalkers
 
 
-    def extend(self, n):
+    def extend(self, n, blobs):
         """
         Method to extend saving space.
         Args:
@@ -27,13 +27,20 @@ class samples:
             self.samples = np.concatenate((self.samples,ext),axis=0)
             ext = np.empty((n,self.nwalkers))
             self.logp = np.concatenate((self.logp,ext),axis=0)
+            if blobs is not None:
+                dt = np.dtype((blobs[0].dtype, blobs[0].shape))
+                ext = np.empty((n,self.nwalkers), dtype=dt)
+                self.blobs = np.concatenate((self.blobs, ext),axis=0)
         else:
             self.samples = np.empty((n,self.nwalkers,self.ndim))
             self.logp = np.empty((n,self.nwalkers))
+            if blobs is not None:
+                dt = np.dtype((blobs[0].dtype, blobs[0].shape))
+                self.blobs = np.empty((n,self.nwalkers), dtype=dt)
             self.initialised = True
 
 
-    def save(self, x, logp):
+    def save(self, x, logp, blobs):
         """
         Save sample into the storage.
         Args:
@@ -42,6 +49,8 @@ class samples:
         """
         self.samples[self.index] = x
         self.logp[self.index] = logp
+        if blobs is not None:
+            self.blobs[self.index] = blobs
         self.index += 1
 
 
@@ -105,3 +114,17 @@ class samples:
             1D object containing the logprob of the flattened chains.
         """
         return self.logprob[discard::thin,:].reshape((-1,), order='F')
+
+
+    def flatten_blobs(self, discard=0, thin=1):
+        """
+        Flatten blobs by thinning the chain, removing the burn in phase, and combining all the walkers.
+
+        Args:
+            discard (int): Number of burn-in steps to be removed from each walker (default is 0).
+            thin (int): Thinning parameter (the default value is 1).
+
+        Returns:
+            (structured) NumPy array containing the blobs metadata.
+        """
+        return self.blobs[discard::thin,:].reshape((-1,), order='F')

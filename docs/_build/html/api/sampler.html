@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Ensemble Slice Sampler &#8212; zeus 2.0.0 documentation</title>
+    <title>The Ensemble Slice Sampler &#8212; zeus 2.1.0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -139,7 +139,7 @@
 <h1>The Ensemble Slice Sampler<a class="headerlink" href="#the-ensemble-slice-sampler" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="zeus.EnsembleSampler">
-<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">EnsembleSampler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nwalkers</span></em>, <em class="sig-param"><span class="n">ndim</span></em>, <em class="sig-param"><span class="n">logprob_fn</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">moves</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tune</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">tolerance</span><span class="o">=</span><span class="default_value">0.05</span></em>, <em class="sig-param"><span class="n">patience</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">maxsteps</span><span class="o">=</span><span class="default_value">10000</span></em>, <em class="sig-param"><span class="n">mu</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">10000</span></em>, <em class="sig-param"><span class="n">pool</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vectorize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">EnsembleSampler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nwalkers</span></em>, <em class="sig-param"><span class="n">ndim</span></em>, <em class="sig-param"><span class="n">logprob_fn</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">moves</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tune</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">tolerance</span><span class="o">=</span><span class="default_value">0.05</span></em>, <em class="sig-param"><span class="n">patience</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">maxsteps</span><span class="o">=</span><span class="default_value">10000</span></em>, <em class="sig-param"><span class="n">mu</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">10000</span></em>, <em class="sig-param"><span class="n">pool</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vectorize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">blobs_dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler" title="Permalink to this definition">¶</a></dt>
 <dd><p>An Ensemble Slice Sampler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -161,6 +161,7 @@ When running, the sampler will randomly select a move from this list (optionally
 <li><p><strong>maxiter</strong> (<em>int</em>) – Number of maximum Expansions/Contractions (Default is 10^4).</p></li>
 <li><p><strong>pool</strong> (<em>bool</em>) – External pool of workers to distribute workload to multiple CPUs (default is None).</p></li>
 <li><p><strong>vectorize</strong> (<em>bool</em>) – If true (default is False), logprob_fn receives not just one point but an array of points, and returns an array of likelihoods.</p></li>
+<li><p><strong>blobs_dtype</strong> (<em>list</em>) – List containing names and dtypes of blobs metadata e.g. <code class="docutils literal notranslate"><span class="pre">[(&quot;log_prior&quot;,</span> <span class="pre">float),</span> <span class="pre">(&quot;mean&quot;,</span> <span class="pre">float)]</span></code>. It’s useful when you want to save multiple species of metadata. Default is None.</p></li>
 <li><p><strong>verbose</strong> (<em>bool</em>) – If True (default) print log statements.</p></li>
 </ul>
 </dd>
@@ -188,6 +189,24 @@ When running, the sampler will randomly select a move from this list (optionally
 </dd></dl>
 
 <dl class="py method">
+<dt id="zeus.EnsembleSampler.compute_log_prob">
+<code class="sig-name descname">compute_log_prob</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">coords</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.compute_log_prob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the vector of log-probability for the walkers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>coords</strong> – (ndarray[…, ndim]) The position vector in parameter space where the probability should be calculated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A vector of log-probabilities with one entry for each walker in this sub-ensemble.
+blob: The list of meta data returned by the <code class="docutils literal notranslate"><span class="pre">log_post_fn</span></code> at this position or <code class="docutils literal notranslate"><span class="pre">None</span></code> if nothing was returned.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>log_prob</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="zeus.EnsembleSampler.efficiency">
 <em class="property">property </em><code class="sig-name descname">efficiency</code><a class="headerlink" href="#zeus.EnsembleSampler.efficiency" title="Permalink to this definition">¶</a></dt>
 <dd><p>Effective Samples per Log Probability Evaluation.</p>
@@ -205,6 +224,24 @@ When running, the sampler will randomly select a move from this list (optionally
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>ESS</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="zeus.EnsembleSampler.get_blobs">
+<code class="sig-name descname">get_blobs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">flat</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">thin</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">discard</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.get_blobs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the values of the blobs at each step of the chain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flat</strong> (<em>bool</em>) – If True then flatten the chain into a 1D array by combining all walkers (default is False).</p></li>
+<li><p><strong>thin</strong> (<em>int</em>) – Thinning parameter (the default value is 1).</p></li>
+<li><p><strong>discard</strong> (<em>int</em>) – Number of burn-in steps to be removed from each walker (default is 0). A float number between 0.0 and 1.0 can be used to indicate what percentage of the chain to be discarded as burnin.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(structured) numpy array containing the values of the blobs at each step of the chain.</p>
 </dd>
 </dl>
 </dd></dl>

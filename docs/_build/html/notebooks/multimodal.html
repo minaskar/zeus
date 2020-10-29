@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sampling from multimodal distributions &#8212; zeus 2.0.0 documentation</title>
+    <title>Sampling from multimodal distributions &#8212; zeus 2.1.0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -371,9 +371,9 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Sampling-from-multimodal-distributions">
 <h1>Sampling from multimodal distributions<a class="headerlink" href="#Sampling-from-multimodal-distributions" title="Permalink to this headline">¶</a></h1>
 <p>In this recipe we will demonstrate how one can use zeus with the Moves interface to sample efficiently from challenging high-dimensional multimodal distributions.</p>
-<p>We will start by defining the target distribution, a 10-dimensional mixture of Normal distributions with huge valleys of almost-zero probability between the modes. This is an extremelly difficult target to sample from and most methods would fail.</p>
+<p>We will start by defining the target distribution, a 50-dimensional mixture of Normal distributions with huge valleys of almost-zero probability between the modes. This is an extremelly difficult target to sample from and most methods would fail.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -381,22 +381,55 @@ div.rendered_html tbody tr:hover {
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 
+<span class="c1"># Number of dimensions</span>
+<span class="n">ndim</span> <span class="o">=</span> <span class="mi">50</span>
 
-<span class="n">ndim</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">nmodes</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="c1"># Means</span>
+<span class="n">mu1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">mu2</span> <span class="o">=</span> <span class="o">-</span><span class="n">mu1</span>
 
-<span class="c1"># Define the random means and variances of the Gaussian Mixture components.</span>
-<span class="n">means</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">ivars</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmodes</span><span class="p">):</span>
-    <span class="n">means</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mf">15.0</span> <span class="o">+</span> <span class="mf">30.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">ndim</span><span class="p">))</span>
-    <span class="n">ivars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">ndim</span><span class="p">))</span>
+<span class="c1"># Standard Deviations</span>
+<span class="n">stdev</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">stdev</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
+<span class="n">isigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
+<span class="n">dsigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
 
-<span class="c1"># The log probability density of the Gaussian Mixture</span>
-<span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="n">lnprobs</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ivars</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">means</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmodes</span><span class="p">)]</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">logaddexp</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">lnprobs</span><span class="p">)</span>
+<span class="n">w1</span> <span class="o">=</span> <span class="mf">0.33</span>  <span class="c1"># one mode with 0.1 of the mass</span>
+<span class="n">w2</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">w1</span> <span class="c1"># the other mode with 0.9 of the mass</span>
+
+<span class="c1"># Uniform prior limits</span>
+<span class="n">low</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.0</span>
+<span class="n">high</span> <span class="o">=</span> <span class="mf">2.0</span>
+
+<span class="c1"># The log-likelihood function of the Gaussian Mixture</span>
+<span class="k">def</span> <span class="nf">two_gaussians</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">log_like1</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">ndim</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+        <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">dsigma</span><span class="p">)</span>
+        <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mu1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">isigma</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mu1</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">log_like2</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">ndim</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+        <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">dsigma</span><span class="p">)</span>
+        <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mu2</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">isigma</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mu2</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">logaddexp</span><span class="o">.</span><span class="n">reduce</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">w1</span><span class="p">)</span> <span class="o">+</span> <span class="n">log_like1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">w2</span><span class="p">)</span> <span class="o">+</span> <span class="n">log_like2</span><span class="p">])</span>
+
+<span class="c1"># A simple uniform log-prior</span>
+<span class="k">def</span> <span class="nf">log_prior</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">x</span><span class="o">&gt;</span><span class="n">low</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">x</span><span class="o">&lt;</span><span class="n">high</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+<span class="c1"># The Log-Posterior</span>
+<span class="k">def</span> <span class="nf">log_post</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">lp</span> <span class="o">=</span> <span class="n">log_prior</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">lp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="k">return</span> <span class="n">lp</span> <span class="o">+</span> <span class="n">two_gaussians</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -404,18 +437,18 @@ div.rendered_html tbody tr:hover {
 <h2>A failed attempt<a class="headerlink" href="#A-failed-attempt" title="Permalink to this headline">¶</a></h2>
 <p>Now lets run <code class="docutils literal notranslate"><span class="pre">zeus</span></code> for 1000 steps using 100 walkers and see what happens:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">nwalkers</span> <span class="o">=</span> <span class="mi">400</span>
-<span class="n">nsteps</span><span class="o">=</span> <span class="mi">1000</span>
+<span class="n">nsteps</span><span class="o">=</span> <span class="mi">2000</span>
 
 <span class="c1"># The starting positions of the walkers</span>
-<span class="n">start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span> <span class="o">*</span> <span class="mf">10.0</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">low</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span><span class="n">ndim</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">high</span> <span class="o">-</span> <span class="n">low</span><span class="p">)</span>
 
 <span class="c1"># Initialise the Ensemble Sampler</span>
-<span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_prob</span><span class="p">)</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_post</span><span class="p">)</span>
 <span class="c1"># Run MCMC</span>
 <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
 
@@ -435,7 +468,7 @@ div.rendered_html tbody tr:hover {
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 Initialising ensemble of 400 walkers...
-Sampling progress : 100%|██████████| 1000/1000 [01:10&amp;lt;00:00, 14.20it/s]
+Sampling progress : 100%|██████████| 2000/2000 [03:05&lt;00:00, 10.80it/s]
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -448,15 +481,15 @@ Sampling progress : 100%|██████████| 1000/1000 [01:10&amp;lt
 </div>
 <div class="section" id="The-clever-way…">
 <h2>The clever way…<a class="headerlink" href="#The-clever-way…" title="Permalink to this headline">¶</a></h2>
-<p>Now that we know that our target is multimodal, and that the default <code class="docutils literal notranslate"><span class="pre">DifferentialMove</span></code> cannot facilitate jumps between modes we can use a few more advanced moves such as the <code class="docutils literal notranslate"><span class="pre">GlobalMove</span></code> and <code class="docutils literal notranslate"><span class="pre">LocalMove</span></code>.</p>
-<p>Although the <code class="docutils literal notranslate"><span class="pre">GlobalMove</span></code> and <code class="docutils literal notranslate"><span class="pre">LocalMove</span></code> are very powerful tools, they are not well suited during the burnin phase. For that reason we will use the default <code class="docutils literal notranslate"><span class="pre">DifferentialMove</span></code> during burnin and then switch to the more sophisticated tools.</p>
+<p>Now that we know that our target is multimodal, and that the default <code class="docutils literal notranslate"><span class="pre">DifferentialMove</span></code> cannot facilitate jumps between modes we can use a more advanced move such as the <code class="docutils literal notranslate"><span class="pre">GlobalMove</span></code>.</p>
+<p>Although the <code class="docutils literal notranslate"><span class="pre">GlobalMove</span></code> is a very powerful tools, it is not well suited during the burnin phase. For that reason we will use the default <code class="docutils literal notranslate"><span class="pre">DifferentialMove</span></code> during burnin and then bring out the big guns.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># Initialise the Ensemble Sampler using the default ``DifferentialMove``</span>
-<span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_prob</span><span class="p">)</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_post</span><span class="p">)</span>
 <span class="c1"># Run MCMC</span>
 <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
 
@@ -466,9 +499,8 @@ Sampling progress : 100%|██████████| 1000/1000 [01:10&amp;lt
 <span class="c1"># Set the new starting positions of walkers based on their last positions</span>
 <span class="n">start</span> <span class="o">=</span> <span class="n">burnin</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-<span class="c1"># Initialise the Ensemble Sampler using the advanced ``LocalMove`` and ``GlobalMove``.</span>
-<span class="c1"># The 0.75 and 0.25 factors mean that there is a 75% probability of using the Global move and 25% probability of using the Local one.</span>
-<span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_prob</span><span class="p">,</span> <span class="n">moves</span><span class="o">=</span><span class="p">[(</span><span class="n">zeus</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">GlobalMove</span><span class="p">(),</span> <span class="mf">0.75</span><span class="p">),</span> <span class="p">(</span><span class="n">zeus</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">LocalMove</span><span class="p">(),</span> <span class="mf">0.25</span><span class="p">)])</span>
+<span class="c1"># Initialise the Ensemble Sampler using the advanced ``GlobalMove``.</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_post</span><span class="p">,</span> <span class="n">moves</span><span class="o">=</span><span class="n">zeus</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">GlobalMove</span><span class="p">())</span>
 <span class="c1"># Run MCMC</span>
 <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
 
@@ -489,9 +521,9 @@ Sampling progress : 100%|██████████| 1000/1000 [01:10&amp;lt
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 Initialising ensemble of 400 walkers...
-Sampling progress : 100%|██████████| 1000/1000 [01:13&amp;lt;00:00, 13.69it/s]
+Sampling progress : 100%|██████████| 2000/2000 [03:03&lt;00:00, 10.89it/s]
 Initialising ensemble of 400 walkers...
-Sampling progress : 100%|██████████| 1000/1000 [04:06&amp;lt;00:00,  4.05it/s]
+Sampling progress : 100%|██████████| 2000/2000 [06:52&lt;00:00,  4.85it/s]
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -500,22 +532,26 @@ Sampling progress : 100%|██████████| 1000/1000 [04:06&amp;lt
 <div class="output_area docutils container">
 <img alt="../_images/notebooks_multimodal_7_1.svg" src="../_images/notebooks_multimodal_7_1.svg" /></div>
 </div>
-<p>You can see that the moment we switched to the <code class="docutils literal notranslate"><span class="pre">GlobalMove</span></code> and <code class="docutils literal notranslate"><span class="pre">LocalMove</span></code> the walkers begun to jump from mode to mode frequently.</p>
-<p>Lets now plot the 2D distribution of the first couple parameters along with the walker trajectories.</p>
+<p>You can see that the moment we switched to the <code class="docutils literal notranslate"><span class="pre">GlobalMove</span></code> the walkers begun to jump from mode to mode frequently.</p>
+<p>Lets now plot the 1D distribution of the first parameter and compare this with “actual truth”.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">chain</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">(</span><span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">discard</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span></span><span class="c1"># Compute true samples from the gaussian mixture directly</span>
+<span class="n">s1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu1</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">w1</span><span class="o">*</span><span class="mi">200000</span><span class="p">))</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu2</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">w2</span><span class="o">*</span><span class="mi">200000</span><span class="p">))</span>
+<span class="n">samples_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">s1</span><span class="p">,</span><span class="n">s2</span><span class="p">))</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">samples</span><span class="p">[</span><span class="n">nsteps</span><span class="o">//</span><span class="mi">2</span><span class="p">:,:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">samples</span><span class="p">[</span><span class="n">nsteps</span><span class="o">//</span><span class="mi">2</span><span class="p">:,:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">chain</span><span class="p">[::</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">chain</span><span class="p">[::</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">means</span><span class="p">)[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">means</span><span class="p">)[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$p_</span><span class="si">{1}</span><span class="s2">$&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$p_</span><span class="si">{2}</span><span class="s2">$&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="c1"># Get the chain from zeus</span>
+<span class="n">chain</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">(</span><span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">discard</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="c1"># Plot Comparison</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">chain</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">samples_true</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;zeus - Global Move&#39;</span><span class="p">,</span> <span class="s1">&#39;Truth&#39;</span><span class="p">]);</span>
 </pre></div>
 </div>
 </div>
@@ -525,31 +561,16 @@ Sampling progress : 100%|██████████| 1000/1000 [04:06&amp;lt
 <div class="output_area docutils container">
 <img alt="../_images/notebooks_multimodal_9_0.svg" src="../_images/notebooks_multimodal_9_0.svg" /></div>
 </div>
-<p>We can also calculate the approximate maximum distance between the modes:</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<p>Using the advanced moves, the walkers can move great distances in parameter space.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">maximum</span> <span class="o">=</span> <span class="mf">0.0</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmodes</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmodes</span><span class="p">):</span>
-        <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">means</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">means</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">distance</span> <span class="o">&gt;</span> <span class="n">maximum</span><span class="p">:</span>
-            <span class="n">maximum</span> <span class="o">=</span> <span class="n">distance</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">maximum</span><span class="p">)</span>
+<span></span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-41.040249893354634
-</pre></div></div>
-</div>
-<p>Using the advanced moves, the walkers can jump distances in parameter space close to 40 standard deviations.</p>
 </div>
 </div>
 

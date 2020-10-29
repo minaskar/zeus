@@ -41,6 +41,11 @@ Parallelisation recipes
 Saving Progress recipes
 =======================
 
+- `Tracking metadata using the blobs interface`_
+    We introduce the blobs interface. An easy way for the user to track arbitrary metadata for every sample of the chain.
+
+.. _Tracking metadata using the blobs interface: notebooks/blobs.ipynb
+
 - Save progress using h5py. (soon)
     Save chains into a file.
 
@@ -64,3 +69,4 @@ Autocorrelation Analysis recipes
     notebooks/multimodal.ipynb
     notebooks/multiprocessing.ipynb
     notebooks/MPI.ipynb
+    notebooks/blobs.ipynb

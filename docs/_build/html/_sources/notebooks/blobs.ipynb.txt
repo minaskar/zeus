@@ -1,0 +1,174 @@
+{
+ "metadata": {
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.6-final"
+  },
+  "orig_nbformat": 2,
+  "kernelspec": {
+   "name": "Python 3.7.6 64-bit ('nbodykit-env': conda)",
+   "display_name": "Python 3.7.6 64-bit ('nbodykit-env': conda)",
+   "metadata": {
+    "interpreter": {
+     "hash": "92a13e2fbe78b004d0fb7131bfe04f8cf6342cb1d93c749c200bfd2478bfd7dd"
+    }
+   }
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2,
+ "cells": [
+  {
+   "source": [
+    "# Blobs and Metadata"
+   ],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "source": [
+    "We introduce the blobs interface. An easy way for the user to track arbitrary metadata for every sample of the chain."
+   ],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "source": [
+    "## Tracking the value of the log-prior\n",
+    "\n",
+    "We can easily use blobs to store the value of the log-prior at each step in the chain by doing something like:"
+   ],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [
+    {
+     "output_type": "stream",
+     "name": "stderr",
+     "text": [
+      "Initialising ensemble of 32 walkers...\n",
+      "Sampling progress : 100%|██████████| 100/100 [00:00<00:00, 160.45it/s](100, 32)\n",
+      "(3200,)\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "import zeus\n",
+    "\n",
+    "import numpy as np\n",
+    "\n",
+    "def log_prior(x):\n",
+    "    return -0.5 * np.dot(x,x)\n",
+    "\n",
+    "def log_like(x):\n",
+    "    return -0.5 * np.dot(x,x) / 0.1**2.0\n",
+    "\n",
+    "def log_prob(x):\n",
+    "    lp = log_prior(x)\n",
+    "    if not np.isfinite(lp):\n",
+    "        return -np.inf, -np.inf\n",
+    "    ll = log_like(x)\n",
+    "    if not np.isfinite(ll):\n",
+    "        return lp, -np.inf\n",
+    "    return lp + ll, lp\n",
+    "\n",
+    "nwalkers, ndim = 32, 3\n",
+    "start = np.random.randn(nwalkers, ndim)\n",
+    "sampler = zeus.EnsembleSampler(nwalkers, ndim, log_prob)\n",
+    "sampler.run_mcmc(start, 100)\n",
+    "\n",
+    "log_prior_samps = sampler.get_blobs()\n",
+    "flat_log_prior_samps = sampler.get_blobs(flat=True)\n",
+    "\n",
+    "print(log_prior_samps.shape)  # (100, 32)\n",
+    "print(flat_log_prior_samps.shape)  # (3200,)"
+   ]
+  },
+  {
+   "source": [
+    "Once this is done running, the “blobs” stored by the sampler will be a ``(nsteps, nwalkers)`` numpy array with the value of the log prior at every sample."
+   ],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "source": [
+    "## Tracking multiple species of metadata\n",
+    "\n",
+    "When handling multiple species of metadata, it can be useful to name them. This can be done using the ``blobs_dtype`` argument of the ``EnsembleSampler``. For instance, to save the mean of the parameters as well as the log-prior we could do something like:"
+   ],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [
+    {
+     "output_type": "stream",
+     "name": "stderr",
+     "text": [
+      "Initialising ensemble of 32 walkers...\n",
+      "Sampling progress : 100%|██████████| 100/100 [00:00<00:00, 137.06it/s](100, 32)\n",
+      "(100, 32)\n",
+      "(3200,)\n",
+      "(3200,)\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "def log_prob(params):\n",
+    "    lp = log_prior(params)\n",
+    "    if not np.isfinite(lp):\n",
+    "        return -np.inf, -np.inf\n",
+    "    ll = log_like(params)\n",
+    "    if not np.isfinite(ll):\n",
+    "        return lp, -np.inf\n",
+    "    return lp + ll, lp, np.mean(params)\n",
+    "\n",
+    "nwalkers, ndim = 32, 3\n",
+    "start = np.random.randn(nwalkers, ndim)\n",
+    "\n",
+    "# Here are the important lines\n",
+    "dtype = [(\"log_prior\", float), (\"mean\", float)]\n",
+    "sampler = zeus.EnsembleSampler(nwalkers, ndim, log_prob, blobs_dtype=dtype)\n",
+    "\n",
+    "sampler.run_mcmc(start, 100)\n",
+    "\n",
+    "blobs = sampler.get_blobs()\n",
+    "log_prior_samps = blobs[\"log_prior\"]\n",
+    "mean_samps = blobs[\"mean\"]\n",
+    "print(log_prior_samps.shape)\n",
+    "print(mean_samps.shape)\n",
+    "\n",
+    "flat_blobs = sampler.get_blobs(flat=True)\n",
+    "flat_log_prior_samps = flat_blobs[\"log_prior\"]\n",
+    "flat_mean_samps = flat_blobs[\"mean\"]\n",
+    "print(flat_log_prior_samps.shape)\n",
+    "print(flat_mean_samps.shape)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ]
+}

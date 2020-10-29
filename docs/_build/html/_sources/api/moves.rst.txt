@@ -26,12 +26,6 @@ Global Move
 .. autoclass:: zeus.moves.GlobalMove
     :members:
 
-Local Move
-==========
-
-.. autoclass:: zeus.moves.LocalMove
-    :members:
-
 KDE Move
 ========
 
