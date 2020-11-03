@@ -96,6 +96,10 @@ Copyright 2019-2020 Minas Karamanis and contributors.
 Changelog
 =========
 
+**2.2.0 (03/11/20)**
+
+- Improved vectorization.
+
 **2.1.1 (29/10/20)**
 
 - Added ``blobs`` interface to track arbitrary metadata.

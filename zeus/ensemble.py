@@ -139,8 +139,6 @@ class EnsembleSampler:
             self.distribute = map
         else:
             self.distribute = self.pool.map
-        if self.vectorize:
-            self.distribute = lambda func, x : func(x)
 
         # Initialise ensemble of walkers
         logging.info('Initialising ensemble of %d walkers...', self.nwalkers)
@@ -539,8 +537,10 @@ class EnsembleSampler:
             raise ValueError("At least one parameter value was NaN")
 
         # Run the log-probability calculations (optionally in parallel).
-        results = list(self.distribute(self.logprob_fn, (p[i] for i in range(len(p)))))
-        #results = list(self.distribute(self.logprob_fn, p))
+        if self.vectorize:
+            results = self.logprob_fn(p)
+        else:
+            results = list(self.distribute(self.logprob_fn, (p[i] for i in range(len(p)))))
 
         try:
             log_prob = np.array([float(l[0]) for l in results])
