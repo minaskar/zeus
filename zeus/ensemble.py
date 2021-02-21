@@ -405,7 +405,7 @@ class EnsembleSampler:
             flat (bool) : If True then flatten the chain into a 1D array by combining all walkers (default is False).
             thin (int) : Thinning parameter (the default value is 1).
             discard (int) : Number of burn-in steps to be removed from each walker (default is 0). A float number between
-            0.0 and 1.0 can be used to indicate what percentage of the chain to be discarded as burnin.
+                0.0 and 1.0 can be used to indicate what percentage of the chain to be discarded as burnin.
 
         Returns:
             Array containing the value of the log probability at the samples of the Markov chain (1D if flat=True, 2D otherwise).
