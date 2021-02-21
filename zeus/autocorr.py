@@ -1,6 +1,5 @@
 import numpy as np
-import scipy as sp
-
+from scipy.fft import fft, ifft
 
 def _autocorr_func_1d(x, norm=True):
     """
@@ -25,8 +24,8 @@ def _autocorr_func_1d(x, norm=True):
     # Compute the auto-correlation function using FFT
     #f = np.fft.fft(x - np.mean(x), n=2 * n)
     #acf = np.fft.ifft(f * np.conjugate(f))[: len(x)].real
-    f = sp.fft.fft(x - np.mean(x), n=2 * n)
-    acf = sp.fft.ifft(f * np.conjugate(f))[: len(x)].real
+    f = fft(x - np.mean(x), n=2 * n)
+    acf = ifft(f * np.conjugate(f))[: len(x)].real
     acf /= 4 * n
 
     # Normalize
