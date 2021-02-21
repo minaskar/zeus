@@ -1,5 +1,5 @@
 numpy
-scipy
+scipy>=1.5.0
 tqdm
 setuptools
 pytest
