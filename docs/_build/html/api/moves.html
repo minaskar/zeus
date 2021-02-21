@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Ensemble Moves &#8212; zeus 2.2.0 documentation</title>
+    <title>The Ensemble Moves &#8212; zeus 2.2.1 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -186,7 +186,7 @@ of target distributions.</p>
 <h2>Gaussian Move<a class="headerlink" href="#gaussian-move" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="zeus.moves.GaussianMove">
-<em class="property">class </em><code class="sig-prename descclassname">zeus.moves.</code><code class="sig-name descname">GaussianMove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tune</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mu0</span><span class="o">=</span><span class="default_value">1.0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.moves.GaussianMove" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">zeus.moves.</code><code class="sig-name descname">GaussianMove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tune</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mu0</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">cov</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.moves.GaussianMove" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <a class="reference external" href="https://arxiv.org/abs/2002.06212">Karamanis &amp; Beutler (2020)</a> “Gaussian Move” with parallelization.
 When this Move is used the walkers move along directions defined by random vectors sampled from the Gaussian
 approximation of the walkers of the complementary ensemble.</p>

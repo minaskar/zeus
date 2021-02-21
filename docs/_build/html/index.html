@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>zeus documentation &#8212; zeus 2.2.0 documentation</title>
+    <title>zeus documentation &#8212; zeus 2.2.1 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -165,6 +165,7 @@
 
 <span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_prob</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">ivar</span><span class="p">])</span>
 <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
+<span class="n">chain</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">(</span><span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -190,7 +191,7 @@ research. The BibTeX entry for the paper is:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@article</span><span class="p">{</span><span class="n">zeus</span><span class="p">,</span>
     <span class="n">title</span><span class="o">=</span><span class="p">{</span><span class="n">zeus</span><span class="p">:</span> <span class="n">A</span> <span class="n">Python</span> <span class="n">Implementation</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Ensemble</span> <span class="n">Slice</span> <span class="n">Sampling</span> <span class="n">method</span><span class="p">},</span>
     <span class="n">author</span><span class="o">=</span><span class="p">{</span><span class="n">Minas</span> <span class="n">Karamanis</span> <span class="ow">and</span> <span class="n">Florian</span> <span class="n">Beutler</span><span class="p">},</span>
-    <span class="n">year</span><span class="o">=</span><span class="p">{</span><span class="mi">2020</span><span class="p">},</span>
+    <span class="n">year</span><span class="o">=</span><span class="p">{</span><span class="mi">2021</span><span class="p">},</span>
     <span class="n">note</span><span class="o">=</span><span class="p">{</span><span class="ow">in</span> <span class="n">prep</span><span class="p">}</span>
 <span class="p">}</span>
 
@@ -207,11 +208,16 @@ research. The BibTeX entry for the paper is:</p>
 </div>
 <div class="section" id="licence">
 <h1>Licence<a class="headerlink" href="#licence" title="Permalink to this headline">¶</a></h1>
-<p>Copyright 2019-2020 Minas Karamanis and contributors.</p>
+<p>Copyright 2019-2021 Minas Karamanis and contributors.</p>
 <p><code class="docutils literal notranslate"><span class="pre">zeus</span></code> is free software made available under the <code class="docutils literal notranslate"><span class="pre">GPL-3.0</span> <span class="pre">License</span></code>.</p>
 </div>
 <div class="section" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<p><strong>2.2.1 (21/02/21)</strong></p>
+<ul class="simple">
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">log_prob0</span></code> and <code class="docutils literal notranslate"><span class="pre">blobs0</span></code> arguments in <code class="docutils literal notranslate"><span class="pre">run</span></code>.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">get_last_sample()</span></code>, <code class="docutils literal notranslate"><span class="pre">get_last_log_prob()</span></code> and <code class="docutils literal notranslate"><span class="pre">get_last_blobs()</span></code> methods.</p></li>
+</ul>
 <p><strong>2.2.0 (03/11/20)</strong></p>
 <ul class="simple">
 <li><p>Improved vectorization.</p></li>

@@ -43,6 +43,7 @@ For instance, if you wanted to draw samples from a *10-dimensional Normal distri
 
     sampler = zeus.EnsembleSampler(nwalkers, ndim, log_prob, args=[ivar])
     sampler.run_mcmc(start, nsteps)
+    chain = sampler.get_chain(flat=True)
 
 
 Installation
@@ -72,7 +73,7 @@ research. The BibTeX entry for the paper is::
     @article{zeus,
         title={zeus: A Python Implementation of the Ensemble Slice Sampling method},
         author={Minas Karamanis and Florian Beutler},
-        year={2020},
+        year={2021},
         note={in prep}
     }
 
@@ -88,13 +89,18 @@ research. The BibTeX entry for the paper is::
 Licence
 =======
 
-Copyright 2019-2020 Minas Karamanis and contributors.
+Copyright 2019-2021 Minas Karamanis and contributors.
 
 ``zeus`` is free software made available under the ``GPL-3.0 License``.
 
 
 Changelog
 =========
+
+**2.2.1 (21/02/21)**
+
+- Added ``log_prob0`` and ``blobs0`` arguments in ``run``.
+- Added ``get_last_sample()``, ``get_last_log_prob()`` and ``get_last_blobs()`` methods.
 
 **2.2.0 (03/11/20)**
 

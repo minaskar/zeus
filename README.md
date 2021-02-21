@@ -32,6 +32,7 @@ start = np.random.randn(nwalkers,ndim)
 
 sampler = zeus.EnsembleSampler(nwalkers, ndim, log_prob, args=[ivar])
 sampler.run_mcmc(start, nsteps)
+chain = sampler.get_chain(flat=True)
 ```
 
 ## Documentation
@@ -62,7 +63,7 @@ Please cite the following papers if you found this code useful in your research:
 @article{ess,
       title={Ensemble Slice Sampling},
       author={Minas Karamanis and Florian Beutler},
-      year={2020},
+      year={2021},
       eprint={2002.06212},
       archivePrefix={arXiv},
       primaryClass={stat.ML}
@@ -71,6 +72,6 @@ Please cite the following papers if you found this code useful in your research:
 
 ## Licence
 
-Copyright 2019-2020 Minas Karamanis and contributors.
+Copyright 2019-2021 Minas Karamanis and contributors.
 
 zeus is free software made available under the GPL-3.0 License. For details see the `LICENSE` file.

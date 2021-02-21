@@ -78,9 +78,10 @@ class GaussianMove:
 
     """
 
-    def __init__(self, tune=False, mu0=1.0):
+    def __init__(self, tune=False, mu0=1.0, cov=None):
         self.tune = tune 
         self.mu0 = mu0
+        self.cov = cov
 
 
     def get_direction(self, X, mu):
@@ -103,7 +104,10 @@ class GaussianMove:
         nsamples = X.shape[0]
 
         mean = np.mean(X, axis=0)
-        cov = np.cov(X, rowvar=False)
+        if self.cov is None:
+            cov = np.cov(X, rowvar=False)
+        else:
+            cov = self.cov
 
         if not self.tune:
             mu = self.mu0

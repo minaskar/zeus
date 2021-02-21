@@ -38,6 +38,7 @@ class EnsembleSampler:
         vectorize (bool): If true (default is False), logprob_fn receives not just one point but an array of points, and returns an array of likelihoods.
         blobs_dtype (list): List containing names and dtypes of blobs metadata e.g. ``[("log_prior", float), ("mean", float)]``. It's useful when you want to save multiple species of metadata. Default is None.
         verbose (bool): If True (default) print log statements.
+        check_walkers (bool): If True (default) then check that ``nwalkers >= 2*ndim`` and even.
     """
     def __init__(self,
                  nwalkers,
@@ -55,7 +56,8 @@ class EnsembleSampler:
                  pool=None,
                  vectorize=False,
                  blobs_dtype=None,
-                 verbose=True):
+                 verbose=True,
+                 check_walkers=True):
 
         # Set up logger
         self.logger = logging.getLogger()
@@ -91,10 +93,12 @@ class EnsembleSampler:
         # Set up walkers
         self.nwalkers = int(nwalkers)
         self.ndim = int(ndim)
-        if self.nwalkers < 2 * self.ndim:
-            raise ValueError("Please provide at least (2 * ndim) walkers.")
-        elif self.nwalkers % 2 == 1:
-            raise ValueError("Please provide an even number of walkers.")
+        self.check_walkers = check_walkers
+        if self.check_walkers:
+            if self.nwalkers < 2 * self.ndim:
+                raise ValueError("Please provide at least (2 * ndim) walkers.")
+            elif self.nwalkers % 2 == 1:
+                raise ValueError("Please provide an even number of walkers.")
 
         # Set up Slice parameters
         self.mu = mu
@@ -124,6 +128,8 @@ class EnsembleSampler:
             start,
             nsteps=1000,
             thin=1,
+            log_prob0=None,
+            blobs0=None,
             progress=True):
         '''
         Calling this method runs the mcmc sampler.
@@ -133,6 +139,8 @@ class EnsembleSampler:
             nsteps (int): Number of steps/generations (default is 1000).
             thin (float): Thin the chain by this number (default is 1 no thinning).
             progress (bool): If True (default), show progress bar (requires tqdm).
+            log_prob0 (float) : Log probability values of the walkers. Default is ``None``.
+            blobs0 (float) : Blob value of the walkers. Default is ``None``.
         '''
         # Define task distributer
         if self.pool is None:
@@ -146,7 +154,15 @@ class EnsembleSampler:
             raise ValueError('Incompatible input dimensions! \n' +
                              'Please provide array of shape (nwalkers, ndim) as the starting position.')
         X = np.copy(start)
-        Z, blobs = self.compute_log_prob(X)
+        if log_prob0 is None:
+            Z, blobs = self.compute_log_prob(X)
+        else:
+            Z = np.copy(log_prob0)
+            if blobs0 is None:
+                blobs = None
+            else:
+                blobs = np.copy(blobs0)
+
         if not np.all(np.isfinite(Z)):
             raise ValueError('Invalid walker initial positions! \n' +
                              'Initialise walkers from positions of finite log probability.')
@@ -489,13 +505,32 @@ class EnsembleSampler:
         """
         return np.asarray(self.mus)
 
-    
     @property
+    def get_last_sample(self):
+        logging.warning('The ``get_last_sample`` property is deprecated and it will be removed in a future release.\n' + 'Please use the method ``get_last_sample()`` instead.')
+
+        return self.chain[-1]
+
+    
     def get_last_sample(self):
         """
         Return the last position of the walkers.
         """
         return self.chain[-1]
+
+    
+    def get_last_log_prob(self):
+        """
+        Return the log probability values for the last position of the walkers.
+        """
+        return self.samples.logprob[-1]
+
+    
+    def get_last_blobs(self):
+        """
+        Return the blobs for the last position of the walkers.
+        """
+        return self.samples.blobs[-1]
 
 
     @property
