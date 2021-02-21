@@ -97,7 +97,7 @@ Copyright 2019-2021 Minas Karamanis and contributors.
 Changelog
 =========
 
-**2.2.1 (21/02/21)**
+**2.2.2 (21/02/21)**
 
 - Added ``log_prob0`` and ``blobs0`` arguments in ``run``.
 - Added ``get_last_sample()``, ``get_last_log_prob()`` and ``get_last_blobs()`` methods.
