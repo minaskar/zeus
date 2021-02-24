@@ -56,14 +56,14 @@ Please cite the following papers if you found this code useful in your research:
 @article{zeus,
         title={zeus: A Python Implementation of the Ensemble Slice Sampling method},
         author={Minas Karamanis and Florian Beutler},
-        year={2020},
+        year={2021},
         note={in prep}
     }
 
 @article{ess,
       title={Ensemble Slice Sampling},
       author={Minas Karamanis and Florian Beutler},
-      year={2021},
+      year={2020},
       eprint={2002.06212},
       archivePrefix={arXiv},
       primaryClass={stat.ML}
