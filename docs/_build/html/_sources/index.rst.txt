@@ -17,6 +17,8 @@
     :target: https://github.com/minaskar/zeus
 .. image:: https://img.shields.io/badge/arXiv-2002.06212-red
     :target: https://arxiv.org/abs/2002.06212
+.. image:: https://img.shields.io/badge/ascl-2008.010-blue.svg?colorB=262255
+    :target: https://ascl.net/2008.010
 .. image:: https://travis-ci.com/minaskar/zeus.svg?token=xnVWRZ3TFg1zxQYQyLs4&branch=master
     :target: https://travis-ci.com/minaskar/zeus
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
@@ -96,6 +98,16 @@ Copyright 2019-2021 Minas Karamanis and contributors.
 
 Changelog
 =========
+
+**2.3.0 (25/02/21)**
+
+- Added ``sample`` method which advances the chain as a generator.
+- Added ``light_mode``. When used, ``light_mode`` can significantly reduce the number of log likelihood evaluations
+  and increase the general efficiency of the algorithm. ``light_mode`` works by performing no expansions after the
+  end of the tuning phase. The scale factor is set to its opttimal value. This works best for approximately Gaussian
+  distributions.
+- Added ``start=None`` support for ``run_mcmc``. When used, the sampler proceeds from the last known position of the walkers.
+- Added support for both ``thin`` and ``thin_by`` arguments.
 
 **2.2.2 (21/02/21)**
 

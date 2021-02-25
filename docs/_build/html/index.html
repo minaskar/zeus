@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>zeus documentation &#8212; zeus 2.2.2 documentation</title>
+    <title>zeus documentation &#8212; zeus 2.3.0 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -147,6 +147,7 @@
 </ul>
 <a class="reference external image-reference" href="https://github.com/minaskar/zeus"><img alt="https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue" src="https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue" /></a>
 <a class="reference external image-reference" href="https://arxiv.org/abs/2002.06212"><img alt="https://img.shields.io/badge/arXiv-2002.06212-red" src="https://img.shields.io/badge/arXiv-2002.06212-red" /></a>
+<a class="reference external image-reference" href="https://ascl.net/2008.010"><img alt="https://img.shields.io/badge/ascl-2008.010-blue.svg?colorB=262255" src="https://img.shields.io/badge/ascl-2008.010-blue.svg?colorB=262255" /></a>
 <a class="reference external image-reference" href="https://travis-ci.com/minaskar/zeus"><img alt="https://travis-ci.com/minaskar/zeus.svg?token=xnVWRZ3TFg1zxQYQyLs4&amp;branch=master" src="https://travis-ci.com/minaskar/zeus.svg?token=xnVWRZ3TFg1zxQYQyLs4&amp;branch=master" /></a>
 <a class="reference external image-reference" href="https://github.com/minaskar/zeus/blob/master/LICENSE"><img alt="https://img.shields.io/badge/License-GPLv3-blue.svg" src="https://img.shields.io/badge/License-GPLv3-blue.svg" /></a>
 <a class="reference external image-reference" href="https://zeus-mcmc.readthedocs.io/en/latest/?badge=latest"><img alt="https://readthedocs.org/projects/zeus-mcmc/badge/?version=latest&amp;token=4455dbf495c5a4eaba52de26ac56628aad85eb3eadc90badfd1703d0a819a0f9" src="https://readthedocs.org/projects/zeus-mcmc/badge/?version=latest&amp;token=4455dbf495c5a4eaba52de26ac56628aad85eb3eadc90badfd1703d0a819a0f9" /></a>
@@ -213,6 +214,16 @@ research. The BibTeX entry for the paper is:</p>
 </div>
 <div class="section" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<p><strong>2.3.0 (25/02/21)</strong></p>
+<ul class="simple">
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">sample</span></code> method which advances the chain as a generator.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">light_mode</span></code>. When used, <code class="docutils literal notranslate"><span class="pre">light_mode</span></code> can significantly reduce the number of log likelihood evaluations
+and increase the general efficiency of the algorithm. <code class="docutils literal notranslate"><span class="pre">light_mode</span></code> works by performing no expansions after the
+end of the tuning phase. The scale factor is set to its opttimal value. This works best for approximately Gaussian
+distributions.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">start=None</span></code> support for <code class="docutils literal notranslate"><span class="pre">run_mcmc</span></code>. When used, the sampler proceeds from the last known position of the walkers.</p></li>
+<li><p>Added support for both <code class="docutils literal notranslate"><span class="pre">thin</span></code> and <code class="docutils literal notranslate"><span class="pre">thin_by</span></code> arguments.</p></li>
+</ul>
 <p><strong>2.2.2 (21/02/21)</strong></p>
 <ul class="simple">
 <li><p>Added <code class="docutils literal notranslate"><span class="pre">log_prob0</span></code> and <code class="docutils literal notranslate"><span class="pre">blobs0</span></code> arguments in <code class="docutils literal notranslate"><span class="pre">run</span></code>.</p></li>

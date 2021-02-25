@@ -25,7 +25,7 @@ copyright = '2019-2021, Minas Karamanis'
 author = 'Minas Karamanis'
 
 # The full version, including alpha/beta/rc tags
-release = '2.2.2'
+release = '2.3.0'
 
 # -- General configuration ---------------------------------------------------
 

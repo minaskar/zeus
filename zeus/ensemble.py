@@ -39,6 +39,8 @@ class EnsembleSampler:
         blobs_dtype (list): List containing names and dtypes of blobs metadata e.g. ``[("log_prior", float), ("mean", float)]``. It's useful when you want to save multiple species of metadata. Default is None.
         verbose (bool): If True (default) print log statements.
         check_walkers (bool): If True (default) then check that ``nwalkers >= 2*ndim`` and even.
+        shuffle_ensemble (bool): If True (default) then shuffle the ensemble of walkers in every iteration before splitting it.
+        light_mode (bool): If True (default is False) then no expansions are performed after the tuning phase. This can significantly reduce the number of log likelihood evaluations but works best in target distributions that are apprroximately Gaussian.
     """
     def __init__(self,
                  nwalkers,
@@ -57,7 +59,9 @@ class EnsembleSampler:
                  vectorize=False,
                  blobs_dtype=None,
                  verbose=True,
-                 check_walkers=True):
+                 check_walkers=True,
+                 shuffle_ensemble=True,
+                 light_mode=False):
 
         # Set up logger
         self.logger = logging.getLogger()
@@ -89,7 +93,6 @@ class EnsembleSampler:
         # Set up Log Probability
         self.logprob_fn = _FunctionWrapper(logprob_fn, args, kwargs)
 
-
         # Set up walkers
         self.nwalkers = int(nwalkers)
         self.ndim = int(ndim)
@@ -99,6 +102,7 @@ class EnsembleSampler:
                 raise ValueError("Please provide at least (2 * ndim) walkers.")
             elif self.nwalkers % 2 == 1:
                 raise ValueError("Please provide an even number of walkers.")
+        self.shuffle_ensemble = shuffle_ensemble
 
         # Set up Slice parameters
         self.mu = mu
@@ -118,253 +122,25 @@ class EnsembleSampler:
         self.pool = pool
         self.vectorize = vectorize
 
+        # Set up blobs dtype
         self.blobs_dtype = blobs_dtype
 
         # Initialise Saving space for samples
         self.samples = samples(self.ndim, self.nwalkers)
 
+        # Initialise iteration counter and state
+        self.iteration = 0
+        self.state_X = None
+        self.state_Z = None
+        self.state_blobs = None
 
-    def run(self,
-            start,
-            nsteps=1000,
-            thin=1,
-            log_prob0=None,
-            blobs0=None,
-            progress=True):
-        '''
-        Calling this method runs the mcmc sampler.
-
-        Args:
-            start (float) : Starting point for the walkers.
-            nsteps (int): Number of steps/generations (default is 1000).
-            thin (float): Thin the chain by this number (default is 1 no thinning).
-            progress (bool): If True (default), show progress bar (requires tqdm).
-            log_prob0 (float) : Log probability values of the walkers. Default is ``None``.
-            blobs0 (float) : Blob value of the walkers. Default is ``None``.
-        '''
-        # Define task distributer
-        if self.pool is None:
-            self.distribute = map
-        else:
-            self.distribute = self.pool.map
-
-        # Initialise ensemble of walkers
-        logging.info('Initialising ensemble of %d walkers...', self.nwalkers)
-        if np.shape(start) != (self.nwalkers, self.ndim):
-            raise ValueError('Incompatible input dimensions! \n' +
-                             'Please provide array of shape (nwalkers, ndim) as the starting position.')
-        X = np.copy(start)
-        if log_prob0 is None:
-            Z, blobs = self.compute_log_prob(X)
-        else:
-            Z = np.copy(log_prob0)
-            if blobs0 is None:
-                blobs = None
-            else:
-                blobs = np.copy(blobs0)
-
-        if not np.all(np.isfinite(Z)):
-            raise ValueError('Invalid walker initial positions! \n' +
-                             'Initialise walkers from positions of finite log probability.')
-        batch = list(np.arange(self.nwalkers))
-
-        # Extend saving space
-        self.nsteps = int(nsteps)
-        self.thin = int(thin)
-        self.samples.extend(self.nsteps//self.thin, blobs)
-
-        # Devide Number of Log Prob Evaluations vector
-        self.neval = np.zeros(self.nsteps, dtype=int)
-
-        # Define tuning count
-        ncount = 0
-
-        # Initialise progress bar
-        if progress:
-            t = tqdm(total=nsteps, desc='Sampling progress : ')
-
-        # Main Loop
-        for i in range(self.nsteps):
-
-            # Initialise number of expansions & contractions
-            nexp = 0
-            ncon = 0
-
-            move = np.random.choice(self._moves, p=self._weights)
-
-            # Shuffle ensemble
-            np.random.shuffle(batch)
-            batch0 = batch[:int(self.nwalkers/2)]
-            batch1 = batch[int(self.nwalkers/2):]
-            sets = [[batch0,batch1],[batch1,batch0]]
-
-            # Loop over two sets
-            for ensembles in sets:
-                indeces = np.arange(int(self.nwalkers/2))
-                # Define active-inactive ensembles
-                active, inactive = ensembles
-
-                # Compute directions
-                directions, tune_once = move.get_direction(X[inactive], self.mu)
-
-                # Get Z0 = LogP(x0)
-                Z0 = Z[active] - np.random.exponential(size=int(self.nwalkers/2))
-
-                # Set Initial Interval Boundaries
-                L = - np.random.uniform(0.0,1.0,size=int(self.nwalkers/2))
-                R = L + 1.0
-
-                # Parallel stepping-out
-                J = np.floor(self.maxsteps * np.random.uniform(0.0,1.0,size=int(self.nwalkers/2)))
-                K = (self.maxsteps - 1) - J
-
-                # Initialise number of Log prob calls
-                ncall = 0
-
-                # Left stepping-out initialisation
-                mask_J = np.full(int(self.nwalkers/2),True)
-                Z_L = np.empty(int(self.nwalkers/2))
-                X_L = np.empty((int(self.nwalkers/2),self.ndim))
-
-                # Right stepping-out initialisation
-                mask_K = np.full(int(self.nwalkers/2),True)
-                Z_R = np.empty(int(self.nwalkers/2))
-                X_R = np.empty((int(self.nwalkers/2),self.ndim))
-
-                cnt = 0
-                # Stepping-Out procedure
-                while len(mask_J[mask_J])>0 or len(mask_K[mask_K])>0:
-                    if len(mask_J[mask_J])>0:
-                        cnt += 1
-                    if len(mask_K[mask_K])>0:
-                        cnt += 1
-                    if cnt > self.maxiter:
-                        raise RuntimeError('Number of expansions exceeded maximum limit! \n' +
-                                           'Make sure that the pdf is well-defined. \n' +
-                                           'Otherwise increase the maximum limit (maxiter=10^4 by default).')
-
-                    for j in indeces[mask_J]:
-                        if J[j] < 1:
-                            mask_J[j] = False
-
-                    for j in indeces[mask_K]:
-                        if K[j] < 1:
-                            mask_K[j] = False
-
-                    X_L[mask_J] = directions[mask_J] * L[mask_J][:,np.newaxis] + X[active][mask_J]
-                    X_R[mask_K] = directions[mask_K] * R[mask_K][:,np.newaxis] + X[active][mask_K]
-
-                    if len(X_L[mask_J]) + len(X_R[mask_K]) < 1:
-                        Z_L[mask_J] = np.array([])
-                        Z_R[mask_K] = np.array([])
-                        cnt -= 1
-                    else:
-                        Z_LR_masked, _ = self.compute_log_prob(np.concatenate([X_L[mask_J],X_R[mask_K]]))
-                        #Z_LR_masked = np.array(list(self.distribute(self.logprob_fn, np.concatenate([X_L[mask_J],X_R[mask_K]]))))
-                        Z_L[mask_J] = Z_LR_masked[:X_L[mask_J].shape[0]]
-                        Z_R[mask_K] = Z_LR_masked[X_L[mask_J].shape[0]:]
-
-                    for j in indeces[mask_J]:
-                        ncall += 1
-                        if Z0[j] < Z_L[j]:
-                            L[j] = L[j] - 1.0
-                            J[j] = J[j] - 1
-                            nexp += 1
-                        else:
-                            mask_J[j] = False
-
-                    for j in indeces[mask_K]:
-                        ncall += 1
-                        if Z0[j] < Z_R[j]:
-                            R[j] = R[j] + 1.0
-                            K[j] = K[j] - 1
-                            nexp += 1
-                        else:
-                            mask_K[j] = False
+        # Light mode
+        self.light_mode = light_mode
 
 
-                # Shrinking procedure
-                Widths = np.empty(int(self.nwalkers/2))
-                Z_prime = np.empty(int(self.nwalkers/2))
-                X_prime = np.empty((int(self.nwalkers/2),self.ndim))
-                if blobs is not None:
-                    blobs_prime = np.empty(int(self.nwalkers/2), dtype=np.dtype((blobs[0].dtype, blobs[0].shape)))
-                mask = np.full(int(self.nwalkers/2),True)
-
-                cnt = 0
-                while len(mask[mask])>0:
-                    # Update Widths of intervals
-                    Widths[mask] = L[mask] + np.random.uniform(0.0,1.0,size=len(mask[mask])) * (R[mask] - L[mask])
-
-                    # Compute New Positions
-                    X_prime[mask] = directions[mask] * Widths[mask][:,np.newaxis] + X[active][mask]
-                    
-
-                    # Calculate LogP of New Positions
-                    if blobs is None:
-                        Z_prime[mask], _ = self.compute_log_prob(X_prime[mask])
-                        #Z_prime[mask] = np.array(list(self.distribute(self.logprob_fn, X_prime[mask])))
-                    else:
-                        Z_prime[mask], blobs_prime[mask] = self.compute_log_prob(X_prime[mask])
-
-                    # Count LogProb calls
-                    ncall += len(mask[mask])
-
-                    # Shrink slices
-                    for j in indeces[mask]:
-                        if Z0[j] < Z_prime[j]:
-                            mask[j] = False
-                        else:
-                            if Widths[j] < 0.0:
-                                L[j] = Widths[j]
-                                ncon += 1
-                            elif Widths[j] > 0.0:
-                                R[j] = Widths[j]
-                                ncon += 1
-
-                    cnt += 1
-                    if cnt > self.maxiter:
-                        raise RuntimeError('Number of contractions exceeded maximum limit! \n' +
-                                           'Make sure that the pdf is well-defined. \n' +
-                                           'Otherwise increase the maximum limit (maxiter=10^4 by default).')
-
-                # Update Positions
-                X[active] = X_prime
-                Z[active] = Z_prime
-                if blobs is not None:
-                    blobs[active] = blobs_prime
-                self.neval[i] += ncall
-
-            # Tune scale factor using Robbins-Monro optimization
-            if self.tune and tune_once:
-                self.nexps.append(nexp)
-                self.ncons.append(ncon)
-                nexp = max(1, nexp) # This prevents the optimizer from getting stuck
-                self.mu *= 2.0 * nexp / (nexp + ncon)
-                self.mus.append(self.mu)
-                if np.abs(nexp / (nexp + ncon) - 0.5) < self.tolerance:
-                    ncount += 1
-                if ncount > self.patience:
-                    self.tune = False
-
-            # Save samples
-            if (i+1) % self.thin == 0:
-                self.samples.save(X, Z, blobs)
-
-            # Update progress bar
-            if progress:
-                t.update()
-
-        # Close progress bar
-        if progress:
-            t.close()
-    
-
-    def run_mcmc(self, *args, **kwargs):
-        """
-        Wrapper for run method.
-        """
-        return self.run(*args, **kwargs)
+    def run(self, *args, **kwargs):
+        logging.warning('The run method has been deprecated and it will be removed. Please use the new run_mcmc method.')
+        return self.run_mcmc(*args, **kwargs)
 
 
     def reset(self):
@@ -606,6 +382,320 @@ class EnsembleSampler:
             raise ValueError("Probability function returned NaN")
 
         return log_prob, blob
+
+
+    def run_mcmc(self,
+                 start,
+                 nsteps=1000,
+                 thin=1,
+                 progress=True,
+                 log_prob0=None,
+                 blobs0=None,
+                 thin_by=1):
+        '''
+        Run MCMC.
+
+        Args:
+            start (float) : Starting point for the walkers. If ``None`` then the sampler proceeds
+                from the last known position of the walkers.
+            nsteps (int): Number of steps/generations (default is 1000).
+            thin (float): Thin the chain by this number (default is 1, no thinning).
+            progress (bool): If True (default), show progress bar.
+            log_prob0 (float) : Log probability values of the walkers. Default is ``None``.
+            blobs0 (float) : Blob value of the walkers. Default is ``None``.
+            thin_by (float): If you only want to store and yield every
+                ``thin_by`` samples in the chain, set ``thin_by`` to an
+                integer greater than 1. When this is set, ``iterations *
+                thin_by`` proposals will be made.
+        '''
+        
+        for _ in self.sample(start,
+                             log_prob0=log_prob0,
+                             blobs0=blobs0,
+                             iterations=nsteps,
+                             thin=thin,
+                             thin_by=thin_by,
+                             progress=progress):
+            pass
+        
+
+    def sample(self,
+            start,
+            log_prob0=None,
+            blobs0=None,
+            iterations=1,
+            thin=1,
+            thin_by=1,
+            progress=True):
+        '''
+        Advance the chain as a generator. The current iteration index of the generator is given by the ``sampler.iteration`` property.
+
+        Args:
+            start (float) : Starting point for the walkers.
+            log_prob0 (float) : Log probability values of the walkers. Default is ``None``.
+            blobs0 (float) : Blob value of the walkers. Default is ``None``.
+            iterations (int): Number of steps to generate (default is 1).
+            thin (float): Thin the chain by this number (default is 1, no thinning).
+            thin_by (float): If you only want to store and yield every
+                ``thin_by`` samples in the chain, set ``thin_by`` to an
+                integer greater than 1. When this is set, ``iterations *
+                thin_by`` proposals will be made.
+            progress (bool): If True (default), show progress bar.
+        '''
+        # Define task distributer
+        if self.pool is None:
+            self.distribute = map
+        else:
+            self.distribute = self.pool.map
+
+        # Initialise ensemble of walkers
+        logging.info('Initialising ensemble of %d walkers...', self.nwalkers)
+        if start is not None:
+            if np.shape(start) != (self.nwalkers, self.ndim):
+                raise ValueError('Incompatible input dimensions! \n' +
+                                 'Please provide array of shape (nwalkers, ndim) as the starting position.')
+            X = np.copy(start)
+            if log_prob0 is None:
+                Z, blobs = self.compute_log_prob(X)
+            else:
+                Z = np.copy(log_prob0)
+                blobs = blobs0
+        elif (self.state_X is not None) and (self.state_Z is not None):
+            X = np.copy(self.state_X)
+            Z = np.copy(self.state_Z)
+            blobs = self.state_blobs
+        else:
+            raise ValueError("Cannot have `start=None` if run_mcmc has never been called before.")
+
+
+        if not np.all(np.isfinite(Z)):
+            raise ValueError('Invalid walker initial positions! \n' +
+                             'Initialise walkers from positions of finite log probability.')
+        batch = list(np.arange(self.nwalkers))
+
+        # Extend saving space
+        self.thin = int(thin)
+        self.thin_by = int(thin_by)
+        
+        if self.thin_by < 0:
+            raise ValueError('Invalid `thin_by` argument.')
+        elif self.thin < 0:
+            raise ValueError('Invalid `thin` argument.')
+        elif self.thin > 1 and self.thin_by == 1:
+            self.nsteps = int(iterations)
+            self.samples.extend(self.nsteps//self.thin, blobs)
+            self.ncheckpoint = self.thin
+        elif self.thin_by > 1 and self.thin == 1:
+            self.nsteps = int(iterations*self.thin_by)
+            self.samples.extend(self.nsteps//self.thin_by, blobs)
+            self.ncheckpoint = self.thin_by
+        elif self.thin == 1 and self.thin_by == 1:
+            self.nsteps = int(iterations)
+            self.samples.extend(self.nsteps, blobs)
+            self.ncheckpoint = 1
+        else:
+            raise ValueError('Only one of `thin` and `thin_by` arguments can be used.')
+        
+
+        # Define Number of Log Prob Evaluations vector
+        self.neval = np.zeros(self.nsteps, dtype=int)
+
+        # Define tuning count
+        ncount = 0
+
+        # Initialise progress bar
+        if progress:
+            t = tqdm(total=self.nsteps, desc='Sampling progress : ')
+
+        # Main Loop
+        for i in range(self.nsteps):
+
+            # Initialise number of expansions & contractions
+            nexp = 0
+            ncon = 0
+
+            move = np.random.choice(self._moves, p=self._weights)
+
+            # Shuffle and split ensemble
+            if self.shuffle_ensemble:
+                np.random.shuffle(batch)
+            batch0 = batch[:int(self.nwalkers/2)]
+            batch1 = batch[int(self.nwalkers/2):]
+            sets = [[batch0,batch1],[batch1,batch0]]
+
+            # Loop over two sets
+            for ensembles in sets:
+                indeces = np.arange(int(self.nwalkers/2))
+                # Define active-inactive ensembles
+                active, inactive = ensembles
+
+                # Compute directions
+                directions, tune_once = move.get_direction(X[inactive], self.mu)
+
+                # Get Z0 = LogP(x0)
+                Z0 = Z[active] - np.random.exponential(size=int(self.nwalkers/2))
+
+                # Set Initial Interval Boundaries
+                L = - np.random.uniform(0.0,1.0,size=int(self.nwalkers/2))
+                R = L + 1.0
+
+                # Parallel stepping-out
+                J = np.floor(self.maxsteps * np.random.uniform(0.0,1.0,size=int(self.nwalkers/2)))
+                K = (self.maxsteps - 1) - J
+
+                # Initialise number of Log prob calls
+                ncall = 0
+
+                # Left stepping-out initialisation
+                mask_J = np.full(int(self.nwalkers/2),True)
+                Z_L = np.empty(int(self.nwalkers/2))
+                X_L = np.empty((int(self.nwalkers/2),self.ndim))
+
+                # Right stepping-out initialisation
+                mask_K = np.full(int(self.nwalkers/2),True)
+                Z_R = np.empty(int(self.nwalkers/2))
+                X_R = np.empty((int(self.nwalkers/2),self.ndim))
+
+                cnt = 0
+                # Stepping-Out procedure
+                while len(mask_J[mask_J])>0 or len(mask_K[mask_K])>0:
+                    if len(mask_J[mask_J])>0:
+                        cnt += 1
+                    if len(mask_K[mask_K])>0:
+                        cnt += 1
+                    if cnt > self.maxiter:
+                        raise RuntimeError('Number of expansions exceeded maximum limit! \n' +
+                                           'Make sure that the pdf is well-defined. \n' +
+                                           'Otherwise increase the maximum limit (maxiter=10^4 by default).')
+
+                    for j in indeces[mask_J]:
+                        if J[j] < 1:
+                            mask_J[j] = False
+
+                    for j in indeces[mask_K]:
+                        if K[j] < 1:
+                            mask_K[j] = False
+
+                    X_L[mask_J] = directions[mask_J] * L[mask_J][:,np.newaxis] + X[active][mask_J]
+                    X_R[mask_K] = directions[mask_K] * R[mask_K][:,np.newaxis] + X[active][mask_K]
+
+                    if len(X_L[mask_J]) + len(X_R[mask_K]) < 1:
+                        Z_L[mask_J] = np.array([])
+                        Z_R[mask_K] = np.array([])
+                        cnt -= 1
+                    else:
+                        Z_LR_masked, _ = self.compute_log_prob(np.concatenate([X_L[mask_J],X_R[mask_K]]))
+                        #Z_LR_masked = np.array(list(self.distribute(self.logprob_fn, np.concatenate([X_L[mask_J],X_R[mask_K]]))))
+                        Z_L[mask_J] = Z_LR_masked[:X_L[mask_J].shape[0]]
+                        Z_R[mask_K] = Z_LR_masked[X_L[mask_J].shape[0]:]
+
+                    for j in indeces[mask_J]:
+                        ncall += 1
+                        if Z0[j] < Z_L[j]:
+                            L[j] = L[j] - 1.0
+                            J[j] = J[j] - 1
+                            nexp += 1
+                        else:
+                            mask_J[j] = False
+
+                    for j in indeces[mask_K]:
+                        ncall += 1
+                        if Z0[j] < Z_R[j]:
+                            R[j] = R[j] + 1.0
+                            K[j] = K[j] - 1
+                            nexp += 1
+                        else:
+                            mask_K[j] = False
+
+
+                # Shrinking procedure
+                Widths = np.empty(int(self.nwalkers/2))
+                Z_prime = np.empty(int(self.nwalkers/2))
+                X_prime = np.empty((int(self.nwalkers/2),self.ndim))
+                if blobs is not None:
+                    blobs_prime = np.empty(int(self.nwalkers/2), dtype=np.dtype((blobs[0].dtype, blobs[0].shape)))
+                mask = np.full(int(self.nwalkers/2),True)
+
+                cnt = 0
+                while len(mask[mask])>0:
+                    # Update Widths of intervals
+                    Widths[mask] = L[mask] + np.random.uniform(0.0,1.0,size=len(mask[mask])) * (R[mask] - L[mask])
+
+                    # Compute New Positions
+                    X_prime[mask] = directions[mask] * Widths[mask][:,np.newaxis] + X[active][mask]
+                    
+
+                    # Calculate LogP of New Positions
+                    if blobs is None:
+                        Z_prime[mask], _ = self.compute_log_prob(X_prime[mask])
+                        #Z_prime[mask] = np.array(list(self.distribute(self.logprob_fn, X_prime[mask])))
+                    else:
+                        Z_prime[mask], blobs_prime[mask] = self.compute_log_prob(X_prime[mask])
+
+                    # Count LogProb calls
+                    ncall += len(mask[mask])
+
+                    # Shrink slices
+                    for j in indeces[mask]:
+                        if Z0[j] < Z_prime[j]:
+                            mask[j] = False
+                        else:
+                            if Widths[j] < 0.0:
+                                L[j] = Widths[j]
+                                ncon += 1
+                            elif Widths[j] > 0.0:
+                                R[j] = Widths[j]
+                                ncon += 1
+
+                    cnt += 1
+                    if cnt > self.maxiter:
+                        raise RuntimeError('Number of contractions exceeded maximum limit! \n' +
+                                           'Make sure that the pdf is well-defined. \n' +
+                                           'Otherwise increase the maximum limit (maxiter=10^4 by default).')
+
+                # Update Positions
+                X[active] = X_prime
+                Z[active] = Z_prime
+                if blobs is not None:
+                    blobs[active] = blobs_prime
+                self.neval[i] += ncall
+
+            # Tune scale factor using Robbins-Monro optimization
+            if self.tune and tune_once:
+                self.nexps.append(nexp)
+                self.ncons.append(ncon)
+                nexp = max(1, nexp) # This is to prevent the optimizer from getting stuck
+                self.mu *= 2.0 * nexp / (nexp + ncon)
+                self.mus.append(self.mu)
+                if np.abs(nexp / (nexp + ncon) - 0.5) < self.tolerance:
+                    ncount += 1
+                if ncount > self.patience:
+                    self.tune = False
+                    if self.light_mode:
+                        self.mu *= (1.0 + nexp/self.nwalkers)
+                        self.maxsteps = 1
+
+            # Save samples
+            if (i+1) % self.ncheckpoint == 0:
+                self.samples.save(X, Z, blobs)
+
+            # Update progress bar
+            if progress:
+                t.update()
+
+            # Update iteration counter and state variables
+            self.iteration = i + 1
+            self.state_X = np.copy(X)
+            self.state_Z = np.copy(Z)
+            self.state_blobs = blobs
+
+            # Yield current state
+            if (i+1) % self.ncheckpoint == 0:
+                yield (X, Z, blobs)
+
+        # Close progress bar
+        if progress:
+            t.close()
 
 
 class sampler(EnsembleSampler):
