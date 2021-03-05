@@ -4,3 +4,5 @@ zeus/_pycache__/
 .ipynb_checkpoints/
 examples/.ipynb_checkpoints/
 zeus_mcmc.egg-info/
+build/
+dist/
