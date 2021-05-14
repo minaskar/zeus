@@ -57,6 +57,12 @@ To install ``zeus`` using ``pip`` run:
 
     pip install zeus-mcmc
 
+To install ``zeus`` in a `[Ana]Conda <https://conda.io/projects/conda/en/latest/index.html>`_ environment use:
+
+.. code:: bash
+
+    conda install -c conda-forge zeus-mcmc
+
 
 Getting Started
 ===============
