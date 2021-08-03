@@ -1,22 +1,20 @@
 __bibtex__ = """
-@article{zeus,
-        title={zeus: A Python Implementation of the Ensemble Slice Sampling method},
-        author={Minas Karamanis and Florian Beutler},
-        year={2021},
-        note={in prep}
-    }
+@article{karamanis2021zeus,
+             title={zeus: A Python implementation of Ensemble Slice Sampling for efficient Bayesian parameter inference},
+             author={Karamanis, Minas and Beutler, Florian and Peacock, John A},
+             journal={arXiv preprint arXiv:2105.03468},
+             year={2021}
+            }
 
-@article{ess,
-      title={Ensemble Slice Sampling},
-      author={Minas Karamanis and Florian Beutler},
-      year={2020},
-      eprint={2002.06212},
-      archivePrefix={arXiv},
-      primaryClass={stat.ML}
-}
+    @article{karamanis2020ensemble,
+             title = {Ensemble slice sampling: Parallel, black-box and gradient-free inference for correlated & multimodal distributions},
+             author = {Karamanis, Minas and Beutler, Florian},
+             journal = {arXiv preprint arXiv: 2002.06212},
+             year = {2020}
+            }
 """
 
-__version__ = "2.3.0"
+__version__ = "2.3.1"
 __url__ = "https://zeus-mcmc.readthedocs.io"
 __author__ = "Minas Karamanis"
 __email__ = "minaskar@gmail.com"

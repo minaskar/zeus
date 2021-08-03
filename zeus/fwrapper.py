@@ -20,4 +20,15 @@ class _FunctionWrapper(object):
         self.kwargs = {} if kwargs is None else kwargs
 
     def __call__(self, x):
-        return self.f(x, *self.args, **self.kwargs)
+        try:
+            return self.f(x, *self.args, **self.kwargs)
+        except:  # pragma: no cover
+            import traceback
+
+            print("zeus: Exception while calling your likelihood function:")
+            print("  params:", x)
+            print("  args:", self.args)
+            print("  kwargs:", self.kwargs)
+            print("  exception:")
+            traceback.print_exc()
+            raise
