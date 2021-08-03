@@ -10,10 +10,12 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue)](https://github.com/minaskar/zeus)
 [![arXiv](https://img.shields.io/badge/arXiv-2002.06212-red)](https://arxiv.org/abs/2002.06212)
+[![arXiv](https://img.shields.io/badge/arXiv-2105.03468-brightgreen)](https://arxiv.org/abs/2105.03468)
 [![ascl](https://img.shields.io/badge/ascl-2008.010-blue.svg?colorB=262255)](https://ascl.net/2008.010)
 [![Build Status](https://travis-ci.com/minaskar/zeus.svg?token=xnVWRZ3TFg1zxQYQyLs4&branch=master)](https://travis-ci.com/minaskar/zeus)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/minaskar/zeus/blob/master/LICENSE)
 [![Documentation Status](https://readthedocs.org/projects/zeus-mcmc/badge/?version=latest&token=4455dbf495c5a4eaba52de26ac56628aad85eb3eadc90badfd1703d0a819a0f9)](https://zeus-mcmc.readthedocs.io/en/latest/?badge=latest)
+[![Downloads](https://pepy.tech/badge/zeus-mcmc)](https://pepy.tech/project/zeus-mcmc)
 
 
 ## Example
@@ -60,20 +62,18 @@ conda install -c conda-forge zeus-mcmc
 Please cite the following papers if you found this code useful in your research:
 
 ```bash
-@article{zeus,
-        title={zeus: A Python Implementation of the Ensemble Slice Sampling method},
-        author={Minas Karamanis and Florian Beutler},
-        year={2021},
-        note={in prep}
-    }
+@article{karamanis2021zeus,
+  title={zeus: A Python implementation of Ensemble Slice Sampling for efficient Bayesian parameter inference},
+  author={Karamanis, Minas and Beutler, Florian and Peacock, John A},
+  journal={arXiv preprint arXiv:2105.03468},
+  year={2021}
+}
 
-@article{ess,
-      title={Ensemble Slice Sampling},
-      author={Minas Karamanis and Florian Beutler},
-      year={2020},
-      eprint={2002.06212},
-      archivePrefix={arXiv},
-      primaryClass={stat.ML}
+@article{karamanis2020ensemble,
+    title = {Ensemble slice sampling: Parallel, black-box and gradient-free inference for correlated & multimodal distributions},
+    author = {Karamanis, Minas and Beutler, Florian},
+    journal = {arXiv preprint arXiv: 2002.06212},
+    year = {2020}
 }
 ```
 
