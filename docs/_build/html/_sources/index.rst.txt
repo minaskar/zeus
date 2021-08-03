@@ -78,9 +78,8 @@ Getting Started
 Citation
 ========
 
-Please cite `Karamanis & Beutler (2020)
-<https://arxiv.org/abs/2002.06212>`_ if you find this code useful in your
-research. The BibTeX entry for the paper is::
+Please cite the following papers if you found this code useful in your
+research::
 
     @article{karamanis2021zeus,
              title={zeus: A Python implementation of Ensemble Slice Sampling for efficient Bayesian parameter inference},
@@ -106,6 +105,10 @@ Copyright 2019-2021 Minas Karamanis and contributors.
 
 Changelog
 =========
+
+**2.3.1 (03/08/21)**
+
+- Raise exception if model fails.
 
 **2.3.0 (25/02/21)**
 
