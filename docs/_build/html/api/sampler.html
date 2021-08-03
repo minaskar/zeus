@@ -3,18 +3,16 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>The Ensemble Slice Sampler &#8212; zeus 2.3.0 documentation</title>
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -135,11 +133,11 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="the-ensemble-slice-sampler">
+  <section id="the-ensemble-slice-sampler">
 <h1>The Ensemble Slice Sampler<a class="headerlink" href="#the-ensemble-slice-sampler" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="zeus.EnsembleSampler">
-<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">EnsembleSampler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nwalkers</span></em>, <em class="sig-param"><span class="n">ndim</span></em>, <em class="sig-param"><span class="n">logprob_fn</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">moves</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tune</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">tolerance</span><span class="o">=</span><span class="default_value">0.05</span></em>, <em class="sig-param"><span class="n">patience</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">maxsteps</span><span class="o">=</span><span class="default_value">10000</span></em>, <em class="sig-param"><span class="n">mu</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">10000</span></em>, <em class="sig-param"><span class="n">pool</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vectorize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">blobs_dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">check_walkers</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">shuffle_ensemble</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">light_mode</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="zeus.EnsembleSampler">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeus.</span></span><span class="sig-name descname"><span class="pre">EnsembleSampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nwalkers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logprob_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moves</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectorize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blobs_dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_walkers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle_ensemble</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">light_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler" title="Permalink to this definition">¶</a></dt>
 <dd><p>An Ensemble Slice Sampler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -169,9 +167,9 @@ When running, the sampler will randomly select a move from this list (optionally
 </ul>
 </dd>
 </dl>
-<dl class="py method">
-<dt id="zeus.EnsembleSampler.act">
-<em class="property">property </em><code class="sig-name descname">act</code><a class="headerlink" href="#zeus.EnsembleSampler.act" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="zeus.EnsembleSampler.act">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">act</span></span><a class="headerlink" href="#zeus.EnsembleSampler.act" title="Permalink to this definition">¶</a></dt>
 <dd><p>Integrated Autocorrelation Time (IAT) of the Markov Chain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -180,9 +178,9 @@ When running, the sampler will randomly select a move from this list (optionally
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="zeus.EnsembleSampler.chain">
-<em class="property">property </em><code class="sig-name descname">chain</code><a class="headerlink" href="#zeus.EnsembleSampler.chain" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="zeus.EnsembleSampler.chain">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">chain</span></span><a class="headerlink" href="#zeus.EnsembleSampler.chain" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the chains.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -192,8 +190,8 @@ When running, the sampler will randomly select a move from this list (optionally
 </dd></dl>
 
 <dl class="py method">
-<dt id="zeus.EnsembleSampler.compute_log_prob">
-<code class="sig-name descname">compute_log_prob</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">coords</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.compute_log_prob" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="zeus.EnsembleSampler.compute_log_prob">
+<span class="sig-name descname"><span class="pre">compute_log_prob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.compute_log_prob" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the vector of log-probability for the walkers</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -209,9 +207,9 @@ blob: The list of meta data returned by the <code class="docutils literal notran
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="zeus.EnsembleSampler.efficiency">
-<em class="property">property </em><code class="sig-name descname">efficiency</code><a class="headerlink" href="#zeus.EnsembleSampler.efficiency" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="zeus.EnsembleSampler.efficiency">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">efficiency</span></span><a class="headerlink" href="#zeus.EnsembleSampler.efficiency" title="Permalink to this definition">¶</a></dt>
 <dd><p>Effective Samples per Log Probability Evaluation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -220,9 +218,9 @@ blob: The list of meta data returned by the <code class="docutils literal notran
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="zeus.EnsembleSampler.ess">
-<em class="property">property </em><code class="sig-name descname">ess</code><a class="headerlink" href="#zeus.EnsembleSampler.ess" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="zeus.EnsembleSampler.ess">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ess</span></span><a class="headerlink" href="#zeus.EnsembleSampler.ess" title="Permalink to this definition">¶</a></dt>
 <dd><p>Effective Sampling Size (ESS) of the Markov Chain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -232,8 +230,8 @@ blob: The list of meta data returned by the <code class="docutils literal notran
 </dd></dl>
 
 <dl class="py method">
-<dt id="zeus.EnsembleSampler.get_blobs">
-<code class="sig-name descname">get_blobs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">flat</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">thin</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">discard</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.get_blobs" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="zeus.EnsembleSampler.get_blobs">
+<span class="sig-name descname"><span class="pre">get_blobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.get_blobs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the values of the blobs at each step of the chain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -250,8 +248,8 @@ blob: The list of meta data returned by the <code class="docutils literal notran
 </dd></dl>
 
 <dl class="py method">
-<dt id="zeus.EnsembleSampler.get_chain">
-<code class="sig-name descname">get_chain</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">flat</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">thin</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">discard</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.get_chain" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="zeus.EnsembleSampler.get_chain">
+<span class="sig-name descname"><span class="pre">get_chain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.get_chain" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the Markov chain containing the samples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -269,26 +267,26 @@ blob: The list of meta data returned by the <code class="docutils literal notran
 </dd></dl>
 
 <dl class="py method">
-<dt id="zeus.EnsembleSampler.get_last_blobs">
-<code class="sig-name descname">get_last_blobs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.get_last_blobs" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="zeus.EnsembleSampler.get_last_blobs">
+<span class="sig-name descname"><span class="pre">get_last_blobs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.get_last_blobs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the blobs for the last position of the walkers.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="zeus.EnsembleSampler.get_last_log_prob">
-<code class="sig-name descname">get_last_log_prob</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.get_last_log_prob" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="zeus.EnsembleSampler.get_last_log_prob">
+<span class="sig-name descname"><span class="pre">get_last_log_prob</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.get_last_log_prob" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the log probability values for the last position of the walkers.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="zeus.EnsembleSampler.get_last_sample">
-<code class="sig-name descname">get_last_sample</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.get_last_sample" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="zeus.EnsembleSampler.get_last_sample">
+<span class="sig-name descname"><span class="pre">get_last_sample</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.get_last_sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the last position of the walkers.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="zeus.EnsembleSampler.get_log_prob">
-<code class="sig-name descname">get_log_prob</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">flat</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">thin</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">discard</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.get_log_prob" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="zeus.EnsembleSampler.get_log_prob">
+<span class="sig-name descname"><span class="pre">get_log_prob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.get_log_prob" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the value of the log probability function evalutated at the samples of the Markov chain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -305,9 +303,9 @@ blob: The list of meta data returned by the <code class="docutils literal notran
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="zeus.EnsembleSampler.ncall">
-<em class="property">property </em><code class="sig-name descname">ncall</code><a class="headerlink" href="#zeus.EnsembleSampler.ncall" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="zeus.EnsembleSampler.ncall">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ncall</span></span><a class="headerlink" href="#zeus.EnsembleSampler.ncall" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of Log Prob calls.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -317,14 +315,14 @@ blob: The list of meta data returned by the <code class="docutils literal notran
 </dd></dl>
 
 <dl class="py method">
-<dt id="zeus.EnsembleSampler.reset">
-<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.reset" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="zeus.EnsembleSampler.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reset the state of the sampler. Delete any samples stored in memory.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="zeus.EnsembleSampler.run_mcmc">
-<code class="sig-name descname">run_mcmc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">nsteps</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">thin</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">progress</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">log_prob0</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">blobs0</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">thin_by</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.run_mcmc" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="zeus.EnsembleSampler.run_mcmc">
+<span class="sig-name descname"><span class="pre">run_mcmc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_prob0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blobs0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thin_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.run_mcmc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run MCMC.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -346,8 +344,8 @@ integer greater than 1. When this is set, <code class="docutils literal notransl
 </dd></dl>
 
 <dl class="py method">
-<dt id="zeus.EnsembleSampler.sample">
-<code class="sig-name descname">sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">log_prob0</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">blobs0</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">iterations</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">thin</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">thin_by</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">progress</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.sample" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="zeus.EnsembleSampler.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_prob0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blobs0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thin_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Advance the chain as a generator. The current iteration index of the generator is given by the <code class="docutils literal notranslate"><span class="pre">sampler.iteration</span></code> property.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -367,9 +365,9 @@ integer greater than 1. When this is set, <code class="docutils literal notransl
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="zeus.EnsembleSampler.scale_factor">
-<em class="property">property </em><code class="sig-name descname">scale_factor</code><a class="headerlink" href="#zeus.EnsembleSampler.scale_factor" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="zeus.EnsembleSampler.scale_factor">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">scale_factor</span></span><a class="headerlink" href="#zeus.EnsembleSampler.scale_factor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Scale factor values during tuning.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -378,15 +376,15 @@ integer greater than 1. When this is set, <code class="docutils literal notransl
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="zeus.EnsembleSampler.summary">
-<em class="property">property </em><code class="sig-name descname">summary</code><a class="headerlink" href="#zeus.EnsembleSampler.summary" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="zeus.EnsembleSampler.summary">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">summary</span></span><a class="headerlink" href="#zeus.EnsembleSampler.summary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Summary of the MCMC run.</p>
 </dd></dl>
 
 </dd></dl>
 
-</div>
+</section>
 
 
     </div>
@@ -401,7 +399,7 @@ integer greater than 1. When this is set, <code class="docutils literal notransl
     </p>
     <p>
         &copy; Copyright 2019-2021, Minas Karamanis.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.<br/>
     </p>
   </div>
 </footer>

@@ -3,18 +3,16 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>The Chain Manager &amp; MPI Tools &#8212; zeus 2.3.0 documentation</title>
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -135,14 +133,14 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="the-chain-manager-mpi-tools">
+  <section id="the-chain-manager-mpi-tools">
 <h1>The Chain Manager &amp; MPI Tools<a class="headerlink" href="#the-chain-manager-mpi-tools" title="Permalink to this headline">¶</a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">Chain</span> <span class="pre">Manager</span></code> can be used to parallelize <code class="docutils literal notranslate"><span class="pre">zeus</span></code>. The benefits of this appoach is that
 the <code class="docutils literal notranslate"><span class="pre">Chain</span> <span class="pre">Manager</span></code> can parallelize many chains and walkers simultaneously. See the Cookbook
 for more information.</p>
 <dl class="py class">
-<dt id="zeus.ChainManager">
-<em class="property">class </em><code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">ChainManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nchains</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">comm</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="zeus.ChainManager">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeus.</span></span><span class="sig-name descname"><span class="pre">ChainManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nchains</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to serve as context manager to handle to MPI-related issues,
 specifically, the managing of <code class="docutils literal notranslate"><span class="pre">MPIPool</span></code> and splitting of communicators.
 This class can be used to run <code class="docutils literal notranslate"><span class="pre">nchains</span></code> in parallel with each chain
@@ -156,8 +154,8 @@ having its own <code class="docutils literal notranslate"><span class="pre">MPIP
 </dd>
 </dl>
 <dl class="py method">
-<dt id="zeus.ChainManager.allgather">
-<code class="sig-name descname">allgather</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager.allgather" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="zeus.ChainManager.allgather">
+<span class="sig-name descname"><span class="pre">allgather</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager.allgather" title="Permalink to this definition">¶</a></dt>
 <dd><p>Allgather method to gather <code class="docutils literal notranslate"><span class="pre">x</span></code> in all chains. This is equivalent to first <code class="docutils literal notranslate"><span class="pre">scatter</span></code> and then <code class="docutils literal notranslate"><span class="pre">bcast</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -173,8 +171,8 @@ having its own <code class="docutils literal notranslate"><span class="pre">MPIP
 </dd></dl>
 
 <dl class="py method">
-<dt id="zeus.ChainManager.bcast">
-<code class="sig-name descname">bcast</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">root</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager.bcast" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="zeus.ChainManager.bcast">
+<span class="sig-name descname"><span class="pre">bcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager.bcast" title="Permalink to this definition">¶</a></dt>
 <dd><p>Broadcast method to send <code class="docutils literal notranslate"><span class="pre">x</span></code> from <code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">=</span> <span class="pre">root</span></code> to all chains.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -193,8 +191,8 @@ having its own <code class="docutils literal notranslate"><span class="pre">MPIP
 </dd></dl>
 
 <dl class="py method">
-<dt id="zeus.ChainManager.gather">
-<code class="sig-name descname">gather</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">root</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager.gather" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="zeus.ChainManager.gather">
+<span class="sig-name descname"><span class="pre">gather</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager.gather" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gather method to gather <code class="docutils literal notranslate"><span class="pre">x</span></code> in <code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">=</span> <span class="pre">root</span></code> chain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -212,23 +210,23 @@ having its own <code class="docutils literal notranslate"><span class="pre">MPIP
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="zeus.ChainManager.get_pool">
-<em class="property">property </em><code class="sig-name descname">get_pool</code><a class="headerlink" href="#zeus.ChainManager.get_pool" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="zeus.ChainManager.get_pool">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">get_pool</span></span><a class="headerlink" href="#zeus.ChainManager.get_pool" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get parallel <code class="docutils literal notranslate"><span class="pre">pool</span></code> of workers that correspond to a specific chain. This should be used to
 parallelize the walkers of each <code class="docutils literal notranslate"><span class="pre">chain</span></code> (not the chains themselves). This includes the <code class="docutils literal notranslate"><span class="pre">map</span></code>
 method that <code class="docutils literal notranslate"><span class="pre">zeus</span></code> requires.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt id="zeus.ChainManager.get_rank">
-<em class="property">property </em><code class="sig-name descname">get_rank</code><a class="headerlink" href="#zeus.ChainManager.get_rank" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="zeus.ChainManager.get_rank">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">get_rank</span></span><a class="headerlink" href="#zeus.ChainManager.get_rank" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get <code class="docutils literal notranslate"><span class="pre">rank</span></code> of current <code class="docutils literal notranslate"><span class="pre">chain</span></code>. The minimum <code class="docutils literal notranslate"><span class="pre">rank</span></code> is <code class="docutils literal notranslate"><span class="pre">0</span></code> and the maximum is <code class="docutils literal notranslate"><span class="pre">nchains-1</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="zeus.ChainManager.scatter">
-<code class="sig-name descname">scatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">root</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager.scatter" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="zeus.ChainManager.scatter">
+<span class="sig-name descname"><span class="pre">scatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.ChainManager.scatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Scatter method to scatter <code class="docutils literal notranslate"><span class="pre">x</span></code> from <code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">=</span> <span class="pre">root</span></code> chain to the rest.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -248,7 +246,7 @@ method that <code class="docutils literal notranslate"><span class="pre">zeus</s
 
 </dd></dl>
 
-</div>
+</section>
 
 
     </div>
@@ -263,7 +261,7 @@ method that <code class="docutils literal notranslate"><span class="pre">zeus</s
     </p>
     <p>
         &copy; Copyright 2019-2021, Minas Karamanis.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.<br/>
     </p>
   </div>
 </footer>

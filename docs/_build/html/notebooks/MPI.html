@@ -3,18 +3,18 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Parallelizing sampling using MPI &#8212; zeus 2.3.0 documentation</title>
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -135,16 +135,16 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="Parallelizing-sampling-using-MPI">
+  <section id="Parallelizing-sampling-using-MPI">
 <h1>Parallelizing sampling using MPI<a class="headerlink" href="#Parallelizing-sampling-using-MPI" title="Permalink to this headline">¶</a></h1>
 <p>To take advantage of modern high performance computing facilities such as clusters with hundreds of CPUs we recommend to use <code class="docutils literal notranslate"><span class="pre">MPI</span></code> instead of <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code>.</p>
 <p>To do this we will use the <code class="docutils literal notranslate"><span class="pre">ChainManager</span></code> included in <code class="docutils literal notranslate"><span class="pre">zeus</span></code>.</p>
 <p>In order to run this example, copy and paste the following script into a file called ‘test_mpi.py’ and run the following command in the terminal:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mpiexec</span> <span class="o">-</span><span class="n">n</span> <span class="mi">8</span> <span class="n">python3</span> <span class="n">test_mpi</span><span class="o">.</span><span class="n">py</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mpiexec -n 8 python3 test_mpi.py
 </pre></div>
 </div>
 <p>This will spawn 8 <code class="docutils literal notranslate"><span class="pre">MPI</span></code> processes and divide them into 2 independent chains of 10 walkers each. Unfortunately <code class="docutils literal notranslate"><span class="pre">MPI</span></code> is not compatible with <code class="docutils literal notranslate"><span class="pre">Jupyter</span></code> notebooks.</p>
-<div class="section" id="Save-this-as-‘test_mpi.py’">
+<section id="Save-this-as-‘test_mpi.py’">
 <h2>Save this as ‘test_mpi.py’<a class="headerlink" href="#Save-this-as-‘test_mpi.py’" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">zeus</span>
@@ -171,8 +171,8 @@
     <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;chain_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">rank</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;.npy&#39;</span><span class="p">,</span> <span class="n">chain</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -187,7 +187,7 @@
     </p>
     <p>
         &copy; Copyright 2019-2021, Minas Karamanis.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.<br/>
     </p>
   </div>
 </footer>

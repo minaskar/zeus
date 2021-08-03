@@ -17,6 +17,8 @@
     :target: https://github.com/minaskar/zeus
 .. image:: https://img.shields.io/badge/arXiv-2002.06212-red
     :target: https://arxiv.org/abs/2002.06212
+.. image:: https://img.shields.io/badge/arXiv-2105.03468-brightgreen
+    :target: https://arxiv.org/abs/2105.03468
 .. image:: https://img.shields.io/badge/ascl-2008.010-blue.svg?colorB=262255
     :target: https://ascl.net/2008.010
 .. image:: https://travis-ci.com/minaskar/zeus.svg?token=xnVWRZ3TFg1zxQYQyLs4&branch=master
@@ -25,6 +27,8 @@
     :target: https://github.com/minaskar/zeus/blob/master/LICENSE
 .. image:: https://readthedocs.org/projects/zeus-mcmc/badge/?version=latest&token=4455dbf495c5a4eaba52de26ac56628aad85eb3eadc90badfd1703d0a819a0f9
     :target: https://zeus-mcmc.readthedocs.io/en/latest/?badge=latest
+.. image:: https://pepy.tech/badge/zeus-mcmc
+    :target: https://pepy.tech/project/zeus-mcmc
 
 Basic use
 =========
@@ -78,21 +82,19 @@ Please cite `Karamanis & Beutler (2020)
 <https://arxiv.org/abs/2002.06212>`_ if you find this code useful in your
 research. The BibTeX entry for the paper is::
 
-    @article{zeus,
-        title={zeus: A Python Implementation of the Ensemble Slice Sampling method},
-        author={Minas Karamanis and Florian Beutler},
-        year={2021},
-        note={in prep}
-    }
+    @article{karamanis2021zeus,
+             title={zeus: A Python implementation of Ensemble Slice Sampling for efficient Bayesian parameter inference},
+             author={Karamanis, Minas and Beutler, Florian and Peacock, John A},
+             journal={arXiv preprint arXiv:2105.03468},
+             year={2021}
+            }
 
-    @article{ess,
-        title={Ensemble Slice Sampling},
-        author={Minas Karamanis and Florian Beutler},
-        year={2020},
-        eprint={2002.06212},
-        archivePrefix={arXiv},
-        primaryClass={stat.ML}
-    }
+    @article{karamanis2020ensemble,
+             title = {Ensemble slice sampling: Parallel, black-box and gradient-free inference for correlated & multimodal distributions},
+             author = {Karamanis, Minas and Beutler, Florian},
+             journal = {arXiv preprint arXiv: 2002.06212},
+             year = {2020}
+            }
 
 Licence
 =======

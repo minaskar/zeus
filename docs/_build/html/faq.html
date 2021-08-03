@@ -3,18 +3,16 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Frequently Asked Questions &#8212; zeus 2.3.0 documentation</title>
-    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -135,44 +133,44 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="frequently-asked-questions">
+  <section id="frequently-asked-questions">
 <h1>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="what-is-the-acceptance-rate-of-zeus">
+<section id="what-is-the-acceptance-rate-of-zeus">
 <h2>What is the acceptance rate of <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?<a class="headerlink" href="#what-is-the-acceptance-rate-of-zeus" title="Permalink to this headline">¶</a></h2>
 <p>Unlike most MCMC methods, <code class="docutils literal notranslate"><span class="pre">zeus</span></code> acceptance rate isn’t varying during a run. As a matter of fact,
 its acceptance rate is identically 1 always. This is because of the Slice Sampler at its core.</p>
-</div>
-<div class="section" id="why-should-i-use-zeus-instead-of-other-mcmc-samplers">
+</section>
+<section id="why-should-i-use-zeus-instead-of-other-mcmc-samplers">
 <h2>Why should I use zeus instead of other MCMC samplers?<a class="headerlink" href="#why-should-i-use-zeus-instead-of-other-mcmc-samplers" title="Permalink to this headline">¶</a></h2>
 <p>The first reason you should think of using <code class="docutils literal notranslate"><span class="pre">zeus</span></code> is due to the fact that it doesn’t require
 any hand tuning at all. There is no need to adjust any hyperparameters or provide a proposal
 distribution.</p>
 <p>Moreover, unlike other black-box MCMC methods <code class="docutils literal notranslate"><span class="pre">zeus</span></code> is more robust to the curse of
 dimensionality and handle challenging distributions better.</p>
-</div>
-<div class="section" id="what-are-the-walkers">
+</section>
+<section id="what-are-the-walkers">
 <h2>What are the walkers?<a class="headerlink" href="#what-are-the-walkers" title="Permalink to this headline">¶</a></h2>
 <p>Walkers are the members of the ensemble and the explore the parameter space in parallel. Collectively,
 the converge to the target distribution.</p>
-</div>
-<div class="section" id="how-many-walkers-should-i-use">
+</section>
+<section id="how-many-walkers-should-i-use">
 <h2>How many walkers should I use?<a class="headerlink" href="#how-many-walkers-should-i-use" title="Permalink to this headline">¶</a></h2>
 <p>At least twice the number of parameters of your problem. A good rule of thump is to use approximately
 2.5 times the number of parameters. If your distribution has multiple modes you may want to increase
 the number of walkers.</p>
-</div>
-<div class="section" id="how-should-i-initialize-the-positions-of-the-walkers">
+</section>
+<section id="how-should-i-initialize-the-positions-of-the-walkers">
 <h2>How should I initialize the positions of the walkers?<a class="headerlink" href="#how-should-i-initialize-the-positions-of-the-walkers" title="Permalink to this headline">¶</a></h2>
 <p>A good practice seems to be to initialize the walkers from a small ball close to the <em>Maximum a Posteriori</em>
 estimate. After a few autocorrelation times the walkers would have explored the rest of the usefull regions
 of the parameter space (a.k.a. the typical set), producing a great number of independent samples.</p>
-</div>
-<div class="section" id="how-long-should-i-run-zeus">
+</section>
+<section id="how-long-should-i-run-zeus">
 <h2>How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?<a class="headerlink" href="#how-long-should-i-run-zeus" title="Permalink to this headline">¶</a></h2>
 <p>You don’t have to run <code class="docutils literal notranslate"><span class="pre">zeus</span></code> for very long. If your goal is to produce 2D/1D contours and/or 1-sigma/2-sigma
 constraints for your parameters, running <code class="docutils literal notranslate"><span class="pre">zeus</span></code> for a few autocorrelation times (e.g. 10) is more than enough.</p>
-</div>
-<div class="section" id="what-are-the-moves-and-which-one-should-i-use">
+</section>
+<section id="what-are-the-moves-and-which-one-should-i-use">
 <h2>What are the <code class="docutils literal notranslate"><span class="pre">Moves</span></code> and which one should I use?<a class="headerlink" href="#what-are-the-moves-and-which-one-should-i-use" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">zeus</span></code> was originally built on the <code class="docutils literal notranslate"><span class="pre">Differential</span></code> and <code class="docutils literal notranslate"><span class="pre">Gaussian</span></code> moves. Starting from version
 2.0.0, <code class="docutils literal notranslate"><span class="pre">zeus</span></code> supports a mixture of different moves/proposals. Moves are recipes that the walkers
@@ -183,8 +181,8 @@ challenging target distributions (e.g. highly dimensional multimodal distributio
 seems to be a good choice for most distributions and 50-50 mixture of the <code class="docutils literal notranslate"><span class="pre">Global</span> <span class="pre">Move</span></code> and
 <code class="docutils literal notranslate"><span class="pre">Local</span> <span class="pre">Move</span></code> seem to perform very well in highly dimensional multimodal distributions when used
 after the burnin period is over.</p>
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -199,7 +197,7 @@ after the burnin period is over.</p>
     </p>
     <p>
         &copy; Copyright 2019-2021, Minas Karamanis.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.<br/>
     </p>
   </div>
 </footer>
