@@ -1,3 +1,4 @@
 sphinx_bootstrap_theme
 nbsphinx
 IPython
+docutils==0.17.1
