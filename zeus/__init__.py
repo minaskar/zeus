@@ -14,7 +14,7 @@ __bibtex__ = """
             }
 """
 
-__version__ = "2.3.1"
+__version__ = "2.4.0"
 __url__ = "https://zeus-mcmc.readthedocs.io"
 __author__ = "Minas Karamanis"
 __email__ = "minaskar@gmail.com"
@@ -26,3 +26,4 @@ from .ensemble import *
 from .parallel import ChainManager
 from .autocorr import AutoCorrTime
 from .plotting import cornerplot
+from . import moves, callbacks

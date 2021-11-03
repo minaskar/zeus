@@ -35,7 +35,7 @@ class EnsembleSampler:
         mu (float): Scale factor (Default value is 1.0), this will be tuned if tune=True.
         maxiter (int): Number of maximum Expansions/Contractions (Default is 10^4).
         pool (bool): External pool of workers to distribute workload to multiple CPUs (default is None).
-        vectorize (bool): If true (default is False), logprob_fn receives not just one point but an array of points, and returns an array of likelihoods.
+        vectorize (bool): If true (default is False), logprob_fn receives not just one point but an array of points, and returns an array of log-probabilities.
         blobs_dtype (list): List containing names and dtypes of blobs metadata e.g. ``[("log_prior", float), ("mean", float)]``. It's useful when you want to save multiple species of metadata. Default is None.
         verbose (bool): If True (default) print log statements.
         check_walkers (bool): If True (default) then check that ``nwalkers >= 2*ndim`` and even.
@@ -61,7 +61,8 @@ class EnsembleSampler:
                  verbose=True,
                  check_walkers=True,
                  shuffle_ensemble=True,
-                 light_mode=False):
+                 light_mode=False,
+                 ):
 
         # Set up logger
         self.logger = logging.getLogger()
@@ -391,7 +392,8 @@ class EnsembleSampler:
                  progress=True,
                  log_prob0=None,
                  blobs0=None,
-                 thin_by=1):
+                 thin_by=1,
+                 callbacks=None):
         '''
         Run MCMC.
 
@@ -407,6 +409,11 @@ class EnsembleSampler:
                 ``thin_by`` samples in the chain, set ``thin_by`` to an
                 integer greater than 1. When this is set, ``iterations *
                 thin_by`` proposals will be made.
+            callbacks (function): Callback function or list with multiple callback actions
+                (e.g. ``[callback_0, callback_1, ...]``) to be evaluated during the run.
+                Sampling terminates when all of the callback functions return ``True``.
+                This option is useful in cases in which sampling needs to terminate once
+                convergence is reached. Examples of callback functions can be found in the API docs.
         '''
         
         for _ in self.sample(start,
@@ -416,8 +423,24 @@ class EnsembleSampler:
                              thin=thin,
                              thin_by=thin_by,
                              progress=progress):
-            pass
-        
+
+            if callbacks is None:
+                pass
+            else:
+                if isinstance(callbacks, list):
+                    # Compute all callbacks
+                    cb_values = [cb(self.iteration, self.get_chain(), self.get_log_prob()) for cb in callbacks]
+                    # Keep only the non-None callbacks
+                    cb_notnan_values = [cb for cb in cb_values if cb != None]
+                    # Check them
+                    if len(cb_notnan_values) < 1:
+                        pass
+                    elif np.all(cb_notnan_values):
+                        break
+                else:
+                    if callbacks(self.iteration, self.get_chain(), self.get_log_prob()):
+                        break
+
 
     def sample(self,
             start,

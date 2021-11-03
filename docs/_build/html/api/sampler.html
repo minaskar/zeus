@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>The Ensemble Slice Sampler &#8212; zeus 2.3.1 documentation</title>
+    <title>The Ensemble Slice Sampler &#8212; zeus 2.4.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -16,7 +16,7 @@
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="The Ensemble Moves" href="moves.html" />
+    <link rel="next" title="The Callbacks" href="callbacks.html" />
     <link rel="prev" title="API Reference" href="../api.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -64,8 +64,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../cookbook.html#mcmc-sampling-recipes">MCMC Sampling recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cookbook.html#parallelisation-recipes">Parallelisation recipes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cookbook.html#saving-progress-recipes">Saving Progress recipes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cookbook.html#autocorrelation-analysis-recipes">Autocorrelation Analysis recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cookbook.html#convergence-diagnostics-and-saving-progress-recipes-new">Convergence Diagnostics and Saving Progress recipes <span class="red">NEW</span></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/normal_distribution.html">Sampling from a multivariate Normal distribution</a></li>
@@ -91,11 +90,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../faq.html#how-many-walkers-should-i-use">How many walkers should I use?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../faq.html#how-should-i-initialize-the-positions-of-the-walkers">How should I initialize the positions of the walkers?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../faq.html#how-long-should-i-run-zeus">How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#what-can-i-do-if-the-first-few-iterations-take-too-long-to-complete">What can I do if the first few iterations take too long to complete?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#is-there-any-way-to-reduce-the-computational-cost-per-iteration">Is there any way to reduce the computational cost per iteration?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../faq.html#what-are-the-moves-and-which-one-should-i-use">What are the <code class="docutils literal notranslate"><span class="pre">Moves</span></code> and which one should I use?</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">The Ensemble Slice Sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="callbacks.html">The Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="moves.html">The Ensemble Moves</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autocorr.html">Autocorrelation Time Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="parallel.html">The Chain Manager &amp; MPI Tools</a></li>
@@ -158,7 +160,7 @@ When running, the sampler will randomly select a move from this list (optionally
 <li><p><strong>mu</strong> (<em>float</em>) – Scale factor (Default value is 1.0), this will be tuned if tune=True.</p></li>
 <li><p><strong>maxiter</strong> (<em>int</em>) – Number of maximum Expansions/Contractions (Default is 10^4).</p></li>
 <li><p><strong>pool</strong> (<em>bool</em>) – External pool of workers to distribute workload to multiple CPUs (default is None).</p></li>
-<li><p><strong>vectorize</strong> (<em>bool</em>) – If true (default is False), logprob_fn receives not just one point but an array of points, and returns an array of likelihoods.</p></li>
+<li><p><strong>vectorize</strong> (<em>bool</em>) – If true (default is False), logprob_fn receives not just one point but an array of points, and returns an array of log-probabilities.</p></li>
 <li><p><strong>blobs_dtype</strong> (<em>list</em>) – List containing names and dtypes of blobs metadata e.g. <code class="docutils literal notranslate"><span class="pre">[(&quot;log_prior&quot;,</span> <span class="pre">float),</span> <span class="pre">(&quot;mean&quot;,</span> <span class="pre">float)]</span></code>. It’s useful when you want to save multiple species of metadata. Default is None.</p></li>
 <li><p><strong>verbose</strong> (<em>bool</em>) – If True (default) print log statements.</p></li>
 <li><p><strong>check_walkers</strong> (<em>bool</em>) – If True (default) then check that <code class="docutils literal notranslate"><span class="pre">nwalkers</span> <span class="pre">&gt;=</span> <span class="pre">2*ndim</span></code> and even.</p></li>
@@ -322,7 +324,7 @@ blob: The list of meta data returned by the <code class="docutils literal notran
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zeus.EnsembleSampler.run_mcmc">
-<span class="sig-name descname"><span class="pre">run_mcmc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_prob0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blobs0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thin_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.run_mcmc" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">run_mcmc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_prob0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blobs0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thin_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callbacks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.EnsembleSampler.run_mcmc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run MCMC.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -338,6 +340,11 @@ from the last known position of the walkers.</p></li>
 <code class="docutils literal notranslate"><span class="pre">thin_by</span></code> samples in the chain, set <code class="docutils literal notranslate"><span class="pre">thin_by</span></code> to an
 integer greater than 1. When this is set, <code class="docutils literal notranslate"><span class="pre">iterations</span> <span class="pre">*</span>
 <span class="pre">thin_by</span></code> proposals will be made.</p></li>
+<li><p><strong>callbacks</strong> (<em>function</em>) – Callback function or list with multiple callback actions
+(e.g. <code class="docutils literal notranslate"><span class="pre">[callback_0,</span> <span class="pre">callback_1,</span> <span class="pre">...]</span></code>) to be evaluated during the run.
+Sampling terminates when all of the callback functions return <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+This option is useful in cases in which sampling needs to terminate once
+convergence is reached. Examples of callback functions can be found in the API docs.</p></li>
 </ul>
 </dd>
 </dl>

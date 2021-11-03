@@ -6,7 +6,8 @@
 - Efficient *Markov Chain Monte Carlo (MCMC)*,
 - Black-box inference, no hand-tuning,
 - Excellent performance in terms of autocorrelation time and convergence rate,
-- Scale to multiple CPUs without any extra effort.
+- Scale to multiple CPUs without any extra effort,
+- Automated Convergence diagnostics.
 
 [![GitHub](https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue)](https://github.com/minaskar/zeus)
 [![arXiv](https://img.shields.io/badge/arXiv-2002.06212-red)](https://arxiv.org/abs/2002.06212)

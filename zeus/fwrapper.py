@@ -22,7 +22,7 @@ class _FunctionWrapper(object):
     def __call__(self, x):
         try:
             return self.f(x, *self.args, **self.kwargs)
-        except:  # pragma: no cover
+        except:
             import traceback
 
             print("zeus: Exception while calling your likelihood function:")

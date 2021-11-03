@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Frequently Asked Questions &#8212; zeus 2.3.1 documentation</title>
+    <title>Frequently Asked Questions &#8212; zeus 2.4.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -17,7 +17,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API Reference" href="api.html" />
-    <link rel="prev" title="Blobs and Metadata" href="notebooks/blobs.html" />
+    <link rel="prev" title="Automated Convergence Diagnostics using the callback interface" href="notebooks/convergence.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -64,8 +64,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cookbook.html">Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="cookbook.html#mcmc-sampling-recipes">MCMC Sampling recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cookbook.html#parallelisation-recipes">Parallelisation recipes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cookbook.html#saving-progress-recipes">Saving Progress recipes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cookbook.html#autocorrelation-analysis-recipes">Autocorrelation Analysis recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cookbook.html#convergence-diagnostics-and-saving-progress-recipes-new">Convergence Diagnostics and Saving Progress recipes <span class="red">NEW</span></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/normal_distribution.html">Sampling from a multivariate Normal distribution</a></li>
@@ -91,11 +90,14 @@
 <li class="toctree-l2"><a class="reference internal" href="#how-many-walkers-should-i-use">How many walkers should I use?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#how-should-i-initialize-the-positions-of-the-walkers">How should I initialize the positions of the walkers?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#how-long-should-i-run-zeus">How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-can-i-do-if-the-first-few-iterations-take-too-long-to-complete">What can I do if the first few iterations take too long to complete?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#is-there-any-way-to-reduce-the-computational-cost-per-iteration">Is there any way to reduce the computational cost per iteration?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#what-are-the-moves-and-which-one-should-i-use">What are the <code class="docutils literal notranslate"><span class="pre">Moves</span></code> and which one should I use?</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/sampler.html">The Ensemble Slice Sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/callbacks.html">The Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/moves.html">The Ensemble Moves</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/autocorr.html">Autocorrelation Time Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/parallel.html">The Chain Manager &amp; MPI Tools</a></li>
@@ -138,7 +140,7 @@
 <section id="what-is-the-acceptance-rate-of-zeus">
 <h2>What is the acceptance rate of <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?<a class="headerlink" href="#what-is-the-acceptance-rate-of-zeus" title="Permalink to this headline">¶</a></h2>
 <p>Unlike most MCMC methods, <code class="docutils literal notranslate"><span class="pre">zeus</span></code> acceptance rate isn’t varying during a run. As a matter of fact,
-its acceptance rate is identically 1 always. This is because of the Slice Sampler at its core.</p>
+its acceptance rate is identically 1, always. This is because of the Slice Sampler at its core.</p>
 </section>
 <section id="why-should-i-use-zeus-instead-of-other-mcmc-samplers">
 <h2>Why should I use zeus instead of other MCMC samplers?<a class="headerlink" href="#why-should-i-use-zeus-instead-of-other-mcmc-samplers" title="Permalink to this headline">¶</a></h2>
@@ -150,25 +152,41 @@ dimensionality and handle challenging distributions better.</p>
 </section>
 <section id="what-are-the-walkers">
 <h2>What are the walkers?<a class="headerlink" href="#what-are-the-walkers" title="Permalink to this headline">¶</a></h2>
-<p>Walkers are the members of the ensemble and the explore the parameter space in parallel. Collectively,
-the converge to the target distribution.</p>
+<p>Walkers are the members of the ensemble. They are interacting parallel chains which collectively explore
+the posterior mass.</p>
 </section>
 <section id="how-many-walkers-should-i-use">
 <h2>How many walkers should I use?<a class="headerlink" href="#how-many-walkers-should-i-use" title="Permalink to this headline">¶</a></h2>
-<p>At least twice the number of parameters of your problem. A good rule of thump is to use approximately
-2.5 times the number of parameters. If your distribution has multiple modes you may want to increase
+<p>At least twice the number of parameters of your problem. A good rule of thump is to use between 2 and 4
+times the number of parameters. If your distribution has multiple modes/peaks you may want to increase
 the number of walkers.</p>
 </section>
 <section id="how-should-i-initialize-the-positions-of-the-walkers">
 <h2>How should I initialize the positions of the walkers?<a class="headerlink" href="#how-should-i-initialize-the-positions-of-the-walkers" title="Permalink to this headline">¶</a></h2>
 <p>A good practice seems to be to initialize the walkers from a small ball close to the <em>Maximum a Posteriori</em>
 estimate. After a few autocorrelation times the walkers would have explored the rest of the usefull regions
-of the parameter space (a.k.a. the typical set), producing a great number of independent samples.</p>
+of the parameter space (i.e. the typical set), producing a great number of independent samples.</p>
 </section>
 <section id="how-long-should-i-run-zeus">
 <h2>How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?<a class="headerlink" href="#how-long-should-i-run-zeus" title="Permalink to this headline">¶</a></h2>
 <p>You don’t have to run <code class="docutils literal notranslate"><span class="pre">zeus</span></code> for very long. If your goal is to produce 2D/1D contours and/or 1-sigma/2-sigma
-constraints for your parameters, running <code class="docutils literal notranslate"><span class="pre">zeus</span></code> for a few autocorrelation times (e.g. 10) is more than enough.</p>
+constraints for your parameters, running <code class="docutils literal notranslate"><span class="pre">zeus</span></code> for a few autocorrelation times (e.g. 10) is more than enough.
+You can also use the implemented callback functions (see Cookbook and API) to automate the termination of a run.</p>
+</section>
+<section id="what-can-i-do-if-the-first-few-iterations-take-too-long-to-complete">
+<h2>What can I do if the first few iterations take too long to complete?<a class="headerlink" href="#what-can-i-do-if-the-first-few-iterations-take-too-long-to-complete" title="Permalink to this headline">¶</a></h2>
+<p>This usually occurs when the walkers are initialised closed to each other. During the  first <code class="docutils literal notranslate"><span class="pre">10-100</span></code> iterations
+<code class="docutils literal notranslate"><span class="pre">zeus</span></code> is tuning its proposal scale <code class="docutils literal notranslate"><span class="pre">mu</span></code>. During that time <code class="docutils literal notranslate"><span class="pre">zeus</span></code> may do more model evaluations than usual.
+Tuning of <code class="docutils literal notranslate"><span class="pre">mu</span></code> is faster if initialised from a large value. We thus recommend to set <code class="docutils literal notranslate"><span class="pre">mu</span></code> to an large value
+(e.g. <code class="docutils literal notranslate"><span class="pre">mu=1e3</span></code>) initially in the <code class="docutils literal notranslate"><span class="pre">EnsembleSampler</span></code>.</p>
+</section>
+<section id="is-there-any-way-to-reduce-the-computational-cost-per-iteration">
+<h2>Is there any way to reduce the computational cost per iteration?<a class="headerlink" href="#is-there-any-way-to-reduce-the-computational-cost-per-iteration" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">zeus</span></code>’s power originates in its flexibility. During each iteration, the walkers move along straight lines (i.e. slices)
+that cross the posterior mass. The construction of a slice involves two steps, an initial expanding/stepping-out and a subsequent
+shrinking procedure. One can decrease the computational cost per iteration by forcing <code class="docutils literal notranslate"><span class="pre">zeus</span></code> to conduct no expansions. This is
+achieved by setting <code class="docutils literal notranslate"><span class="pre">light_mode=True</span></code> in the <code class="docutils literal notranslate"><span class="pre">EnsembleSampler</span></code> at the cost of reduced flexibility. If the target distribution
+is close to normal/Gaussian one then this procedure can cut the cost to half.</p>
 </section>
 <section id="what-are-the-moves-and-which-one-should-i-use">
 <h2>What are the <code class="docutils literal notranslate"><span class="pre">Moves</span></code> and which one should I use?<a class="headerlink" href="#what-are-the-moves-and-which-one-should-i-use" title="Permalink to this headline">¶</a></h2>

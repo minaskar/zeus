@@ -37,27 +37,33 @@ Parallelisation recipes
 
 .. _MPI and ChainManager: notebooks/MPI.ipynb
 
+.. raw:: html
 
-Saving Progress recipes
-=======================
+    <style>
+        .red {color:red; font-weight:bold;}
+        .b {color:#0000FF; background-color:white;}
+    </style>
+
+.. role:: red
+
+Convergence Diagnostics and Saving Progress recipes :red:`NEW`
+==============================================================
+
+- `Automated Convergence Diagnostics using the callback interface`_ :red:`NEW`
+    In this recipe we are going to use the callback interface to monitor convergence and stop sampling automatically.
+
+- `Saving progress to disk using h5py`_ :red:`NEW`
+    In this recipe we are going to use the callback interface to save the samples and their corresponding log-probability values in a ``.h5`` file.
 
 - `Tracking metadata using the blobs interface`_
     We introduce the blobs interface. An easy way for the user to track arbitrary metadata for every sample of the chain.
 
+.. _Automated Convergence Diagnostics using the callback interface: notebooks/convergence.ipynb
+
+.. _Saving progress to disk using h5py: notebooks/progress.ipynb
+
 .. _Tracking metadata using the blobs interface: notebooks/blobs.ipynb
 
-- Save progress using h5py. (soon)
-    Save chains into a file.
-
-
-
-Autocorrelation Analysis recipes
-================================
-
-- Measure the autocorrelation time and effective sample size of a chain (soon)
-    This recipe demonstrates how to compute the autocorrelation time of a chain (i.e. a measure of
-    the statistical independence of the samples). Having this we can also calculate the effective sample
-    size of the chain.
 
 
 .. toctree::
@@ -70,3 +76,5 @@ Autocorrelation Analysis recipes
     notebooks/multiprocessing.ipynb
     notebooks/MPI.ipynb
     notebooks/blobs.ipynb
+    notebooks/progress.ipynb
+    notebooks/convergence.ipynb

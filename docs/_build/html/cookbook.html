@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Cookbook &#8212; zeus 2.3.1 documentation</title>
+    <title>Cookbook &#8212; zeus 2.4.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -64,8 +64,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#mcmc-sampling-recipes">MCMC Sampling recipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#parallelisation-recipes">Parallelisation recipes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#saving-progress-recipes">Saving Progress recipes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#autocorrelation-analysis-recipes">Autocorrelation Analysis recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#convergence-diagnostics-and-saving-progress-recipes-new">Convergence Diagnostics and Saving Progress recipes <span class="red">NEW</span></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/normal_distribution.html">Sampling from a multivariate Normal distribution</a></li>
@@ -96,6 +95,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/sampler.html">The Ensemble Slice Sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/callbacks.html">The Callbacks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/moves.html">The Ensemble Moves</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/autocorr.html">Autocorrelation Time Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/parallel.html">The Chain Manager &amp; MPI Tools</a></li>
@@ -172,31 +172,25 @@ efficiently from challenging high-dimensional multimodal distributions.</p>
 </dl>
 </li>
 </ul>
-</section>
-<section id="saving-progress-recipes">
-<h2>Saving Progress recipes<a class="headerlink" href="#saving-progress-recipes" title="Permalink to this headline">¶</a></h2>
+<style>
+    .red {color:red; font-weight:bold;}
+    .b {color:#0000FF; background-color:white;}
+</style></section>
+<section id="convergence-diagnostics-and-saving-progress-recipes-new">
+<h2>Convergence Diagnostics and Saving Progress recipes <span class="red">NEW</span><a class="headerlink" href="#convergence-diagnostics-and-saving-progress-recipes-new" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li><dl class="simple">
+<dt><a class="reference internal" href="notebooks/convergence.html"><span class="doc">Automated Convergence Diagnostics using the callback interface</span></a> <span class="red">NEW</span></dt><dd><p>In this recipe we are going to use the callback interface to monitor convergence and stop sampling automatically.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="notebooks/progress.html"><span class="doc">Saving progress to disk using h5py</span></a> <span class="red">NEW</span></dt><dd><p>In this recipe we are going to use the callback interface to save the samples and their corresponding log-probability values in a <code class="docutils literal notranslate"><span class="pre">.h5</span></code> file.</p>
+</dd>
+</dl>
+</li>
 <li><dl class="simple">
 <dt><a class="reference internal" href="notebooks/blobs.html"><span class="doc">Tracking metadata using the blobs interface</span></a></dt><dd><p>We introduce the blobs interface. An easy way for the user to track arbitrary metadata for every sample of the chain.</p>
-</dd>
-</dl>
-</li>
-</ul>
-<ul class="simple">
-<li><dl class="simple">
-<dt>Save progress using h5py. (soon)</dt><dd><p>Save chains into a file.</p>
-</dd>
-</dl>
-</li>
-</ul>
-</section>
-<section id="autocorrelation-analysis-recipes">
-<h2>Autocorrelation Analysis recipes<a class="headerlink" href="#autocorrelation-analysis-recipes" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><dl class="simple">
-<dt>Measure the autocorrelation time and effective sample size of a chain (soon)</dt><dd><p>This recipe demonstrates how to compute the autocorrelation time of a chain (i.e. a measure of
-the statistical independence of the samples). Having this we can also calculate the effective sample
-size of the chain.</p>
 </dd>
 </dl>
 </li>

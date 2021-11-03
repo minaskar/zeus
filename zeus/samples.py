@@ -4,7 +4,7 @@ class samples:
     '''
     Creates object that stores the samples.
     Args:
-        ndim (int): Number of dimensions/paramters
+        ndim (int): Number of dimensions/parameters
         nwalkers (int): Number of walkers.
 
     '''
@@ -62,7 +62,7 @@ class samples:
         Returns:
             3D array of shape (nsteps,nwalkers,ndim) containing the samples.
         """
-        return self.samples
+        return self.samples[:self.index]
 
 
     @property
@@ -73,8 +73,7 @@ class samples:
         Returns:
             The total number of samples per walker.
         """
-        length, _, _ = np.shape(self.chain)
-        return length
+        return self.index
 
 
     def flatten(self, discard=0, thin=1):
@@ -88,7 +87,7 @@ class samples:
         Returns:
             2D object containing the ndim flattened chains.
         """
-        return self.chain[discard::thin,:,:].reshape((-1,self.ndim), order='F')
+        return self.chain[discard:self.index:thin,:,:].reshape((-1,self.ndim), order='F')
 
 
     @property
@@ -99,7 +98,7 @@ class samples:
         Returns:
             2D array of shape (nwalkers,nsteps) containing the log-probabilities.
         """
-        return self.logp
+        return self.logp[:self.index]
 
 
     def flatten_logprob(self, discard=0, thin=1):
@@ -113,7 +112,7 @@ class samples:
         Returns:
             1D object containing the logprob of the flattened chains.
         """
-        return self.logprob[discard::thin,:].reshape((-1,), order='F')
+        return self.logprob[discard:self.index:thin,:].reshape((-1,), order='F')
 
 
     def flatten_blobs(self, discard=0, thin=1):
@@ -127,4 +126,4 @@ class samples:
         Returns:
             (structured) NumPy array containing the blobs metadata.
         """
-        return self.blobs[discard::thin,:].reshape((-1,), order='F')
+        return self.blobs[discard:self.index:thin,:].reshape((-1,), order='F')

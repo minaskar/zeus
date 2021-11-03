@@ -4,13 +4,23 @@
     :scale: 30 %
     :align: center
 
+.. raw:: html
+
+    <style>
+        .red {color:red; font-weight:bold;}
+        .b {color:#0000FF; background-color:white;}
+    </style>
+
+.. role:: red
+
 **zeus is a Python implementation of the Ensemble Slice Sampling method.**
 
 - Fast & Robust *Bayesian Inference*,
 - Efficient *Markov Chain Monte Carlo (MCMC)*,
 - Black-box inference, no hand-tuning,
 - Excellent performance in terms of autocorrelation time and convergence rate,
-- Scale to multiple CPUs without any extra effort.
+- Scale to multiple CPUs without any extra effort,
+- Automated Convergence diagnostics. :red:`NEW`
 
 
 .. image:: https://img.shields.io/badge/GitHub-minaskar%2Fzeus-blue
@@ -105,6 +115,12 @@ Copyright 2019-2021 Minas Karamanis and contributors.
 
 Changelog
 =========
+
+**2.4.0 (xx/11/21)**
+
+- Introduced callback interface.
+- Added convergence diagnostics.
+- Added ``H5DF`` support.
 
 **2.3.1 (03/08/21)**
 
