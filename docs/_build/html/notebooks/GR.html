@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Parallelizing sampling using MPI &#8212; zeus 2.4.1 documentation</title>
+    <title>Parallel sampling using MPI and Gelman-Rubin convergence diagnostics &#8212; zeus 2.4.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -18,8 +18,8 @@
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Blobs and Metadata" href="blobs.html" />
-    <link rel="prev" title="Parallelizing sampling using multiprocessing" href="multiprocessing.html" />
+    <link rel="next" title="Frequently Asked Questions" href="../faq.html" />
+    <link rel="prev" title="Automated Convergence Diagnostics using the callback interface" href="convergence.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -78,8 +78,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="multiprocessing.html">Parallelizing sampling using multiprocessing</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Parallelizing sampling using MPI</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Save-this-as-‘test_mpi.py’">Save this as ‘test_mpi.py’</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MPI.html">Parallelizing sampling using MPI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="MPI.html#Save-this-as-‘test_mpi.py’">Save this as ‘test_mpi.py’</a></li>
 </ul>
 </li>
 </ul>
@@ -137,39 +137,42 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <section id="Parallelizing-sampling-using-MPI">
-<h1>Parallelizing sampling using MPI<a class="headerlink" href="#Parallelizing-sampling-using-MPI" title="Permalink to this headline">¶</a></h1>
+  <section id="Parallel-sampling-using-MPI-and-Gelman-Rubin-convergence-diagnostics">
+<h1>Parallel sampling using MPI and Gelman-Rubin convergence diagnostics<a class="headerlink" href="#Parallel-sampling-using-MPI-and-Gelman-Rubin-convergence-diagnostics" title="Permalink to this headline">¶</a></h1>
 <p>To take advantage of modern high performance computing facilities such as clusters with hundreds of CPUs we recommend to use <code class="docutils literal notranslate"><span class="pre">MPI</span></code> instead of <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code>.</p>
-<p>To do this we will use the <code class="docutils literal notranslate"><span class="pre">ChainManager</span></code> included in <code class="docutils literal notranslate"><span class="pre">zeus</span></code>.</p>
+<p>To do this we will use the <code class="docutils literal notranslate"><span class="pre">ChainManager</span></code> included in <code class="docutils literal notranslate"><span class="pre">zeus</span></code>. We will also use the <code class="docutils literal notranslate"><span class="pre">ParallelSplitRCallback</span></code> function to check the Gelman-Rubing convergence diagnostic during the run and terminate sampling automatically.</p>
 <p>In order to run this example, copy and paste the following script into a file called ‘test_mpi.py’ and run the following command in the terminal:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mpiexec -n 8 python3 test_mpi.py
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mpiexec -n 8 python3 test_mpi_gr.py
 </pre></div>
 </div>
 <p>This will spawn 8 <code class="docutils literal notranslate"><span class="pre">MPI</span></code> processes and divide them into 2 independent chains of 10 walkers each. Unfortunately <code class="docutils literal notranslate"><span class="pre">MPI</span></code> is not compatible with <code class="docutils literal notranslate"><span class="pre">Jupyter</span></code> notebooks.</p>
-<section id="Save-this-as-‘test_mpi.py’">
-<h2>Save this as ‘test_mpi.py’<a class="headerlink" href="#Save-this-as-‘test_mpi.py’" title="Permalink to this headline">¶</a></h2>
+<section id="Save-this-as-‘test_mpi_gr.py’">
+<h2>Save this as ‘test_mpi_gr.py’<a class="headerlink" href="#Save-this-as-‘test_mpi_gr.py’" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">zeus</span>
 <span class="kn">from</span> <span class="nn">zeus</span> <span class="kn">import</span> <span class="n">ChainManager</span>
 
-<span class="n">ndim</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">ndim</span> <span class="o">=</span> <span class="mi">20</span>
 <span class="n">nwalkers</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">ndim</span>
-<span class="n">nsteps</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">nsteps</span> <span class="o">=</span> <span class="mi">10000</span>
 <span class="n">nchains</span> <span class="o">=</span> <span class="mi">2</span>
 
 <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mf">2.0</span><span class="p">)</span>
 
-<span class="n">start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
+<span class="n">start</span> <span class="o">=</span> <span class="mf">1e-2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>  <span class="o">+</span> <span class="mf">20.0</span>
 
 
 <span class="k">with</span> <span class="n">ChainManager</span><span class="p">(</span><span class="n">nchains</span><span class="p">)</span> <span class="k">as</span> <span class="n">cm</span><span class="p">:</span>
     <span class="n">rank</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">get_rank</span>
 
+    <span class="n">cb</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">ParallelSplitRCallback</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">chainmanager</span><span class="o">=</span><span class="n">cm</span><span class="p">)</span>
     <span class="n">sampler</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_prob</span><span class="p">,</span> <span class="n">pool</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">get_pool</span><span class="p">)</span>
-    <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
+    <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="n">cb</span><span class="p">)</span>
     <span class="n">chain</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">(</span><span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">discard</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;R =&#39;</span><span class="p">,</span> <span class="n">cb</span><span class="o">.</span><span class="n">estimates</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;chain_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">rank</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;.npy&#39;</span><span class="p">,</span> <span class="n">chain</span><span class="p">)</span>
 </pre></div>
 </div>

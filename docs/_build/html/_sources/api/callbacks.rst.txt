@@ -22,6 +22,13 @@ Split-R Callback
     :members:
 
 
+Parallel Split-R Callback
+=========================
+
+.. autoclass:: zeus.callbacks.ParallelSplitRCallback
+    :members:
+
+
 Minimum Iterations Callback
 ===========================
 

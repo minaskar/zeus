@@ -116,7 +116,11 @@ Copyright 2019-2021 Minas Karamanis and contributors.
 Changelog
 =========
 
-**2.4.0 (xx/11/21)**
+**2.4.1 (17/11/21)**
+
+- Introduced ``ParallelSplitRCallback`` callback function for checking Gelman-Rubin statistics during ``MPI`` runs.
+
+**2.4.0 (01/11/21)**
 
 - Introduced callback interface.
 - Added convergence diagnostics.

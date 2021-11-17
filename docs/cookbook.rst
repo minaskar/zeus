@@ -55,12 +55,17 @@ Convergence Diagnostics and Saving Progress recipes :red:`NEW`
 - `Saving progress to disk using h5py`_ :red:`NEW`
     In this recipe we are going to use the callback interface to save the samples and their corresponding log-probability values in a ``.h5`` file.
 
+- `Parallel sampling using MPI and Gelman-Rubin convergence diagnostics`_ :red:`NEW`
+    In this recipe we are going to use the ChainManager to run zeus in parallel using MPI and terminate sampling automatically using Gelman-Rubin diagnostics.
+
 - `Tracking metadata using the blobs interface`_
     We introduce the blobs interface. An easy way for the user to track arbitrary metadata for every sample of the chain.
 
 .. _Automated Convergence Diagnostics using the callback interface: notebooks/convergence.ipynb
 
 .. _Saving progress to disk using h5py: notebooks/progress.ipynb
+
+.. _Parallel sampling using MPI and Gelman-Rubin convergence diagnostics: notebooks/GR.ipynb
 
 .. _Tracking metadata using the blobs interface: notebooks/blobs.ipynb
 
@@ -78,3 +83,4 @@ Convergence Diagnostics and Saving Progress recipes :red:`NEW`
     notebooks/blobs.ipynb
     notebooks/progress.ipynb
     notebooks/convergence.ipynb
+    notebooks/GR.ipynb

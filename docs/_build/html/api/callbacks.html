@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>The Callbacks &#8212; zeus 2.4.0 documentation</title>
+    <title>The Callbacks &#8212; zeus 2.4.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -90,6 +90,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../faq.html#how-many-walkers-should-i-use">How many walkers should I use?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../faq.html#how-should-i-initialize-the-positions-of-the-walkers">How should I initialize the positions of the walkers?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../faq.html#how-long-should-i-run-zeus">How long should I run <code class="docutils literal notranslate"><span class="pre">zeus</span></code>?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#what-can-i-do-if-the-first-few-iterations-take-too-long-to-complete">What can I do if the first few iterations take too long to complete?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#is-there-any-way-to-reduce-the-computational-cost-per-iteration">Is there any way to reduce the computational cost per iteration?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../faq.html#what-are-the-moves-and-which-one-should-i-use">What are the <code class="docutils literal notranslate"><span class="pre">Moves</span></code> and which one should I use?</a></li>
 </ul>
 </li>
@@ -170,20 +172,42 @@ reached along with the other criteria. Default is <code class="docutils literal 
 <h2>Split-R Callback<a class="headerlink" href="#split-r-callback" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="zeus.callbacks.SplitRCallback">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeus.callbacks.</span></span><span class="sig-name descname"><span class="pre">SplitRCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ncheck</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsplits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trigger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.callbacks.SplitRCallback" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeus.callbacks.</span></span><span class="sig-name descname"><span class="pre">SplitRCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ncheck</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsplits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trigger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.callbacks.SplitRCallback" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Split-R Callback class checks the Gelman-Rubin criterion during the run by splitting the chain
 into multiple parts and terminates sampling if the Split-R coefficient is close to unity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ncheck</strong> (<em>int</em>) – The number of steps after which the IAT is estimated and the tests are performed.
+<li><p><strong>ncheck</strong> (<em>int</em>) – The number of steps after which the Gelman-Rubin statistics is estimated and the tests are performed.
 Default is <code class="docutils literal notranslate"><span class="pre">ncheck=100</span></code>.</p></li>
-<li><p><strong>dact</strong> (<em>float</em>) – Threshold of the rate of change of IAT. Sampling terminates once this threshold is
-reached along with the other criteria. Default is <code class="docutils literal notranslate"><span class="pre">dact=0.01</span></code>.</p></li>
-<li><p><strong>nact</strong> (<em>float</em>) – Minimum lenght of the chain as a mutiple of the IAT. Sampling terminates once this threshold is
-reached along with the other criteria. Default is <code class="docutils literal notranslate"><span class="pre">nact=10</span></code>.</p></li>
+<li><p><strong>epsilon</strong> (<em>float</em>) – Threshold of the Split-R value. Sampling terminates when <code class="docutils literal notranslate"><span class="pre">|R-1|&lt;epsilon</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">0.05</span></code></p></li>
+<li><p><strong>nsplits</strong> (<em>int</em>) – Split each chain into this many pieces. Default is <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p></li>
 <li><p><strong>discard</strong> (<em>float</em>) – Percentage of chain to discard prior to estimating the IAT. Default is <code class="docutils literal notranslate"><span class="pre">discard=0.5</span></code>.</p></li>
 <li><p><strong>trigger</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default) then terminatate sampling once converged, else just monitor statistics.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="parallel-split-r-callback">
+<h2>Parallel Split-R Callback<a class="headerlink" href="#parallel-split-r-callback" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="zeus.callbacks.ParallelSplitRCallback">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeus.callbacks.</span></span><span class="sig-name descname"><span class="pre">ParallelSplitRCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ncheck</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsplits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trigger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chainmanager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.callbacks.ParallelSplitRCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Parallel Split-R Callback class extends the functionality of the Split-R Callback to more than one CPUs by
+checking the Gelman-Rubin criterion during the run by splitting the chain into multiple parts and combining different
+parts from parallel chains and terminates sampling if the Split-R coefficient is close to unity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ncheck</strong> (<em>int</em>) – The number of steps after which the Gelman-Rubin statistics is estimated and the tests are performed.
+Default is <code class="docutils literal notranslate"><span class="pre">ncheck=100</span></code>.</p></li>
+<li><p><strong>epsilon</strong> (<em>float</em>) – Threshold of the Split-R value. Sampling terminates when <code class="docutils literal notranslate"><span class="pre">|R-1|&lt;epsilon</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">0.05</span></code></p></li>
+<li><p><strong>nsplits</strong> (<em>int</em>) – Split each chain into this many pieces. Default is <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p></li>
+<li><p><strong>discard</strong> (<em>float</em>) – Percentage of chain to discard prior to estimating the IAT. Default is <code class="docutils literal notranslate"><span class="pre">discard=0.5</span></code>.</p></li>
+<li><p><strong>trigger</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default) then terminatate sampling once converged, else just monitor statistics.</p></li>
+<li><p><strong>chainmanager</strong> (<em>ChainManager instance</em>) – The <code class="docutils literal notranslate"><span class="pre">ChainManager</span></code> used to parallelise the sampling process.</p></li>
 </ul>
 </dd>
 </dl>
