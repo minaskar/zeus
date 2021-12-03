@@ -271,8 +271,6 @@ class ChainManager:
         if self.pool is not None:
             self.pool.close()
 
-        return True
-
 
     @property
     def get_rank(self):
