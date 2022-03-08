@@ -37,7 +37,7 @@ class AutocorrelationCallback:
         self.estimates = []
         self.old_tau = np.inf
 
-    def __call__(self, i, x, y):
+    def __call__(self, i, x, y, b):
         """
         Method that calls the callback function.
 
@@ -46,6 +46,8 @@ class AutocorrelationCallback:
             x (array): Numpy array containing the chain elements up to iteration i for every walker.
             y (array): Numpy array containing the log-probability values of all chain elements up to
                 iteration i for every walker.
+            b (array): Numpy structured array containing the chain blobs up to iteration i for every
+                walker
         Returns:
             True if the criteria are satisfied and sampling terminates or False if the criteria are
                 not satisfied and sampling continues.
@@ -95,7 +97,7 @@ class SplitRCallback:
 
         self.estimates = []
 
-    def __call__(self, i, x, y):
+    def __call__(self, i, x, y, b):
         """
         Method that calls the callback function.
 
@@ -104,6 +106,8 @@ class SplitRCallback:
             x (array): Numpy array containing the chain elements up to iteration i for every walker.
             y (array): Numpy array containing the log-probability values of all chain elements up to
                 iteration i for every walker.
+            b (array): Numpy structured array containing the chain blobs up to iteration i for every
+                walker
         Returns:
             True if the criteria are satisfied and sampling terminates or False if the criteria are
                 not satisfied and sampling continues.
@@ -165,7 +169,7 @@ class MinIterCallback:
     def __init__(self, nmin=1000):
         self.nmin = nmin 
 
-    def __call__(self, i, x, y):
+    def __call__(self, i, x, y, b):
         """
         Method that calls the callback function.
 
@@ -174,6 +178,8 @@ class MinIterCallback:
             x (array): Numpy array containing the chain elements up to iteration i for every walker.
             y (array): Numpy array containing the log-probability values of all chain elements up to
                 iteration i for every walker.
+            b (array): Numpy structured array containing the chain blobs up to iteration i for every
+                walker
         Returns:
             True if the criteria are satisfied and sampling terminates or False if the criteria are
                 not satisfied and sampling continues.
@@ -217,7 +223,7 @@ class ParallelSplitRCallback:
         self.cm = chainmanager
 
 
-    def __call__(self, i, x, y):
+    def __call__(self, i, x, y, b):
         """
         Method that calls the callback function.
 
@@ -226,6 +232,8 @@ class ParallelSplitRCallback:
             x (array): Numpy array containing the chain elements up to iteration i for every walker.
             y (array): Numpy array containing the log-probability values of all chain elements up to
                 iteration i for every walker.
+            b (array): Numpy structured array containing the chain blobs up to iteration i for every
+                walker
         Returns:
             True if the criteria are satisfied and sampling terminates or False if the criteria are
                 not satisfied and sampling continues.
@@ -301,7 +309,7 @@ class SaveProgressCallback:
         self.ncheck = ncheck
 
 
-    def __call__(self, i, x, y):
+    def __call__(self, i, x, y, b):
         """
         Method that calls the callback function.
 
@@ -310,6 +318,8 @@ class SaveProgressCallback:
             x (array): Numpy array containing the chain elements up to iteration i for every walker.
             y (array): Numpy array containing the log-probability values of all chain elements up to
                 iteration i for every walker.
+            b (array): Numpy structured array containing the chain blobs up to iteration i for every
+                walker
         Returns:
             True if the criteria are satisfied and sampling terminates or False if the criteria are
                 not satisfied and sampling continues.
@@ -317,23 +327,34 @@ class SaveProgressCallback:
         """
         if i % self.ncheck == 0:
             if self.initialised:
-                self.__save(x[i-self.ncheck:], y[i-self.ncheck:])
+                if b is not None:
+                    self.__save(x[i-self.ncheck:], y[i-self.ncheck:], b[i-self.ncheck:])
+                else:
+                    self.__save(x[i-self.ncheck:], y[i-self.ncheck:], None)
             else:
-                self.__initialize_and_save(x[i-self.ncheck:], y[i-self.ncheck:])
+                if b is not None:
+                    self.__initialize_and_save(x[i-self.ncheck:], y[i-self.ncheck:], b[i-self.ncheck:])
+                else:
+                    self.__initialize_and_save(x[i-self.ncheck:], y[i-self.ncheck:], None)
 
         return None
 
 
-    def __save(self, x, y):
+    def __save(self, x, y, b):
         with h5py.File(self.directory, 'a') as hf:
             hf['samples'].resize((hf['samples'].shape[0] + x.shape[0]), axis = 0)
             hf['samples'][-x.shape[0]:] = x
             hf['logprob'].resize((hf['logprob'].shape[0] + y.shape[0]), axis = 0)
             hf['logprob'][-y.shape[0]:] = y
+            if b is not None:
+                hf['blobs'].resize((hf['blobs'].shape[0] + b.shape[0]), axis = 0)
+                hf['blobs'][-b.shape[0]:] = b
 
 
-    def __initialize_and_save(self, x, y):
+    def __initialize_and_save(self, x, y, b):
         with h5py.File(self.directory, 'w') as hf:
             hf.create_dataset('samples', data=x, compression="gzip", chunks=True, maxshape=(None,)+x.shape[1:])
             hf.create_dataset('logprob', data=y, compression="gzip", chunks=True, maxshape=(None,)+y.shape[1:]) 
+            if b is not None:
+                hf.create_dataset('blobs', data=b, compression="gzip", chunks=True, maxshape=(None,)+b.shape[1:])
         self.initialised  = True

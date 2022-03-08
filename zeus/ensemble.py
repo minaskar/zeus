@@ -427,9 +427,13 @@ class EnsembleSampler:
             if callbacks is None:
                 pass
             else:
+                if hasattr(self.samples, 'blobs'):
+                    blobs_if_any = self.get_blobs()[:self.iteration]
+                else:
+                    blobs_if_any = None
                 if isinstance(callbacks, list):
                     # Compute all callbacks
-                    cb_values = [cb(self.iteration, self.get_chain(), self.get_log_prob()) for cb in callbacks]
+                    cb_values = [cb(self.iteration, self.get_chain(), self.get_log_prob(), blobs_if_any) for cb in callbacks]
                     # Keep only the non-None callbacks
                     cb_notnan_values = [cb for cb in cb_values if cb != None]
                     # Check them
@@ -438,7 +442,7 @@ class EnsembleSampler:
                     elif np.all(cb_notnan_values):
                         break
                 else:
-                    if callbacks(self.iteration, self.get_chain(), self.get_log_prob()):
+                    if callbacks(self.iteration, self.get_chain(), self.get_log_prob(), blobs_if_any):
                         break
 
 
