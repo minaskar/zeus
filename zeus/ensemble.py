@@ -427,6 +427,7 @@ class EnsembleSampler:
             if callbacks is None:
                 pass
             else:
+                # Test
                 if hasattr(self.samples, 'blobs'):
                     blobs_if_any = self.get_blobs()[:self.iteration]
                 else:
