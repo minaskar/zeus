@@ -62,19 +62,25 @@ class EnsembleSampler:
                  check_walkers=True,
                  shuffle_ensemble=True,
                  light_mode=False,
+                 logger=None,
                  ):
 
         # Set up logger
-        self.logger = logging.getLogger()
-        for handler in self.logger.handlers[:]:
-            self.logger.removeHandler(handler)
-        handler = logging.StreamHandler()
-        self.logger.addHandler(handler)
-        if verbose:
-            self.logger.setLevel(logging.INFO)
+        if logger is None:
+            self.logger = logging.getLogger()
+            for handler in self.logger.handlers[:]:
+                self.logger.removeHandler(handler)
+            handler = logging.StreamHandler()
+            self.logger.addHandler(handler)
+            if verbose:
+                self.logger.setLevel(logging.INFO)
+            else:
+                self.logger.setLevel(logging.WARNING)
+        elif isinstance(logger, logging.Logger):
+            self.logger = logger
         else:
-            self.logger.setLevel(logging.WARNING)
-
+            raise ValueError("logger should be an instance of logging.Logger or None")
+            
         # Parse the move schedule
         if moves is None:
             self._moves = [DifferentialMove()]
