@@ -21,11 +21,11 @@ import sphinx_bootstrap_theme
 # -- Project information -----------------------------------------------------
 
 project = 'zeus'
-copyright = '2019-2021, Minas Karamanis'
+copyright = '2019-2022, Minas Karamanis'
 author = 'Minas Karamanis'
 
 # The full version, including alpha/beta/rc tags
-release = '2.4.1'
+release = zeus.__version__
 
 # -- General configuration ---------------------------------------------------
 
