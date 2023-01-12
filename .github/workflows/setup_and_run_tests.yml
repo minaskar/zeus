@@ -5,7 +5,7 @@ on:
   push:
     branches: [ "new"]
   pull_request:
-    branches: [ "main"]
+    branches: [ "new"]
   workflow_dispatch:
 
 jobs:
