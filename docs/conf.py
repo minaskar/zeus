@@ -15,6 +15,8 @@ import sys
 
 sys.path.insert(0, os.path.abspath('../../zeus/'))
 
+import zeus
+
 import sphinx_bootstrap_theme
 
 
