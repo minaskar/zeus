@@ -27,7 +27,7 @@ jobs:
           python -m build
           twine check --strict dist/*
           
-      - name: Install pocomc from the wheel file
+      - name: Install zeus from the wheel file
         run: |
           pip install dist/*.whl
           
@@ -35,7 +35,7 @@ jobs:
         run: |
           pip freeze
       
-      - name: Run pocomc unittests
+      - name: Run zeus unittests
         run: |
           python -m unittest discover tests
           
@@ -47,7 +47,7 @@ jobs:
 
       - name: Get the version
         id: get_version
-        run: echo ::set-output name=VERSION::$(cat pocomc/_version.py | grep version | cut -d'"' -f 2)
+        run: echo ::set-output name=VERSION::$(cat zeus/_version.py | grep version | cut -d'"' -f 2)
 
       - name: Create GitHub Release
         id: create_release
