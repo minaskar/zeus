@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-
+    name: Setup and Run Tests
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
