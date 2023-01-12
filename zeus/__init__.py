@@ -14,7 +14,9 @@ __bibtex__ = """
             }
 """
 
-__version__ = "2.4.1"
+from ._version import version
+
+__version__ = version
 __url__ = "https://zeus-mcmc.readthedocs.io"
 __author__ = "Minas Karamanis"
 __email__ = "minaskar@gmail.com"
