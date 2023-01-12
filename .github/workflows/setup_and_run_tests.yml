@@ -3,9 +3,9 @@ name: Setup zeus and run tests
 
 on:
   push:
-    branches: [ "new"]
+    branches: [ "main"]
   pull_request:
-    branches: [ "new"]
+    branches: [ "main"]
   workflow_dispatch:
 
 jobs:

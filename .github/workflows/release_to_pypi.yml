@@ -3,7 +3,7 @@ name: Publish zeus to PyPI / GitHub
 on:
   push:
     branches:
-      - new
+      - main
     paths:
       - 'zeus/_version.py'  # Only run workflow on pushes where _version.py was changed
 
