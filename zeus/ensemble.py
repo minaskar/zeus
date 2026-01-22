@@ -494,6 +494,9 @@ class EnsembleSampler:
         if not np.all(np.isfinite(Z)):
             raise ValueError('Invalid walker initial positions! \n' +
                              'Initialise walkers from positions of finite log probability.')
+        if self.nwalkers > 1 and (X == X[0]).all():
+            raise ValueError('Invalid walker initial positions! \n' +
+                             'Initialise walkers from different starting positions.')
         batch = list(np.arange(self.nwalkers))
 
         # Extend saving space
